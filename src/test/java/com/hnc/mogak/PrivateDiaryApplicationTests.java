@@ -1,4 +1,4 @@
-package com.diary.private_diary;
+package com.hnc.mogak;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

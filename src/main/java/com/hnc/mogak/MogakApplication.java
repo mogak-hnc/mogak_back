@@ -1,13 +1,13 @@
-package com.diary.private_diary;
+package com.hnc.mogak;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PrivateDiaryApplication {
+public class MogakApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PrivateDiaryApplication.class, args);
+		SpringApplication.run(MogakApplication.class, args);
 	}
 
 }
