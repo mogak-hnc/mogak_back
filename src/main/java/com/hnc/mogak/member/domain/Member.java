@@ -17,4 +17,21 @@ public class Member {
     private PlatformInfo platformInfo;
     private Role role;
 
+    public static Member withId(
+            MemberId memberId,
+            MemberInfo memberInfo,
+            PlatformInfo platformInfo,
+            Role role
+    ) {
+        return new Member(memberId, memberInfo, platformInfo, role);
+    }
+
+    public static Member withoutId(
+            MemberInfo memberInfo,
+            PlatformInfo platformInfo,
+            Role role
+    ) {
+        return new Member(null, memberInfo, platformInfo, role);
+    }
+
 }
