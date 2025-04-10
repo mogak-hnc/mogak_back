@@ -3,8 +3,11 @@ package com.hnc.mogak.member.adapter.out.persistence;
 import com.hnc.mogak.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Entity
+@Table(name = "member")
+@Getter
 @AllArgsConstructor
 class MemberEntity extends BaseEntity {
 
@@ -13,10 +16,10 @@ class MemberEntity extends BaseEntity {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "nickname", nullable = false, unique = true)
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
     @Column(name = "password")
@@ -25,13 +28,13 @@ class MemberEntity extends BaseEntity {
     @Column(name = "image_path")
     private String imagePath;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "provider", nullable = false)
     private String provider;
 
-    @Column(name = "provider_id", nullable = false)
+    @Column(name = "provider_id", nullable = false, unique = true)
     private String providerId;
 
     @Column(name = "role", nullable = false)
