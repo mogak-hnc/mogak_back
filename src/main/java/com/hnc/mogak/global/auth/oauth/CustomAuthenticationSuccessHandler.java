@@ -29,11 +29,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Member member = principalDetails.member();
 
-        String providerId = member.getPlatformInfo().providerId();
+        Long memberId = member.getMemberId().value();
         String nickname = member.getMemberInfo().nickname();
         String role = member.getRole().value();
 
-        String accessToken = jwtUtil.generateToken(providerId, nickname, role, expiredMs);
+        String accessToken = jwtUtil.generateToken(memberId, nickname, role, expiredMs);
 
         String redirectUrl = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("accessToken", accessToken)
