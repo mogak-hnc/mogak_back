@@ -8,5 +8,6 @@ public interface LoadMemberPort {
 
     Member loadMemberByProviderId(String providerId);
     boolean existsByProviderId(String providerId);
+    boolean existsByNickname(String nickname);
 
 }

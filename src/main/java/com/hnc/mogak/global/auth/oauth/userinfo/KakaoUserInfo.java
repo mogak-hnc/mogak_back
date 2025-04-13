@@ -44,20 +44,6 @@ public class KakaoUserInfo implements OAuth2UserInfo{
     }
 
     @Override
-    public String getNickname() {
-        if (attributes.containsKey("properties")) {
-            Object propertiesObj = attributes.get("properties");
-            if (propertiesObj instanceof Map) {
-                Map<String, Object> properties = (Map<String, Object>) propertiesObj;
-                if (properties.containsKey("nickname")) {
-                    return properties.get("nickname").toString();
-                }
-            }
-        }
-        return UUID.randomUUID().toString();
-    }
-
-    @Override
     public String getEmail() {
         if (attributes.containsKey("kakao_account")) {
             Object kakaoAccountObj = attributes.get("kakao_account");
@@ -71,22 +57,4 @@ public class KakaoUserInfo implements OAuth2UserInfo{
         return null;
     }
 
-    @Override
-    public Member mapToMember() {
-        MemberInfo memberInfo = new MemberInfo(
-                getNickname(),
-                getEmail(),
-                null,
-                null,
-                getName()
-        );
-
-        PlatformInfo platformInfo = new PlatformInfo(
-                getProvider(),
-                getProviderId()
-        );
-
-        Role role = new Role(AuthConstant.ROLE_MEMBER);
-        return Member.withoutId(memberInfo, platformInfo, role);
-    }
 }
