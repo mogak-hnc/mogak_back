@@ -32,4 +32,9 @@ class MemberPersistenceAdapter implements LoadMemberPort, PersistMemberPort {
     public boolean existsByProviderId(String providerId) {
         return memberRepository.existsByProviderId(providerId);
     }
+
+    @Override
+    public boolean existsByNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
 }

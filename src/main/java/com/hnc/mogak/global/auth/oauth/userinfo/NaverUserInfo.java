@@ -34,35 +34,12 @@ public class NaverUserInfo implements OAuth2UserInfo {
     }
 
     @Override
-    public String getNickname() {
-        if (responseAttributes.containsKey("nickname")) {
-            return responseAttributes.get("nickname").toString();
-        } else {
-            return UUID.randomUUID().toString();
-        }
-    }
-
-    @Override
     public String getEmail() {
-        return (String) responseAttributes.get("email");
+        if (responseAttributes.containsKey("email")) {
+            return (String) responseAttributes.get("email");
+        }
+
+        return null;
     }
 
-    @Override
-    public Member mapToMember() {
-        MemberInfo memberInfo = new MemberInfo(
-                getNickname(),
-                getEmail(),
-                null,
-                null,
-                getName()
-        );
-
-        PlatformInfo platformInfo = new PlatformInfo(
-                getProvider(),
-                getProviderId()
-        );
-
-        Role role = new Role(AuthConstant.ROLE_MEMBER);
-        return Member.withoutId(memberInfo, platformInfo, role);
-    }
 }

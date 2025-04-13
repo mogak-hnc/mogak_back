@@ -4,11 +4,13 @@ import com.hnc.mogak.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "member")
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 class MemberEntity extends BaseEntity {
 
     @Id
@@ -16,7 +18,7 @@ class MemberEntity extends BaseEntity {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
 
     @Column(name = "email")

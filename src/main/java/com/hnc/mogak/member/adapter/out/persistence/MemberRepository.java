@@ -12,4 +12,7 @@ interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     Optional<MemberEntity> findByProviderId(String providerId);
 
     boolean existsByProviderId(String providerId);
+
+    boolean existsByNickname(String nickname);
+
 }

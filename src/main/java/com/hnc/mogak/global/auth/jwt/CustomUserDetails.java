@@ -13,7 +13,6 @@ import java.util.Collection;
 class CustomUserDetails implements UserDetails {
 
     private String providerId;
-    private String nickname;
     private String role;
 
     @Override

@@ -51,7 +51,7 @@ public class SecurityConfig {
                 // request 인증, 인가 설정
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
-                                        "/", "/login"
+                                        "/", "/login", "/", "/auth/success"
                                 ).permitAll()
                                 .anyRequest().authenticated())
 
