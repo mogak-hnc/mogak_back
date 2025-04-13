@@ -37,10 +37,9 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         String findProviderId = jwtUtil.getProviderId(accessToken);
-        String findNickname = jwtUtil.getNickname(accessToken);
         String findRole = jwtUtil.getRole(accessToken);
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(findProviderId, findNickname, findRole);
+        CustomUserDetails customUserDetails = new CustomUserDetails(findProviderId, findRole);
         Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);

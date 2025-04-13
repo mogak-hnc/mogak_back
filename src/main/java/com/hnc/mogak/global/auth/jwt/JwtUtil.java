@@ -59,9 +59,9 @@ public class JwtUtil {
                 .get("role", String.class);
     }
 
-    public String generateToken(String providerId, String nickname, String role, Long expiredMs) {
+    public String generateToken(Long memberId, String nickname, String role, Long expiredMs) {
         return Jwts.builder()
-                .claim("providerId", providerId)
+                .claim("memberId", memberId)
                 .claim("nickname", nickname)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
