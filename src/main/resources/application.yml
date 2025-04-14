@@ -14,7 +14,8 @@ spring:
         format_sql: true
   jwt:
     secret: ${JWT_SECRET}
-    redirect: http://localhost:8080/login?name=%s&access_token=%s&refresh_token=%s
+#    redirect: http://localhost:8080/login?name=%s&access_token=%s&refresh_token=%s
+    redirect: http://localhost:8080/login?
     #    리다이렉트가 잘 되는지 확인하기 위해, 우선은 localhost:5173 -> localhost:8080 으로 변경해서 진행
     access-token:
       expiration-time: 3600000

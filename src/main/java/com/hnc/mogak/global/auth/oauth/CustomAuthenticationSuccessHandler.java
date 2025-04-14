@@ -19,9 +19,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Value("${spring.jwt.access-token.expiration-time}")
     private Long expiredMs;
+    @Value("${spring.jwt.redirect}")
+    private String redirectUri;
     private final JwtUtil jwtUtil;
-
-    private static final String URI = "/auth/success";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -35,7 +35,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         String accessToken = jwtUtil.generateToken(memberId, nickname, role, expiredMs);
 
-        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
+        String redirectUrl = UriComponentsBuilder.fromUriString(redirectUri)
                 .queryParam("accessToken", accessToken)
                 .build().toUriString();
 
