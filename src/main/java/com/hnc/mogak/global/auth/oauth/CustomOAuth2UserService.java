@@ -112,7 +112,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return nickname;
     }
 
-    private static OAuth2UserInfo getOAuth2UserInfo(String provider, Map<String, Object> oAuth2UserAttributes, String attributeKey) {
+    private OAuth2UserInfo getOAuth2UserInfo(String provider, Map<String, Object> oAuth2UserAttributes, String attributeKey) {
         OAuth2UserInfo oAuth2UserInfo;
         switch (provider) {
             case "kakao" -> oAuth2UserInfo = new KakaoUserInfo(oAuth2UserAttributes);
