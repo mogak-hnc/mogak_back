@@ -34,4 +34,12 @@ public class Member {
         return new Member(null, memberInfo, platformInfo, role);
     }
 
+    public void assignId(MemberId memberId) {
+        if (this.memberId == null) this.memberId = memberId;
+    }
+
+    public void assignId(Long memberId) {
+        if (this.memberId == null) this.memberId = new MemberId(memberId);
+    }
+
 }

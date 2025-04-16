@@ -17,8 +17,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${spring.jwt.access-token.expiration-time}")
-    private Long expiredMs;
     @Value("${spring.jwt.redirect}")
     private String redirectUri;
     private final JwtUtil jwtUtil;
@@ -33,7 +31,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String nickname = member.getMemberInfo().nickname();
         String role = member.getRole().value();
 
-        String accessToken = jwtUtil.generateToken(memberId, nickname, role, expiredMs);
+        String accessToken = jwtUtil.generateToken(memberId, nickname, role);
 
         String redirectUrl = UriComponentsBuilder.fromUriString(redirectUri)
                 .queryParam("accessToken", accessToken)

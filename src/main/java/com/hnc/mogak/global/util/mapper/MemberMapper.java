@@ -1,5 +1,6 @@
-package com.hnc.mogak.member.adapter.out.persistence;
+package com.hnc.mogak.global.util.mapper;
 
+import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.member.domain.vo.MemberId;
 import com.hnc.mogak.member.domain.vo.MemberInfo;
@@ -8,9 +9,9 @@ import com.hnc.mogak.member.domain.vo.Role;
 import org.springframework.stereotype.Component;
 
 @Component
-class MemberMapper {
+public class MemberMapper {
 
-    MemberEntity mapToJpaEntity(Member member) {
+    public MemberEntity mapToJpaEntity(Member member) {
         MemberInfo memberInfo = member.getMemberInfo();
         PlatformInfo platformInfo = member.getPlatformInfo();
         Role role = member.getRole();
@@ -27,7 +28,7 @@ class MemberMapper {
         );
     }
 
-    Member mapToDomainEntity(MemberEntity memberEntity) {
+    public Member mapToDomainEntity(MemberEntity memberEntity) {
         MemberId memberId = new MemberId(memberEntity.getMemberId());
         MemberInfo memberInfo = new MemberInfo(
                 memberEntity.getNickname(),

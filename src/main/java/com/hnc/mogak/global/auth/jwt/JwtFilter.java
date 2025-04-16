@@ -36,10 +36,10 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String findProviderId = jwtUtil.getProviderId(accessToken);
+        String findId = jwtUtil.getMemberId(accessToken);
         String findRole = jwtUtil.getRole(accessToken);
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(findProviderId, findRole);
+        CustomUserDetails customUserDetails = new CustomUserDetails(findId, findRole);
         Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);

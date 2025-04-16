@@ -12,7 +12,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 class CustomUserDetails implements UserDetails {
 
-    private String providerId;
+    private String memberId;
     private String role;
 
     @Override
@@ -35,7 +35,7 @@ class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return providerId;
+        return memberId;
     }
 
 }
