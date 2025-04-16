@@ -13,6 +13,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    @Value("${spring.jwt.access-token.expiration-time}")
+    private Long expiredMs;
     private final SecretKey secretKey;
 
     public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
@@ -41,13 +43,13 @@ public class JwtUtil {
                 .get("nickname", String.class);
     }
 
-    public String getProviderId(String accessToken) {
+    public String getMemberId(String accessToken) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(accessToken)
                 .getPayload()
-                .get("providerId", String.class);
+                .get("memberId", String.class);
     }
 
     public String getRole(String accessToken) {
@@ -59,7 +61,8 @@ public class JwtUtil {
                 .get("role", String.class);
     }
 
-    public String generateToken(Long memberId, String nickname, String role, Long expiredMs) {
+    public String generateToken(Long memberId, String nickname, String role) {
+        nickname = nickname.length() > 10 ? nickname.substring(0, 10) : nickname;
         return Jwts.builder()
                 .claim("memberId", memberId)
                 .claim("nickname", nickname)

@@ -6,7 +6,7 @@ import com.hnc.mogak.global.auth.oauth.userinfo.NaverUserInfo;
 import com.hnc.mogak.global.auth.oauth.userinfo.OAuth2UserInfo;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.AuthException;
-import com.hnc.mogak.member.application.port.out.LoadMemberPort;
+import com.hnc.mogak.member.application.port.out.QueryMemberPort;
 import com.hnc.mogak.member.application.port.out.PersistMemberPort;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.member.domain.vo.MemberId;
@@ -29,7 +29,7 @@ import java.util.UUID;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final LoadMemberPort loadMemberPort;
+    private final QueryMemberPort queryMemberPort;
     private final PersistMemberPort persistMemberPort;
 
     private static final String[] ADJECTIVES = {
@@ -55,12 +55,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private Member loadOrPersistMember(OAuth2UserInfo oAuth2UserInfo) {
         String providerId = oAuth2UserInfo.getProviderId();
-        if (loadMemberPort.existsByProviderId(providerId)) {
-            return loadMemberPort.loadMemberByProviderId(oAuth2UserInfo.getProviderId());
+        if (queryMemberPort.existsByProviderId(providerId)) {
+            return queryMemberPort.loadMemberByProviderId(oAuth2UserInfo.getProviderId());
         }
 
         Member newMember = createNewMember(oAuth2UserInfo);
-        Long newMemberId = persistMemberPort.persistMember(newMember);
+        Long newMemberId = persistMemberPort.persist(newMember);
 
         return Member.withId(
                 new MemberId(newMemberId),
@@ -98,7 +98,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         while (!isNicknameUnique && attemptCount < 10) {
             nickname = ADJECTIVES[random.nextInt(ADJECTIVES.length)] + " " + NOUNS[random.nextInt(NOUNS.length)];
 
-            if (!loadMemberPort.existsByNickname(nickname)) {
+            if (!queryMemberPort.existsByNickname(nickname)) {
                 isNicknameUnique = true;
             }
 
