@@ -5,7 +5,7 @@ import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
 import com.hnc.mogak.member.application.port.out.QueryMemberPort;
-import com.hnc.mogak.member.application.port.out.PersistMemberPort;
+import com.hnc.mogak.member.application.port.out.CommandMemberPort;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.member.domain.vo.MemberInfo;
 import com.hnc.mogak.member.domain.vo.PlatformInfo;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class AuthService implements AuthUseCase {
 
     private final QueryMemberPort queryMemberPort;
-    private final PersistMemberPort persistMemberPort;
+    private final CommandMemberPort commandMemberPort;
     private final NicknameGenerator nicknameGenerator;
     private final JwtUtil jwtUtil;
 
@@ -39,7 +39,7 @@ public class AuthService implements AuthUseCase {
         PlatformInfo platformInfo = new PlatformInfo(provider, providerId);
         Role roleInfo = new Role(AuthConstant.ROLE_MEMBER);
         Member newMember = Member.withoutId(memberInfo, platformInfo, roleInfo);
-        Long memberId = persistMemberPort.persist(newMember);
+        Long memberId = commandMemberPort.persist(newMember);
         newMember.assignId(memberId);
         String token = getToken(newMember);
 
