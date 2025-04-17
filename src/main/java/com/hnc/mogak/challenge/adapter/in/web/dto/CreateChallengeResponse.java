@@ -12,6 +12,7 @@ public class CreateChallengeResponse {
 
     private String title;
     private String description;
+    private Long creatorMemberId;
     private LocalDate startDate;
     private LocalDate endDate;
 

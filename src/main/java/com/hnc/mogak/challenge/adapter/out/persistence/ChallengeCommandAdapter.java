@@ -38,6 +38,7 @@ public class ChallengeCommandAdapter implements CommandChallengePort {
                 .description(savedChallengeEntity.getDescription())
                 .startDate(savedChallengeEntity.getStartDate())
                 .endDate(savedChallengeEntity.getEndDate())
+                .creatorMemberId(memberEntity.getMemberId())
                 .build();
     }
 
