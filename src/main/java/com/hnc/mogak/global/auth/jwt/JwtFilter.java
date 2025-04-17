@@ -24,13 +24,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader(AUTHORIZATION);
-        if (authorization == null || !authorization.startsWith(BEARER)) {
+        String accessToken = request.getHeader(AUTHORIZATION);
+        if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String accessToken = authorization.substring(BEARER.length()).trim();
         if (jwtUtil.isTokenExpired(accessToken)) {
             filterChain.doFilter(request, response);
             return;

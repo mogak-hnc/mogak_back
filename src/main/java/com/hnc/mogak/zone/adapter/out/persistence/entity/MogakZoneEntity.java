@@ -1,0 +1,51 @@
+package com.hnc.mogak.zone.adapter.out.persistence.entity;
+
+import com.hnc.mogak.global.BaseEntity;
+import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "mogak_zone")
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class MogakZoneEntity extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "zone_id")
+    private Long zoneId;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "max_capacity")
+    private int maxCapacity;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "login_required")
+    private boolean loginRequired;
+
+    @Column(name = "chat_enabled")
+    private boolean chatEnabled;
+
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity hostMemberEntity;
+
+}
