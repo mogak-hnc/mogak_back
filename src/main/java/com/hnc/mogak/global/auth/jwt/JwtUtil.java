@@ -61,7 +61,7 @@ public class JwtUtil {
                 .get("role", String.class);
     }
 
-    public String generateToken(Long memberId, String nickname, String role) {
+    public String generateToken(String memberId, String nickname, String role) {
         nickname = nickname.length() > 10 ? nickname.substring(0, 10) : nickname;
         return Jwts.builder()
                 .claim("memberId", memberId)

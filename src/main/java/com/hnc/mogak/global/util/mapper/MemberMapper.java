@@ -15,8 +15,9 @@ public class MemberMapper {
         MemberInfo memberInfo = member.getMemberInfo();
         PlatformInfo platformInfo = member.getPlatformInfo();
         Role role = member.getRole();
+        Long memberId = member.getMemberId() != null ? member.getMemberId().value() : null;
         return new MemberEntity(
-                null,
+                memberId,
                 memberInfo.nickname(),
                 memberInfo.email(),
                 memberInfo.password(),

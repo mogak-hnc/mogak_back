@@ -27,7 +27,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         Member member = principalDetails.member();
 
-        Long memberId = member.getMemberId().value();
+        String memberId = String.valueOf(member.getMemberId().value());
         String nickname = member.getMemberInfo().nickname();
         String role = member.getRole().value();
 

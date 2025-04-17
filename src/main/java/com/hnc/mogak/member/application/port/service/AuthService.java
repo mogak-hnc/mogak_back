@@ -51,7 +51,7 @@ public class AuthService implements AuthUseCase {
 
     private String getToken(Member member) {
         return jwtUtil.generateToken(
-                member.getMemberId().value(),
+                String.valueOf(member.getMemberId().value()),
                 member.getMemberInfo().nickname(),
                 member.getRole().value()
         );
