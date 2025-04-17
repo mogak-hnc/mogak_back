@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class MogakZonePersistenceAdapter implements MogakZonePort, TagPort {
+public class MogakZoneCommandAdapter implements MogakZonePort, TagPort {
 
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneTagRepository zoneTagRepository;
