@@ -10,8 +10,10 @@ import com.hnc.mogak.member.application.port.out.QueryMemberPort;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ChallengeService implements ChallengeUseCase {
 
@@ -23,7 +25,6 @@ public class ChallengeService implements ChallengeUseCase {
     public CreateChallengeResponse create(CreateChallengeCommand command) {
         Member challengeCreator = queryMemberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = challengeMapper.mapToDomain(command, challengeCreator);
-        CreateChallengeResponse response = commandChallengePort.persist(challenge, challengeCreator);
-        return response;
+        return commandChallengePort.persist(challenge, challengeCreator);
     }
 }

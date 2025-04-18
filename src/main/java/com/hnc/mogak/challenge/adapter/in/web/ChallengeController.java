@@ -41,6 +41,7 @@ public class ChallengeController {
                 .startDate(startDate)
                 .endDate(endDate)
                 .memberId(Long.parseLong(memberId))
+                .official(false)
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));

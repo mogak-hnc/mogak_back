@@ -31,7 +31,10 @@ public class ChallengeEntity extends BaseEntity {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @Column(name = "official")
+    private boolean official;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity memberEntity;
 

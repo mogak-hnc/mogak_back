@@ -16,5 +16,6 @@ public class CreateChallengeResponse {
     private Long creatorMemberId;
     private LocalDate startDate;
     private LocalDate endDate;
+    private boolean official;
 
 }

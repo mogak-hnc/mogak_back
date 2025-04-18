@@ -20,7 +20,8 @@ public class ChallengeMapper {
         Long challengeId = challenge.getChallengeId() != null ? challenge.getChallengeId().value() : null;
         String title = challenge.getContent().title();
         String description = challenge.getContent().description();
-        LocalDate startDate = challenge.getChallengeDuration().startDate();
+        boolean official = challenge.getContent().official();
+            LocalDate startDate = challenge.getChallengeDuration().startDate();
         LocalDate endDate = challenge.getChallengeDuration().endDate();
 
         return ChallengeEntity.builder()
@@ -30,6 +31,7 @@ public class ChallengeMapper {
                 .startDate(startDate)
                 .endDate(endDate)
                 .memberEntity(memberEntity)
+                .official(official)
                 .build();
     }
 
@@ -37,7 +39,8 @@ public class ChallengeMapper {
         ChallengeId challengeId = new ChallengeId(challengeEntity.getChallengeId());
         Content content = new Content(
                 challengeEntity.getTitle(),
-                challengeEntity.getDescription()
+                challengeEntity.getDescription(),
+                challengeEntity.isOfficial()
         );
         ChallengeDuration challengeDuration =
                 new ChallengeDuration(
@@ -52,7 +55,8 @@ public class ChallengeMapper {
         ChallengeId challengeId = new ChallengeId(null);
         Content content = new Content(
                 command.getTitle(),
-                command.getDescription()
+                command.getDescription(),
+                command.isOfficial()
         );
         ChallengeDuration challengeDuration =
                 new ChallengeDuration(
@@ -71,6 +75,7 @@ public class ChallengeMapper {
                 .startDate(savedChallengeEntity.getStartDate())
                 .endDate(savedChallengeEntity.getEndDate())
                 .creatorMemberId(memberEntity.getMemberId())
+                .official(savedChallengeEntity.isOfficial())
                 .build();
     }
 
