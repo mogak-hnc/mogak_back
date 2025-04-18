@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CreateChallengeResponse {
 
+    private Long challengeId;
     private String title;
     private String description;
     private Long creatorMemberId;

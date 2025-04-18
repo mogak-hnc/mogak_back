@@ -1,5 +1,6 @@
 package com.hnc.mogak.global.util.mapper;
 
+import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.domain.Challenge;
@@ -60,6 +61,17 @@ public class ChallengeMapper {
                 );
 
         return Challenge.withId(challengeId, content, challengeDuration, challengeCreator);
+    }
+
+    public CreateChallengeResponse mapToChallengeResponse(ChallengeEntity savedChallengeEntity, MemberEntity memberEntity) {
+        return CreateChallengeResponse.builder()
+                .challengeId(savedChallengeEntity.getChallengeId())
+                .title(savedChallengeEntity.getTitle())
+                .description(savedChallengeEntity.getDescription())
+                .startDate(savedChallengeEntity.getStartDate())
+                .endDate(savedChallengeEntity.getEndDate())
+                .creatorMemberId(memberEntity.getMemberId())
+                .build();
     }
 
 }

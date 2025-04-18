@@ -26,20 +26,14 @@ public class ChallengeCommandAdapter implements CommandChallengePort {
 
     @Override
     public CreateChallengeResponse persist(Challenge challenge, Member challengeCreator) {
-        MemberEntity memberEntity = memberMapper.mapToJpaEntity(challengeCreator);;
+        MemberEntity memberEntity = memberMapper.mapToJpaEntity(challengeCreator);
         ChallengeEntity savedChallengeEntity = challengeRepository.save(challengeMapper.mapToJpaEntity(challenge, memberEntity));
         challengeMemberRepository.save(ChallengeMemberEntity.builder()
                 .challengeEntity(savedChallengeEntity)
                 .memberEntity(memberEntity)
                 .build());
 
-        return CreateChallengeResponse.builder()
-                .title(savedChallengeEntity.getTitle())
-                .description(savedChallengeEntity.getDescription())
-                .startDate(savedChallengeEntity.getStartDate())
-                .endDate(savedChallengeEntity.getEndDate())
-                .creatorMemberId(memberEntity.getMemberId())
-                .build();
+        return challengeMapper.mapToChallengeResponse(savedChallengeEntity, memberEntity);
     }
 
 }
