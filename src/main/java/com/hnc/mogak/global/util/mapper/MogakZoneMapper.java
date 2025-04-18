@@ -61,6 +61,7 @@ public class MogakZoneMapper {
 
     public MogakZoneResponse mapToMogakZoneResponse(MogakZoneEntity mogakZoneEntity, Set<String> tagNames) {
         return MogakZoneResponse.builder()
+                .mogakZoneId(mogakZoneEntity.getZoneId())
                 .name(mogakZoneEntity.getName())
                 .maxCapacity(mogakZoneEntity.getMaxCapacity())
                 .imageUrl(mogakZoneEntity.getImageUrl())

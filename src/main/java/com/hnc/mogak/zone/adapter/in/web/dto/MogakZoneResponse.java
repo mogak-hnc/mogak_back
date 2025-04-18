@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MogakZoneResponse {
 
+    private Long mogakZoneId;
     private String name;
 
     private int maxCapacity;
