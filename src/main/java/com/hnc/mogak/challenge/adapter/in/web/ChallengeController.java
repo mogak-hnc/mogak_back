@@ -25,15 +25,17 @@ public class ChallengeController {
     private final JwtUtil jwtUtil;
 
     @PostMapping
-    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER)
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateChallengeResponse> createChallenge(
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @Valid @RequestBody CreateChallengeRequest request
     ) {
         String memberId = jwtUtil.getMemberId(token);
+        String role = jwtUtil.getRole(token);
         LocalDate[] localDates = DateParser.parsePeriod(request.getPeriod());
         LocalDate startDate = localDates[0];
         LocalDate endDate = localDates[1];
+        boolean isOfficial = role.equals(AuthConstant.ROLE_ADMIN);
 
         CreateChallengeCommand command =  CreateChallengeCommand.builder()
                 .title(request.getTitle())
@@ -41,7 +43,7 @@ public class ChallengeController {
                 .startDate(startDate)
                 .endDate(endDate)
                 .memberId(Long.parseLong(memberId))
-                .official(false)
+                .official(isOfficial)
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));

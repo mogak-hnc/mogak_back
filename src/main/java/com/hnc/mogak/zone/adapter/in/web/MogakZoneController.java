@@ -28,7 +28,7 @@ public class MogakZoneController {
     private final JwtUtil jwtUtil;
 
     @PostMapping
-    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER)
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<MogakZoneResponse> createMogakZone(
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @Valid @RequestBody MogakZoneRequest request) {
