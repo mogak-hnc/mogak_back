@@ -1,0 +1,17 @@
+package com.hnc.mogak.zone.adapter.out.persistence.repository;
+
+import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Long> {
+
+    @Query("SELECT zm FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.zoneId = :mogakZoneId")
+    List<ZoneMemberEntity> findAllByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
+
+}

@@ -1,18 +1,16 @@
 package com.hnc.mogak.zone.adapter.out.persistence;
 
-import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
-import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneTagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.TagRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneTagRepository;
-import com.hnc.mogak.zone.application.port.out.MogakZonePort;
+import com.hnc.mogak.zone.application.port.out.MogakZoneCommandPort;
 import com.hnc.mogak.zone.application.port.out.TagPort;
-import com.hnc.mogak.zone.domain.MogakZone;
+import com.hnc.mogak.zone.domain.zone.MogakZone;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,22 +19,29 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class MogakZoneCommandAdapter implements MogakZonePort, TagPort {
+public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, TagPort {
 
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneTagRepository zoneTagRepository;
     private final TagRepository tagRepository;
 
     private final MogakZoneMapper mogakZoneMapper;
-    private final MemberMapper memberMapper;
+
+//    @Override
+//    public CreateMogakZoneResponse createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
+//        MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(mogakZoneMapper.mapToEntity(mogakZone));
+//        tagSet.forEach(tagEntity -> zoneTagRepository.save(new ZoneTagEntity(null, tagEntity, mogakZoneEntity)));
+//
+//        Set<String> tagNames = tagSet.stream().map(TagEntity::getName).collect(Collectors.toSet());
+//        return mogakZoneMapper.mapToMogakZoneResponse(mogakZoneEntity, tagNames);
+//    }
+
 
     @Override
-    public MogakZoneResponse createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
-        MemberEntity memberEntity = memberMapper.mapToJpaEntity(mogakZone.getHostMember());
-        MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(mogakZoneMapper.mapToEntity(mogakZone, memberEntity));
+    public MogakZone createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
+        MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(mogakZoneMapper.mapToEntity(mogakZone));
         tagSet.forEach(tagEntity -> zoneTagRepository.save(new ZoneTagEntity(null, tagEntity, mogakZoneEntity)));
-        Set<String> tagNames = tagSet.stream().map(TagEntity::getName).collect(Collectors.toSet());
-        return mogakZoneMapper.mapToMogakZoneResponse(mogakZoneEntity, tagNames);
+        return mogakZoneMapper.mapToDomainWithId(mogakZoneEntity);
     }
 
     @Override

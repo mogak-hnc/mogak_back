@@ -3,10 +3,13 @@ package com.hnc.mogak.zone.adapter.in.web;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.util.mapper.DateParser;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneRequest;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneResponse;
-import com.hnc.mogak.zone.application.port.in.MogakZoneUseCase;
+import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneRequest;
+import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneRequest;
+import com.hnc.mogak.zone.adapter.in.web.dto.JoinResponse;
+import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
+import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,16 +25,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mogak/zone")
-public class MogakZoneController {
+public class MogakZoneCommandController {
 
-    private final MogakZoneUseCase mogakZoneUseCase;
+    private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
     private final JwtUtil jwtUtil;
 
     @PostMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
-    public ResponseEntity<MogakZoneResponse> createMogakZone(
+    public ResponseEntity<CreateMogakZoneResponse> createMogakZone(
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
-            @Valid @RequestBody MogakZoneRequest request) {
+            @Valid @RequestBody CreateMogakZoneRequest request) {
         String memberId = jwtUtil.getMemberId(token);
 
         LocalDate[] localDates = DateParser.parsePeriod(request.getPeriod());
@@ -45,7 +48,7 @@ public class MogakZoneController {
                 .name(request.getName())
                 .maxCapacity(request.getMaxCapacity())
                 .imageUrl(request.getImageUrl())
-                .password(request.getPassword())
+                .password(request.getPassword() == null ? "" : request.getPassword())
                 .chatEnabled(request.isChatEnabled())
                 .loginRequired(request.isLoginRequired())
                 .startDate(startDate)
@@ -54,7 +57,25 @@ public class MogakZoneController {
                 .tagNames(tagNames)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneUseCase.create(command));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.create(command));
+    }
+
+    @PostMapping("/join/{mogakZoneId}")
+    public ResponseEntity<JoinResponse> joinMogakZone(
+            @RequestHeader(value = AuthConstant.AUTHORIZATION, required = false) String token,
+            @PathVariable(name = "mogakZoneId") Long mogakZoneId,
+            @Valid @RequestBody JoinMogakZoneRequest request
+    ) {
+        Long memberId = null;
+        if (token != null) memberId = Long.parseLong(jwtUtil.getMemberId(token));
+
+        JoinMogakZoneCommand command = JoinMogakZoneCommand.builder()
+                .memberId(memberId)
+                .mogakZoneId(mogakZoneId)
+                .password(request.getPassword() == null ? "" : request.getPassword())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.join(command));
     }
 
 }

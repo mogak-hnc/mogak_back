@@ -9,7 +9,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MogakZoneResponse {
+public class CreateMogakZoneResponse {
 
     private Long mogakZoneId;
     private String name;

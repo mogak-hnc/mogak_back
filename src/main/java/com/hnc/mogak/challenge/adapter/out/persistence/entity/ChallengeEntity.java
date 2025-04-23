@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @Table(name = "challenge")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChallengeEntity extends BaseEntity {
 

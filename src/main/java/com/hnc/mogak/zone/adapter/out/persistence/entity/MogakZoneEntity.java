@@ -1,7 +1,6 @@
 package com.hnc.mogak.zone.adapter.out.persistence.entity;
 
 import com.hnc.mogak.global.BaseEntity;
-import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +10,7 @@ import java.time.LocalDate;
 @Table(name = "mogak_zone")
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MogakZoneEntity extends BaseEntity {
 
@@ -43,9 +42,5 @@ public class MogakZoneEntity extends BaseEntity {
 
     @Column(name = "end_date")
     private LocalDate endDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private MemberEntity hostMemberEntity;
 
 }

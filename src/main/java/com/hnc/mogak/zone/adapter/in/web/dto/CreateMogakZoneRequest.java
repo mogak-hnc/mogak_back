@@ -1,6 +1,5 @@
 package com.hnc.mogak.zone.adapter.in.web.dto;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -8,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class MogakZoneRequest {
+public class CreateMogakZoneRequest {
 
     @NotNull
     private String name;
