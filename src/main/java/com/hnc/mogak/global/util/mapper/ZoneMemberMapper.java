@@ -36,7 +36,7 @@ public class ZoneMemberMapper {
                 .map(zoneMember ->
                         MogakZoneDetailResponse.ZoneMemberInfo
                                 .builder()
-                                .memberId(zoneMember.getZoneMemberId().value())
+                                .memberId(zoneMember.getMember().getMemberId().value())
                                 .status(zoneMember.getStatus())
                                 .nickname(zoneMember.getMember().getMemberInfo().nickname())
                                 .build()
@@ -45,7 +45,7 @@ public class ZoneMemberMapper {
     }
 
     public ZoneMember mapToDomain(ZoneMemberEntity zoneMemberEntity, Member member, MogakZone mogakZone) {
-        ZoneMemberId zoneMemberId = new ZoneMemberId(zoneMemberEntity.getZoneMemberId());
+        ZoneMemberId zoneMemberId = new ZoneMemberId(zoneMemberEntity.getId());
         return ZoneMember.withId(zoneMemberId, zoneMemberEntity.getStatus(), member, mogakZone);
     }
 

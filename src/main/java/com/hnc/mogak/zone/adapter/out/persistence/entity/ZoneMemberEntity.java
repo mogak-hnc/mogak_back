@@ -16,7 +16,7 @@ public class ZoneMemberEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "zone_member_id")
-    private Long zoneMemberId;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private ZoneMemberStatus status;

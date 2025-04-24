@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ZoneOwnerRepository extends JpaRepository<ZoneOwnerEntity, Long> {
 
-    @Query("SELECT zo FROM ZoneOwnerEntity zo WHERE zo.mogakZoneEntity.zoneId = :mogakZoneId")
+    @Query("SELECT zo FROM ZoneOwnerEntity zo WHERE zo.mogakZoneEntity.id = :mogakZoneId")
     ZoneOwnerEntity findByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 }

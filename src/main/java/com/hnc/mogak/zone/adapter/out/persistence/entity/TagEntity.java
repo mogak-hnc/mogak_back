@@ -16,7 +16,7 @@ public class TagEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_id")
-    private Long tagId;
+    private Long id;
 
     @Column(name = "name")
     private String name;

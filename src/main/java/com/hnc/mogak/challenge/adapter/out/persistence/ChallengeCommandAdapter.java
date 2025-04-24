@@ -1,6 +1,5 @@
 package com.hnc.mogak.challenge.adapter.out.persistence;
 
-import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeMemberRepository;
@@ -8,9 +7,6 @@ import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepos
 import com.hnc.mogak.challenge.application.port.out.CommandChallengePort;
 import com.hnc.mogak.challenge.domain.Challenge;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
-import com.hnc.mogak.global.util.mapper.MemberMapper;
-import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
-import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,18 +18,15 @@ public class ChallengeCommandAdapter implements CommandChallengePort {
     private final ChallengeMemberRepository challengeMemberRepository;
 
     private final ChallengeMapper challengeMapper;
-    private final MemberMapper memberMapper;
 
     @Override
-    public CreateChallengeResponse persist(Challenge challenge, Member challengeCreator) {
-        MemberEntity memberEntity = memberMapper.mapToJpaEntity(challengeCreator);
-        ChallengeEntity savedChallengeEntity = challengeRepository.save(challengeMapper.mapToJpaEntity(challenge, memberEntity));
+    public Challenge persist(Challenge challenge) {
+        ChallengeEntity savedChallengeEntity = challengeRepository.save(challengeMapper.mapToJpaEntity(challenge));
         challengeMemberRepository.save(ChallengeMemberEntity.builder()
                 .challengeEntity(savedChallengeEntity)
-                .memberEntity(memberEntity)
                 .build());
 
-        return challengeMapper.mapToChallengeResponse(savedChallengeEntity, memberEntity);
+        return challengeMapper.mapToDomain(savedChallengeEntity);
     }
 
 }

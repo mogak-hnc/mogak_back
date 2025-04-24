@@ -17,7 +17,7 @@ public class ChallengeEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "challenge_id")
-    private Long challengeId;
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String title;
@@ -33,9 +33,5 @@ public class ChallengeEntity extends BaseEntity {
 
     @Column(name = "official")
     private boolean official;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private MemberEntity memberEntity;
 
 }

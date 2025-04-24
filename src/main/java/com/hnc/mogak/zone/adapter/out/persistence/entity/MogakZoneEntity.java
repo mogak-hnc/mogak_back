@@ -17,7 +17,7 @@ public class MogakZoneEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "zone_id")
-    private Long zoneId;
+    private Long id;
 
     @Column(name = "name", nullable = false)
     private String name;
