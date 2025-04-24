@@ -30,7 +30,7 @@ public class MemberMapper {
     }
 
     public Member mapToDomainEntity(MemberEntity memberEntity) {
-        MemberId memberId = new MemberId(memberEntity.getMemberId());
+        MemberId memberId = new MemberId(memberEntity.getId());
         MemberInfo memberInfo = new MemberInfo(
                 memberEntity.getNickname(),
                 memberEntity.getEmail(),

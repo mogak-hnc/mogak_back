@@ -5,5 +5,6 @@ import com.hnc.mogak.challenge.domain.Challenge;
 import com.hnc.mogak.member.domain.Member;
 
 public interface CommandChallengePort {
-    CreateChallengeResponse persist(Challenge challenge, Member challengeCreator);
+    Challenge persist(Challenge challenge);
+
 }

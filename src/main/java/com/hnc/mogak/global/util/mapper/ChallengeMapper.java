@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Component
 public class ChallengeMapper {
 
-    public ChallengeEntity mapToJpaEntity(Challenge challenge, MemberEntity memberEntity) {
+    public ChallengeEntity mapToJpaEntity(Challenge challenge) {
         Long challengeId = challenge.getChallengeId() != null ? challenge.getChallengeId().value() : null;
         String title = challenge.getContent().title();
         String description = challenge.getContent().description();
@@ -25,18 +25,17 @@ public class ChallengeMapper {
         LocalDate endDate = challenge.getChallengeDuration().endDate();
 
         return ChallengeEntity.builder()
-                .challengeId(challengeId)
+                .id(challengeId)
                 .title(title)
                 .description(description)
                 .startDate(startDate)
                 .endDate(endDate)
-                .memberEntity(memberEntity)
                 .official(official)
                 .build();
     }
 
-    public Challenge mapToDomain(ChallengeEntity challengeEntity, Member challengeCreator) {
-        ChallengeId challengeId = new ChallengeId(challengeEntity.getChallengeId());
+    public Challenge mapToDomain(ChallengeEntity challengeEntity) {
+        ChallengeId challengeId = new ChallengeId(challengeEntity.getId());
         Content content = new Content(
                 challengeEntity.getTitle(),
                 challengeEntity.getDescription(),
@@ -48,11 +47,10 @@ public class ChallengeMapper {
                         challengeEntity.getEndDate()
                 );
 
-        return Challenge.withId(challengeId, content, challengeDuration, challengeCreator);
+        return Challenge.withId(challengeId, content, challengeDuration);
     }
 
-    public Challenge mapToDomain(CreateChallengeCommand command, Member challengeCreator) {
-        ChallengeId challengeId = new ChallengeId(null);
+    public Challenge mapToDomain(CreateChallengeCommand command) {
         Content content = new Content(
                 command.getTitle(),
                 command.getDescription(),
@@ -64,17 +62,17 @@ public class ChallengeMapper {
                         command.getEndDate()
                 );
 
-        return Challenge.withId(challengeId, content, challengeDuration, challengeCreator);
+        return Challenge.withoutId(content, challengeDuration);
     }
 
     public CreateChallengeResponse mapToChallengeResponse(ChallengeEntity savedChallengeEntity, MemberEntity memberEntity) {
         return CreateChallengeResponse.builder()
-                .challengeId(savedChallengeEntity.getChallengeId())
+                .challengeId(savedChallengeEntity.getId())
                 .title(savedChallengeEntity.getTitle())
                 .description(savedChallengeEntity.getDescription())
                 .startDate(savedChallengeEntity.getStartDate())
                 .endDate(savedChallengeEntity.getEndDate())
-                .creatorMemberId(memberEntity.getMemberId())
+                .creatorMemberId(memberEntity.getId())
                 .official(savedChallengeEntity.isOfficial())
                 .build();
     }

@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Long> {
 
-    @Query("SELECT zm FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.zoneId = :mogakZoneId")
+    @Query("SELECT zm FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId")
     List<ZoneMemberEntity> findAllByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 
 }

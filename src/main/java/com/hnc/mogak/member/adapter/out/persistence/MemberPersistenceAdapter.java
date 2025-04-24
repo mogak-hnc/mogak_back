@@ -27,7 +27,7 @@ public class MemberPersistenceAdapter implements QueryMemberPort, CommandMemberP
     @Override
     public Long persist(Member member) {
         MemberEntity save = memberRepository.save(memberMapper.mapToJpaEntity(member));
-        return save.getMemberId();
+        return save.getId();
     }
 
     @Override

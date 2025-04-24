@@ -38,7 +38,7 @@ public class MogakZoneMapper {
     }
 
     public MogakZone mapToDomainWithId(MogakZoneEntity mogakZoneEntity) {
-        ZoneId zoneId = new ZoneId(mogakZoneEntity.getZoneId());
+        ZoneId zoneId = new ZoneId(mogakZoneEntity.getId());
 
         ZoneInfo zoneInfo = new ZoneInfo(
                 mogakZoneEntity.getName(),
@@ -66,7 +66,7 @@ public class MogakZoneMapper {
         ZoneInfo zoneInfo = mogakZone.getZoneInfo();
 
         return MogakZoneEntity.builder()
-                .zoneId(id)
+                .id(id)
                 .name(zoneInfo.name())
                 .imageUrl(zoneInfo.imageUrl())
                 .password(zoneInfo.password())

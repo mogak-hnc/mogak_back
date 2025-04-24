@@ -6,22 +6,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Builder
 @Getter
-@Table(name = "challenge_member")
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@Table(name = "challenge_owner")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChallengeMemberEntity extends BaseEntity {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ChallengeOwnerEntity extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "challenge_member_id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "challenge_owner_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity memberEntity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id")
     private ChallengeEntity challengeEntity;
 

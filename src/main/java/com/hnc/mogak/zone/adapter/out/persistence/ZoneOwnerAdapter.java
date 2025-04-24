@@ -41,7 +41,7 @@ public class ZoneOwnerAdapter implements ZoneOwnerPort {
         ZoneOwnerEntity zoneOwnerEntity = zoneOwnerRepository.findByMogakZoneId(mogakZoneId);
         Member member = memberMapper.mapToDomainEntity(zoneOwnerEntity.getMemberEntity());
         MogakZone mogakZone = mogakZoneMapper.mapToDomainWithId(zoneOwnerEntity.getMogakZoneEntity());
-        return ZoneOwner.withId(zoneOwnerEntity.getZoneOwnerId(), member, mogakZone);
+        return ZoneOwner.withId(zoneOwnerEntity.getId(), member, mogakZone);
     }
 
 }
