@@ -1,9 +1,12 @@
 package com.hnc.mogak.challenge.adapter.in.web;
 
+import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeDetailResponse;
 import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeRequest;
 import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeResponse;
+import com.hnc.mogak.challenge.adapter.in.web.dto.JoinChallengeResponse;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
+import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.util.mapper.DateParser;
@@ -30,7 +33,7 @@ public class ChallengeController {
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @Valid @RequestBody CreateChallengeRequest request
     ) {
-        String memberId = jwtUtil.getMemberId(token);
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
         String role = jwtUtil.getRole(token);
         LocalDate[] localDates = DateParser.parsePeriod(request.getPeriod());
         LocalDate startDate = localDates[0];
@@ -42,11 +45,33 @@ public class ChallengeController {
                 .description(request.getDescription())
                 .startDate(startDate)
                 .endDate(endDate)
-                .memberId(Long.parseLong(memberId))
+                .memberId(memberId)
                 .official(isOfficial)
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));
+    }
+
+    @PostMapping("/{challengeId}/join")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<JoinChallengeResponse> joinChallenge(
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @PathVariable(name = "challengeId") Long challengeId
+    ) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        JoinChallengeCommand command = JoinChallengeCommand.builder()
+                .memberId(memberId)
+                .challengeId(challengeId)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.join(command));
+    }
+
+    @GetMapping("/{challengeId}")
+    public ResponseEntity<ChallengeDetailResponse> getChallengeDetail(
+            @PathVariable(name = "challengeId") Long challengeId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(challengeId));
     }
 
 }

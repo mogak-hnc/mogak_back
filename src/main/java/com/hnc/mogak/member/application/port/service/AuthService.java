@@ -4,8 +4,7 @@ import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
-import com.hnc.mogak.member.application.port.out.QueryMemberPort;
-import com.hnc.mogak.member.application.port.out.CommandMemberPort;
+import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.member.domain.vo.MemberInfo;
 import com.hnc.mogak.member.domain.vo.PlatformInfo;
@@ -18,15 +17,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService implements AuthUseCase {
 
-    private final QueryMemberPort queryMemberPort;
-    private final CommandMemberPort commandMemberPort;
+    private final MemberPort memberPort;
     private final NicknameGenerator nicknameGenerator;
     private final JwtUtil jwtUtil;
 
     @Override
     public SocialLoginResponse handleSocialLogin(String provider, String providerId) {
-        if (queryMemberPort.existsByProviderId(providerId)) {
-            Member findMember = queryMemberPort.loadMemberByProviderId(providerId);
+        if (memberPort.existsByProviderId(providerId)) {
+            Member findMember = memberPort.loadMemberByProviderId(providerId);
             String token = getToken(findMember);
 
             return SocialLoginResponse.builder()
@@ -39,7 +37,7 @@ public class AuthService implements AuthUseCase {
         PlatformInfo platformInfo = new PlatformInfo(provider, providerId);
         Role roleInfo = new Role(AuthConstant.ROLE_MEMBER);
         Member newMember = Member.withoutId(memberInfo, platformInfo, roleInfo);
-        Long memberId = commandMemberPort.persist(newMember);
+        Long memberId = memberPort.persist(newMember);
         newMember.assignId(memberId);
         String token = getToken(newMember);
 

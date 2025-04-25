@@ -1,32 +1,38 @@
 package com.hnc.mogak.challenge.adapter.out.persistence;
 
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
-import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
-import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeMemberRepository;
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeOwnerEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeOwnerRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
-import com.hnc.mogak.challenge.application.port.out.CommandChallengePort;
-import com.hnc.mogak.challenge.domain.Challenge;
+import com.hnc.mogak.challenge.application.port.out.ChallengeCommandPort;
+import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
+import com.hnc.mogak.global.util.mapper.MemberMapper;
+import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ChallengeCommandAdapter implements CommandChallengePort {
+public class ChallengeCommandAdapter implements ChallengeCommandPort {
 
     private final ChallengeRepository challengeRepository;
-    private final ChallengeMemberRepository challengeMemberRepository;
-
-    private final ChallengeMapper challengeMapper;
+    private final ChallengeOwnerRepository challengeOwnerRepository;
 
     @Override
-    public Challenge persist(Challenge challenge) {
-        ChallengeEntity savedChallengeEntity = challengeRepository.save(challengeMapper.mapToJpaEntity(challenge));
-        challengeMemberRepository.save(ChallengeMemberEntity.builder()
-                .challengeEntity(savedChallengeEntity)
-                .build());
+    public Challenge persist(Member member, Challenge challenge) {
+        ChallengeEntity savedChallengeEntity = challengeRepository.save(ChallengeMapper.mapToJpaEntity(challenge));
+        saveChallengeOwner(member, savedChallengeEntity);
+        return ChallengeMapper.mapToDomain(savedChallengeEntity);
+    }
 
-        return challengeMapper.mapToDomain(savedChallengeEntity);
+    private void saveChallengeOwner(Member member, ChallengeEntity challengeEntity) {
+        challengeOwnerRepository.save(
+                ChallengeOwnerEntity.builder()
+                        .challengeEntity(challengeEntity)
+                        .memberEntity(MemberMapper.mapToJpaEntity(member))
+                        .build()
+        );
     }
 
 }

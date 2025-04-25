@@ -3,12 +3,12 @@ package com.hnc.mogak.global.util.mapper;
 import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
-import com.hnc.mogak.challenge.domain.Challenge;
-import com.hnc.mogak.challenge.domain.vo.ChallengeDuration;
-import com.hnc.mogak.challenge.domain.vo.ChallengeId;
-import com.hnc.mogak.challenge.domain.vo.Content;
+import com.hnc.mogak.challenge.domain.challenge.Challenge;
+import com.hnc.mogak.challenge.domain.challenge.vo.ChallengeDuration;
+import com.hnc.mogak.challenge.domain.challenge.vo.ChallengeId;
+import com.hnc.mogak.challenge.domain.challenge.vo.Content;
+import com.hnc.mogak.challenge.domain.challenge.vo.ExtraDetails;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
-import com.hnc.mogak.member.domain.Member;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -16,30 +16,36 @@ import java.time.LocalDate;
 @Component
 public class ChallengeMapper {
 
-    public ChallengeEntity mapToJpaEntity(Challenge challenge) {
+    public static ChallengeEntity mapToJpaEntity(Challenge challenge) {
         Long challengeId = challenge.getChallengeId() != null ? challenge.getChallengeId().value() : null;
         String title = challenge.getContent().title();
         String description = challenge.getContent().description();
-        boolean official = challenge.getContent().official();
-            LocalDate startDate = challenge.getChallengeDuration().startDate();
+        boolean official = challenge.getExtraDetails().official();
+        int totalParticipants = challenge.getExtraDetails().totalParticipants();
+        LocalDate startDate = challenge.getChallengeDuration().startDate();
         LocalDate endDate = challenge.getChallengeDuration().endDate();
 
         return ChallengeEntity.builder()
                 .id(challengeId)
                 .title(title)
                 .description(description)
+                .totalParticipants(totalParticipants)
                 .startDate(startDate)
                 .endDate(endDate)
                 .official(official)
                 .build();
     }
 
-    public Challenge mapToDomain(ChallengeEntity challengeEntity) {
+    public static Challenge mapToDomain(ChallengeEntity challengeEntity) {
         ChallengeId challengeId = new ChallengeId(challengeEntity.getId());
         Content content = new Content(
                 challengeEntity.getTitle(),
-                challengeEntity.getDescription(),
-                challengeEntity.isOfficial()
+                challengeEntity.getDescription()
+        );
+
+        ExtraDetails extraDetails = new ExtraDetails(
+                challengeEntity.isOfficial(),
+                challengeEntity.getTotalParticipants()
         );
         ChallengeDuration challengeDuration =
                 new ChallengeDuration(
@@ -47,25 +53,26 @@ public class ChallengeMapper {
                         challengeEntity.getEndDate()
                 );
 
-        return Challenge.withId(challengeId, content, challengeDuration);
+        return Challenge.withId(challengeId, content, extraDetails, challengeDuration);
     }
 
-    public Challenge mapToDomain(CreateChallengeCommand command) {
+    public static Challenge mapToDomain(CreateChallengeCommand command) {
         Content content = new Content(
                 command.getTitle(),
-                command.getDescription(),
-                command.isOfficial()
+                command.getDescription()
         );
+
+        ExtraDetails extraDetails = new ExtraDetails(command.isOfficial(), 0);
         ChallengeDuration challengeDuration =
                 new ChallengeDuration(
                         command.getStartDate(),
                         command.getEndDate()
                 );
 
-        return Challenge.withoutId(content, challengeDuration);
+        return Challenge.withoutId(content, extraDetails, challengeDuration);
     }
 
-    public CreateChallengeResponse mapToChallengeResponse(ChallengeEntity savedChallengeEntity, MemberEntity memberEntity) {
+    public static CreateChallengeResponse mapToChallengeResponse(ChallengeEntity savedChallengeEntity, MemberEntity memberEntity) {
         return CreateChallengeResponse.builder()
                 .challengeId(savedChallengeEntity.getId())
                 .title(savedChallengeEntity.getTitle())

@@ -1,6 +1,6 @@
 package com.hnc.mogak.member.util;
 
-import com.hnc.mogak.member.application.port.out.QueryMemberPort;
+import com.hnc.mogak.member.application.port.out.MemberPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,14 +22,14 @@ public class NicknameGenerator {
             "공부왕", "책벌레", "필기왕", "암기요정", "문제해결자", "수험생", "시험장인", "스터디리더", "지식탐험가", "집중마스터"
     };
 
-    private final QueryMemberPort queryMemberPort;
+    private final MemberPort memberPort;
 
     public String generate() {
 
         int attempt = MAX_ATTEMPTS;
         while (attempt-- > 0) {
             String nickname = ADJECTIVES[current().nextInt(ADJECTIVES.length)] + " " + NOUNS[current().nextInt(NOUNS.length)];
-            if (!queryMemberPort.existsByNickname(nickname)) {
+            if (!memberPort.existsByNickname(nickname)) {
                 return nickname;
             }
         }

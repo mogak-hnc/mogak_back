@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class ZoneMemberMapper {
 
-    public MogakZoneDetailResponse mapToMogakZoneDetailResponse(
+    public static MogakZoneDetailResponse mapToMogakZoneDetailResponse(
             List<String> tagNames,
             MogakZone mogakZone,
             ZoneOwner zoneOwner,
@@ -31,7 +31,7 @@ public class ZoneMemberMapper {
                 .build();
     }
 
-    private List<MogakZoneDetailResponse.ZoneMemberInfo> getZoneMemberInfos(List<ZoneMember> zoneMemberList) {
+    private static List<MogakZoneDetailResponse.ZoneMemberInfo> getZoneMemberInfos(List<ZoneMember> zoneMemberList) {
         return zoneMemberList.stream()
                 .map(zoneMember ->
                         MogakZoneDetailResponse.ZoneMemberInfo
@@ -44,7 +44,7 @@ public class ZoneMemberMapper {
                 .toList();
     }
 
-    public ZoneMember mapToDomain(ZoneMemberEntity zoneMemberEntity, Member member, MogakZone mogakZone) {
+    public static ZoneMember mapToDomain(ZoneMemberEntity zoneMemberEntity, Member member, MogakZone mogakZone) {
         ZoneMemberId zoneMemberId = new ZoneMemberId(zoneMemberEntity.getId());
         return ZoneMember.withId(zoneMemberId, zoneMemberEntity.getStatus(), member, mogakZone);
     }

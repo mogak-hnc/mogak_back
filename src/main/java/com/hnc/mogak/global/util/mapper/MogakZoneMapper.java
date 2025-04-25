@@ -17,7 +17,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class MogakZoneMapper {
 
-    public MogakZone mapToDomainWithoutId(CreateMogakZoneCommand command) {
+    public static MogakZone mapToDomainWithoutId(CreateMogakZoneCommand command) {
         ZoneInfo zoneInfo = new ZoneInfo(
                 command.getName(),
                 command.getImageUrl(),
@@ -37,7 +37,7 @@ public class MogakZoneMapper {
         return MogakZone.withoutId(zoneDuration, zoneConfig, zoneInfo);
     }
 
-    public MogakZone mapToDomainWithId(MogakZoneEntity mogakZoneEntity) {
+    public static MogakZone mapToDomainWithId(MogakZoneEntity mogakZoneEntity) {
         ZoneId zoneId = new ZoneId(mogakZoneEntity.getId());
 
         ZoneInfo zoneInfo = new ZoneInfo(
@@ -59,7 +59,7 @@ public class MogakZoneMapper {
         return MogakZone.withId(zoneId, zoneDuration, zoneConfig, zoneInfo);
     }
 
-    public MogakZoneEntity mapToEntity(MogakZone mogakZone) {
+    public static MogakZoneEntity mapToEntity(MogakZone mogakZone) {
         Long id = mogakZone.getZoneId() == null ? null : mogakZone.getZoneId().value();
         ZoneConfig zoneConfig = mogakZone.getZoneConfig();
         ZoneDuration zoneDuration = mogakZone.getZoneDuration();
@@ -78,7 +78,7 @@ public class MogakZoneMapper {
                 .build();
     }
 
-    public CreateMogakZoneResponse mapToMogakZoneResponse(MogakZone mogakZone, Set<String> tagNames) {
+    public static CreateMogakZoneResponse mapToMogakZoneResponse(MogakZone mogakZone, Set<String> tagNames) {
         return CreateMogakZoneResponse.builder()
                 .mogakZoneId(mogakZone.getZoneId().value())
                 .name(mogakZone.getZoneInfo().name())

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemberMapper {
 
-    public MemberEntity mapToJpaEntity(Member member) {
+    public static MemberEntity mapToJpaEntity(Member member) {
         MemberInfo memberInfo = member.getMemberInfo();
         PlatformInfo platformInfo = member.getPlatformInfo();
         Role role = member.getRole();
@@ -29,7 +29,7 @@ public class MemberMapper {
         );
     }
 
-    public Member mapToDomainEntity(MemberEntity memberEntity) {
+    public static Member mapToDomainEntity(MemberEntity memberEntity) {
         MemberId memberId = new MemberId(memberEntity.getId());
         MemberInfo memberInfo = new MemberInfo(
                 memberEntity.getNickname(),

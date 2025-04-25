@@ -2,8 +2,7 @@ package com.hnc.mogak.member.adapter.out.persistence;
 
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MemberException;
-import com.hnc.mogak.member.application.port.out.QueryMemberPort;
-import com.hnc.mogak.member.application.port.out.CommandMemberPort;
+import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class MemberPersistenceAdapter implements QueryMemberPort, CommandMemberPort {
+public class MemberPersistenceAdapter implements MemberPort {
 
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
@@ -26,7 +25,7 @@ public class MemberPersistenceAdapter implements QueryMemberPort, CommandMemberP
 
     @Override
     public Long persist(Member member) {
-        MemberEntity save = memberRepository.save(memberMapper.mapToJpaEntity(member));
+        MemberEntity save = memberRepository.save(MemberMapper.mapToJpaEntity(member));
         return save.getId();
     }
 

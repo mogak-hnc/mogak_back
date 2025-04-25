@@ -14,4 +14,7 @@ public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Lo
     @Query("SELECT zm FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId")
     List<ZoneMemberEntity> findAllByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 
+    @Query("SELECT COUNT(zm) FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId")
+    int countByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
+
 }

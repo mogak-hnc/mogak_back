@@ -5,7 +5,7 @@ import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import com.hnc.mogak.member.domain.Member;
-import com.hnc.mogak.zone.adapter.in.web.dto.JoinResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneMemberRepository;
@@ -25,26 +25,22 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
 
     private final ZoneMemberRepository zoneMemberRepository;
 
-    private final MemberMapper memberMapper;
-    private final MogakZoneMapper mogakZoneMapper;
-    private final ZoneMemberMapper zoneMemberMapper;
-
     @Override
     public List<ZoneMember> findAllZoneMembersByMogakZoneId(Long mogakZoneId) {
         List<ZoneMemberEntity> zoneMemberEntityList = zoneMemberRepository.findAllByMogakZoneId(mogakZoneId);
         return zoneMemberEntityList.stream()
                 .map(zoneMemberEntity -> {
-                    Member member = memberMapper.mapToDomainEntity(zoneMemberEntity.getMemberEntity());
-                    MogakZone mogakZone = mogakZoneMapper.mapToDomainWithId(zoneMemberEntity.getMogakZoneEntity());
-                    return zoneMemberMapper.mapToDomain(zoneMemberEntity, member, mogakZone);
+                    Member member = MemberMapper.mapToDomainEntity(zoneMemberEntity.getMemberEntity());
+                    MogakZone mogakZone = MogakZoneMapper.mapToDomainWithId(zoneMemberEntity.getMogakZoneEntity());
+                    return ZoneMemberMapper.mapToDomain(zoneMemberEntity, member, mogakZone);
                 })
                 .collect(Collectors.toList());
     }
 
     @Override
-    public JoinResponse join(MogakZone mogakZone, Member findMember) {
-        MogakZoneEntity mogakZoneEntity = mogakZoneMapper.mapToEntity(mogakZone);
-        MemberEntity memberEntity = memberMapper.mapToJpaEntity(findMember);
+    public JoinMogakZoneResponse join(MogakZone mogakZone, Member findMember) {
+        MogakZoneEntity mogakZoneEntity = MogakZoneMapper.mapToEntity(mogakZone);
+        MemberEntity memberEntity = MemberMapper.mapToJpaEntity(findMember);
         ZoneMemberEntity entity = ZoneMemberEntity.builder()
                 .status(ZoneMemberStatus.RESTING)
                 .memberEntity(memberEntity)
@@ -52,11 +48,12 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
                 .build();
 
         zoneMemberRepository.save(entity);
-        return new JoinResponse(mogakZone.getZoneId().value());
+        return new JoinMogakZoneResponse(mogakZone.getZoneId().value());
     }
 
     @Override
     public int getZoneMemberCount(Long mogakZoneId) {
-        return zoneMemberRepository.findAllByMogakZoneId(mogakZoneId).size();
+        return zoneMemberRepository.countByMogakZoneId(mogakZoneId);
     }
+
 }

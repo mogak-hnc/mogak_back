@@ -6,7 +6,7 @@ import com.hnc.mogak.global.util.mapper.DateParser;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneRequest;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneRequest;
-import com.hnc.mogak.zone.adapter.in.web.dto.JoinResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
@@ -60,8 +60,8 @@ public class MogakZoneCommandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.create(command));
     }
 
-    @PostMapping("/join/{mogakZoneId}")
-    public ResponseEntity<JoinResponse> joinMogakZone(
+    @PostMapping("{mogakZoneId}/join")
+    public ResponseEntity<JoinMogakZoneResponse> joinMogakZone(
             @RequestHeader(value = AuthConstant.AUTHORIZATION, required = false) String token,
             @PathVariable(name = "mogakZoneId") Long mogakZoneId,
             @Valid @RequestBody JoinMogakZoneRequest request

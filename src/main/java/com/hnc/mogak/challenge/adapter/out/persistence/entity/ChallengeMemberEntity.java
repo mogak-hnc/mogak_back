@@ -17,6 +17,9 @@ public class ChallengeMemberEntity extends BaseEntity {
     @Column(name = "challenge_member_id")
     private Long id;
 
+    @Column(name = "survivor")
+    private boolean survivor;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private MemberEntity memberEntity;

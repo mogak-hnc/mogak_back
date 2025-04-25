@@ -20,11 +20,11 @@ public class MogakZoneQueryController {
     private final JwtUtil jwtUtil;
     private final MogakZoneQueryUseCase mogakZoneQueryUseCase;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{mogakZoneId}")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<MogakZoneDetailResponse> getMogakZoneDetail(
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
-            @PathVariable(name = "id") Long mogakZoneId) {
+            @PathVariable(name = "mogakZoneId") Long mogakZoneId) {
 
         String memberId = jwtUtil.getMemberId(token);
         String nickname = jwtUtil.getNickname(token);

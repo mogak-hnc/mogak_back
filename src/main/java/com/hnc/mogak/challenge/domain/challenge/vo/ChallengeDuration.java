@@ -1,4 +1,4 @@
-package com.hnc.mogak.challenge.domain.vo;
+package com.hnc.mogak.challenge.domain.challenge.vo;
 
 import java.time.LocalDate;
 

@@ -50,7 +50,13 @@ public class SecurityConfig {
                 // request 인증, 인가 설정
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
-                                        "/", "/login", "/", "/api/mogak/auth/social-login", "/api/mogak/zone/join/*"
+                                        "/",
+                                        "/login",
+                                        "/",
+                                        "/api/mogak/auth/social-login",
+                                        "/api/mogak/zone/join/*",
+                                        "/api/mogak/challenge/*",
+                                        "/api/mogak/challenge/*/verification"
                                 ).permitAll()
                                 .anyRequest().authenticated())
 

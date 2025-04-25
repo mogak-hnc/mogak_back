@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class JoinResponse {
+public class JoinMogakZoneResponse {
 
     private Long mogakZoneId;
 

@@ -1,7 +1,6 @@
 package com.hnc.mogak.challenge.adapter.out.persistence.entity;
 
 import com.hnc.mogak.global.BaseEntity;
-import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +23,9 @@ public class ChallengeEntity extends BaseEntity {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "total_participants")
+    private int totalParticipants;
 
     @Column(name = "start_date")
     private LocalDate startDate;
