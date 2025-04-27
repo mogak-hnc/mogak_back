@@ -14,4 +14,7 @@ public interface ZoneTagRepository extends JpaRepository<ZoneTagEntity, Long> {
     @Query("SELECT zt FROM ZoneTagEntity zt WHERE zt.zone.id = :zoneId")
     List<ZoneTagEntity> findAllByZoneId(@Param("zoneId") Long zoneId);
 
+    @Query("SELECT zt.tag.name FROM ZoneTagEntity zt WHERE zt.zone.id = :mogakZoneId")
+    List<String> findTagNamesByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
+
 }

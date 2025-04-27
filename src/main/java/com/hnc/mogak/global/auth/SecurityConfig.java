@@ -52,11 +52,12 @@ public class SecurityConfig {
                         request.requestMatchers(
                                         "/",
                                         "/login",
-                                        "/",
                                         "/api/mogak/auth/social-login",
                                         "/api/mogak/zone/join/*",
                                         "/api/mogak/challenge/*",
-                                        "/api/mogak/challenge/*/verification"
+                                        "/api/mogak/challenge/*/verification",
+                                        "/api/mogak/zone",
+                                        "/ws"
                                 ).permitAll()
                                 .anyRequest().authenticated())
 

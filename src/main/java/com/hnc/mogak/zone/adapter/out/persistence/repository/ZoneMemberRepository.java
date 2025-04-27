@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Long> {
 
-    @Query("SELECT zm FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId")
-    List<ZoneMemberEntity> findAllByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
+    @Query("SELECT zm FROM ZoneMemberEntity zm JOIN FETCH zm.memberEntity WHERE zm.mogakZoneEntity.id = :mogakZoneId")
+    List<ZoneMemberEntity> findAllZoneMembersWithMembersByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 
     @Query("SELECT COUNT(zm) FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId")
     int countByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);

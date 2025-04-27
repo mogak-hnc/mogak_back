@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ZoneMemberPort {
 
-    List<ZoneMember> findAllZoneMembersByMogakZoneId(Long mogakZoneId);
+    List<ZoneMember> findAllZoneMembersWithMembersByMogakZoneId(Long mogakZoneId);
 
     JoinMogakZoneResponse join(MogakZone mogakZone, Member findMember);
 
