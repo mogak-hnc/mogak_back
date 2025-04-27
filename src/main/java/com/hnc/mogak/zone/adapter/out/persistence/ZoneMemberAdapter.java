@@ -26,8 +26,8 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
     private final ZoneMemberRepository zoneMemberRepository;
 
     @Override
-    public List<ZoneMember> findAllZoneMembersByMogakZoneId(Long mogakZoneId) {
-        List<ZoneMemberEntity> zoneMemberEntityList = zoneMemberRepository.findAllByMogakZoneId(mogakZoneId);
+    public List<ZoneMember> findAllZoneMembersWithMembersByMogakZoneId(Long mogakZoneId) {
+        List<ZoneMemberEntity> zoneMemberEntityList = zoneMemberRepository.findAllZoneMembersWithMembersByMogakZoneId(mogakZoneId);
         return zoneMemberEntityList.stream()
                 .map(zoneMemberEntity -> {
                     Member member = MemberMapper.mapToDomainEntity(zoneMemberEntity.getMemberEntity());
