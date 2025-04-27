@@ -60,6 +60,7 @@ public class MogakZoneCommandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.create(command));
     }
 
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PostMapping("{mogakZoneId}/join")
     public ResponseEntity<JoinMogakZoneResponse> joinMogakZone(
             @RequestHeader(value = AuthConstant.AUTHORIZATION, required = false) String token,

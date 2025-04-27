@@ -37,8 +37,9 @@ public class ZoneMemberMapper {
                         MogakZoneDetailResponse.ZoneMemberInfo
                                 .builder()
                                 .memberId(zoneMember.getMember().getMemberId().value())
-                                .status(zoneMember.getStatus())
                                 .nickname(zoneMember.getMember().getMemberInfo().nickname())
+                                .imageUrl(zoneMember.getMember().getMemberInfo().imagePath())
+                                .status(zoneMember.getStatus())
                                 .build()
                 )
                 .toList();

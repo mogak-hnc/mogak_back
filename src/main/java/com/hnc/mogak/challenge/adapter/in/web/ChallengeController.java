@@ -74,4 +74,5 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(challengeId));
     }
 
+
 }

@@ -24,6 +24,7 @@ public class MogakZoneDetailResponse {
     public static class ZoneMemberInfo {
         private Long memberId;
         private String nickname;
+        private String imageUrl;
         private ZoneMemberStatus status;
     }
 

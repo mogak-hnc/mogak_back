@@ -17,6 +17,7 @@ public enum ErrorCode {
     FULL_CAPACITY("모각존 정원이 가득 찼습니다.", HttpStatus.BAD_REQUEST),
     INVALID_ZONE_PASSWORD("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     LOGIN_REQUIRED_FOR_JOIN("로그인이 필요합니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_JOINED("이미 가입되었습니다.", HttpStatus.BAD_REQUEST),
 
     // CHALLENGE Exception
     NOT_EXISTS_CHALLENGE("챌린지가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
