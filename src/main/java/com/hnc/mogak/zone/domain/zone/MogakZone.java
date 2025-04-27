@@ -7,10 +7,14 @@ import com.hnc.mogak.zone.domain.zone.vo.ZoneConfig;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneDuration;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneId;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneInfo;
+import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -49,22 +53,30 @@ public class MogakZone {
                 .build();
     }
 
-    public void validateJoinable(int maxCapacity, int currentMemberCount) {
-        if (maxCapacity <= currentMemberCount) {
-            throw new MogakZoneException(ErrorCode.FULL_CAPACITY);
-        }
+    public boolean isCapacityAvailableForJoin(int maxCapacity, int currentMemberCount) {
+        return maxCapacity <= currentMemberCount;
     }
 
-    public void validatePassword(String actualPassword, String inputPassword) {
-        if (!actualPassword.equals(inputPassword)) {
-            throw new MogakZoneException(ErrorCode.INVALID_ZONE_PASSWORD);
-        }
-    }
-
-    public void validateLoginRequired(boolean isLoginRequired, Long memberId) {
+    public boolean isLoginRequired(boolean isLoginRequired, Long memberId) {
         if (isLoginRequired && memberId == null) {
-            throw new MogakZoneException(ErrorCode.LOGIN_REQUIRED_FOR_JOIN);
+            return true;
         }
+
+        return false;
+    }
+
+    public boolean isAlreadyJoined(Long memberId, List<ZoneMember> zoneMemberList) {
+        for (ZoneMember zoneMember : zoneMemberList) {
+            if (Objects.equals(zoneMember.getMember().getMemberId().value(), memberId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isMatchPassword(String actualPassword, String inputPassword) {
+        return actualPassword.equals(inputPassword);
     }
 
 }

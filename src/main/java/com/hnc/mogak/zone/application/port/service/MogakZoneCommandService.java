@@ -1,8 +1,12 @@
 package com.hnc.mogak.zone.application.port.service;
 
+import com.hnc.mogak.global.exception.ErrorCode;
+import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
+import com.hnc.mogak.zone.application.port.service.event.JoinMogakZoneEvent;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
+import com.hnc.mogak.zone.application.port.service.event.CreateMogakZoneEvent;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
@@ -11,10 +15,13 @@ import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.out.*;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
+import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -28,35 +35,30 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     private final MemberPort memberPort;
     private final TagPort tagPort;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     @Override
     public CreateMogakZoneResponse create(CreateMogakZoneCommand command) {
         Member hostMember = memberPort.loadMemberByMemberId(command.getMemberId());
+        Set<TagEntity> tagEntitySet = tagPort.findOrCreateTags(command.getTagNames());
 
-        Set<String> tagNames = command.getTagNames();
-        Set<TagEntity> tagEntitySet = tagPort.findOrCreateTags(tagNames);
-        MogakZone mogakZone = MogakZoneMapper.mapToDomainWithoutId(command);
-        mogakZone = mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
-        mogakZoneCommandPort.saveZoneOwner(hostMember, mogakZone);
+        MogakZone mogakZone = createMogakZone(command, tagEntitySet);
+        getSaveZoneOwner(hostMember, mogakZone);
 
+        publishZoneCreationToRedis(command, mogakZone);
         join(getJoinCommand(command, hostMember, mogakZone));
-
-        return MogakZoneMapper.mapToMogakZoneResponse(mogakZone, tagNames);
+        return MogakZoneMapper.mapToMogakZoneResponse(mogakZone, command.getTagNames());
     }
 
     @Override
     public JoinMogakZoneResponse join(JoinMogakZoneCommand command) {
         MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
+        List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
 
-        // 이미 가입되어 있는 회원이라면 중복X 구현X
+        validateMogakZoneJoin(command, mogakZone, zoneMemberList);
 
-        mogakZone.validateLoginRequired(mogakZone.getZoneConfig().loginRequired(), command.getMemberId());
-        mogakZone.validatePassword(mogakZone.getZoneInfo().password(), command.getPassword());
-        int maxCapacity = mogakZone.getZoneConfig().maxCapacity();
-        int currMemberCount = zoneMemberPort.getZoneMemberCount(command.getMogakZoneId());
-        mogakZone.validateJoinable(maxCapacity, currMemberCount);
-
-        // 비로그인은 아직 구현X
         Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
+        publishJoinInfoToRedis(mogakZone);
         return zoneMemberPort.join(mogakZone, findMember);
     }
 
@@ -66,6 +68,54 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
                 .mogakZoneId(mogakZone.getZoneId().value())
                 .password(command.getPassword())
                 .build();
+    }
+
+    private void getSaveZoneOwner(Member hostMember, MogakZone mogakZone) {
+        mogakZoneCommandPort.saveZoneOwner(hostMember, mogakZone);
+    }
+
+    private MogakZone createMogakZone(CreateMogakZoneCommand command, Set<TagEntity> tagEntitySet) {
+        MogakZone mogakZone = MogakZoneMapper.mapToDomainWithoutId(command);
+        mogakZone = mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
+        return mogakZone;
+    }
+
+    private void publishZoneCreationToRedis(CreateMogakZoneCommand command, MogakZone mogakZone) {
+        eventPublisher.publishEvent(
+                new CreateMogakZoneEvent(
+                        this,
+                        mogakZone.getZoneId().value(),
+                        mogakZone.getZoneInfo().name(),
+                        command.getTagNames()
+                )
+        );
+    }
+
+    private void publishJoinInfoToRedis(MogakZone mogakZone) {
+        eventPublisher.publishEvent(
+                new JoinMogakZoneEvent(
+                        this,
+                        mogakZone.getZoneId().value()
+                )
+        );
+    }
+
+    private static void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, List<ZoneMember> zoneMemberList) {
+        if (mogakZone.isAlreadyJoined(command.getMemberId(), zoneMemberList)) {
+            throw new MogakZoneException(ErrorCode.ALREADY_JOINED);
+        }
+
+        if (mogakZone.isLoginRequired(mogakZone.getZoneConfig().loginRequired(), command.getMemberId())) {
+            throw new MogakZoneException(ErrorCode.LOGIN_REQUIRED_FOR_JOIN);
+        }
+
+        if (!mogakZone.isMatchPassword(mogakZone.getZoneInfo().password(), command.getPassword())) {
+            throw new MogakZoneException(ErrorCode.INVALID_ZONE_PASSWORD);
+        }
+
+        if (mogakZone.isCapacityAvailableForJoin(mogakZone.getZoneConfig().maxCapacity(), zoneMemberList.size())) {
+            throw new MogakZoneException(ErrorCode.FULL_CAPACITY);
+        }
     }
 
 }
