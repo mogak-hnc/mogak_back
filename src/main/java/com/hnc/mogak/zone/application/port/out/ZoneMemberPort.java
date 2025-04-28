@@ -15,4 +15,6 @@ public interface ZoneMemberPort {
 
     int getZoneMemberCount(Long mogakZoneId);
 
+    void deleteMemberByMogakZoneId(Long mogakZoneId, Long memberId);
+
 }

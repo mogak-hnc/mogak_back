@@ -63,7 +63,7 @@ public class MogakZoneCommandController {
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PostMapping("{mogakZoneId}/join")
     public ResponseEntity<JoinMogakZoneResponse> joinMogakZone(
-            @RequestHeader(value = AuthConstant.AUTHORIZATION, required = false) String token,
+            @RequestHeader(value = AuthConstant.AUTHORIZATION) String token,
             @PathVariable(name = "mogakZoneId") Long mogakZoneId,
             @Valid @RequestBody JoinMogakZoneRequest request
     ) {

@@ -56,4 +56,8 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
         return zoneMemberRepository.countByMogakZoneId(mogakZoneId);
     }
 
+    @Override
+    public void deleteMemberByMogakZoneId(Long mogakZoneId, Long memberId) {
+        zoneMemberRepository.deleteMemberByMogakZoneId(mogakZoneId, memberId);
+    }
 }
