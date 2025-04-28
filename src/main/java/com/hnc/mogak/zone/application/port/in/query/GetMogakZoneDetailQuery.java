@@ -7,8 +7,6 @@ import lombok.Getter;
 @Getter
 public class GetMogakZoneDetailQuery {
 
-    private String nickname;
     private Long mogakZoneId;
-    private Long memberId;
 
 }

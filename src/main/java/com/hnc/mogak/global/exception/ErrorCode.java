@@ -11,6 +11,10 @@ public enum ErrorCode {
     // Auth Exception
     AUTHENTICATION_FAILED("인증에 실패하셨습니다.", HttpStatus.UNAUTHORIZED),
 
+    // WebSocket Exception
+    EXPIRED_TOKEN("토큰이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("유효하지 않는 토큰입니다.", HttpStatus.UNAUTHORIZED),
+
     // MogakZone Exception
     NOT_EXISTS_MOGAKZONE("모각존이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     NOT_EXISTS_HOST_MEMBER("방장이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
