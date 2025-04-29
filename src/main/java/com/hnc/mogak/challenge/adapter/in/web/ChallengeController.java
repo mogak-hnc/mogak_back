@@ -1,9 +1,6 @@
 package com.hnc.mogak.challenge.adapter.in.web;
 
-import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeDetailResponse;
-import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeRequest;
-import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeResponse;
-import com.hnc.mogak.challenge.adapter.in.web.dto.JoinChallengeResponse;
+import com.hnc.mogak.challenge.adapter.in.web.dto.*;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
@@ -18,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/mogak/challenge")
@@ -40,7 +38,7 @@ public class ChallengeController {
         LocalDate endDate = localDates[1];
         boolean isOfficial = role.equals(AuthConstant.ROLE_ADMIN);
 
-        CreateChallengeCommand command =  CreateChallengeCommand.builder()
+        CreateChallengeCommand command = CreateChallengeCommand.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .startDate(startDate)
@@ -74,5 +72,9 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(challengeId));
     }
 
+    @GetMapping
+    public ResponseEntity<List<MogakChallengeMainResponse>> getMogakChallengeMainPage() {
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getMainPage());
+    }
 
 }
