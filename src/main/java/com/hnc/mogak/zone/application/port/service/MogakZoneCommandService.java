@@ -2,14 +2,15 @@ package com.hnc.mogak.zone.application.port.service;
 
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
-import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageRequest;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
+import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
 import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
-import com.hnc.mogak.zone.application.port.service.event.JoinMogakZoneEvent;
+import com.hnc.mogak.zone.application.port.service.event.model.JoinMogakZoneEvent;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
-import com.hnc.mogak.zone.application.port.service.event.CreateMogakZoneEvent;
+import com.hnc.mogak.zone.application.port.service.event.model.CreateMogakZoneEvent;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
@@ -24,7 +25,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -94,6 +94,16 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
                 .imageUrl(member.getMemberInfo().imagePath())
                 .message(command.getMessage())
                 .now(formattedNow)
+                .build();
+    }
+
+    @Override
+    public MogakZoneStatusResponse changeStatus(ChangeStatusCommand command) {
+        zoneMemberPort.changeStatus(command.getMemberId(), command.getMogakZoneId(), command.getStatus());
+        return MogakZoneStatusResponse.builder()
+                .status(command.getStatus())
+                .mogakZoneId(command.getMogakZoneId())
+                .memberId(command.getMemberId())
                 .build();
     }
 
