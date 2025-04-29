@@ -8,7 +8,11 @@ import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.ChallengeException;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -23,4 +27,11 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
         return ChallengeMapper.mapToDomain(challengeEntity);
     }
 
+    @Override
+    public List<Challenge> findTopChallengesByParticipants(int limit) {
+        List<ChallengeEntity> topChallenges = challengeRepository
+                .findAllByOrderByTotalParticipantsDesc(PageRequest.of(0, limit));
+
+        return topChallenges.stream().map(ChallengeMapper::mapToDomain).toList();
+    }
 }

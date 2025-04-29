@@ -53,10 +53,11 @@ public class SecurityConfig {
                                         "/",
                                         "/login",
                                         "/api/mogak/auth/social-login",
+                                        "/api/mogak/zone",
                                         "/api/mogak/zone/join/*",
+                                        "/api/mogak/challenge",
                                         "/api/mogak/challenge/*",
                                         "/api/mogak/challenge/*/verification",
-                                        "/api/mogak/zone",
                                         "/ws"
                                 ).permitAll()
                                 .anyRequest().authenticated())

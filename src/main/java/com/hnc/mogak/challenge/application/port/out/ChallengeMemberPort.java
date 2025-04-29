@@ -10,8 +10,9 @@ public interface ChallengeMemberPort {
 
     JoinChallengeResponse join(Member member, Challenge challenge);
 
-    List<String> getMemberImageByChallengeId(Long challengeId);
+    List<String> getMemberImageByChallengeId(Long challengeId, int limit);
 
     int getSurvivorCount(Long challengeId);
 
+    List<Member> findMembersByChallengeId(Long challengeId);
 }
