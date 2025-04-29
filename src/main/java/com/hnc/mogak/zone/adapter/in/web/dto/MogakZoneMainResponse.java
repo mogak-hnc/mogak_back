@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -11,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class MogakZoneMainResponse {
 
-    List<String> tagNames;
+    private List<String> tagNames;
     private String name;
-    List<String> memberImageUrls;
+    private List<String> memberImageUrls;
 
 }

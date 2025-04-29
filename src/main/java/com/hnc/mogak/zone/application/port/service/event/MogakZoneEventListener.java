@@ -1,6 +1,9 @@
 package com.hnc.mogak.zone.application.port.service.event;
 
 import com.hnc.mogak.global.redis.RedisConstant;
+import com.hnc.mogak.zone.application.port.service.event.model.CreateMogakZoneEvent;
+import com.hnc.mogak.zone.application.port.service.event.model.JoinMogakZoneEvent;
+import com.hnc.mogak.zone.application.port.service.event.model.OutMogakZoneEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
