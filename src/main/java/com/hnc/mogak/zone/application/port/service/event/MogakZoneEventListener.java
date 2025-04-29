@@ -22,4 +22,12 @@ public class MogakZoneEventListener {
         redisTemplate.opsForZSet().incrementScore(RedisConstant.ZONE_PARTICIPANT_COUNT, event.getMogakZoneId(), 1);
     }
 
+    @TransactionalEventListener
+    public void handleOutMogakZoneEvent(OutMogakZoneEvent event) {
+        Double score = redisTemplate.opsForZSet().score(RedisConstant.ZONE_PARTICIPANT_COUNT, event.getMogakZoneId());
+        if (score != null && score > 0) {
+            redisTemplate.opsForZSet().incrementScore(RedisConstant.ZONE_PARTICIPANT_COUNT, event.getMogakZoneId(), -1);
+        }
+    }
+
 }
