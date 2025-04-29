@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class GetMogakZoneDetailQuery {
+public class MogakZoneDetailQuery {
 
     private Long mogakZoneId;
 

@@ -18,6 +18,7 @@ public class MogakZoneDetailResponse {
     private LocalDate endDate;
     private int joinedUserCount;
     private List<ZoneMemberInfo> zoneMemberInfoList;
+    private List<ChatMessageResponse> chatHistoryResponses;
 
     @Builder
     @Getter

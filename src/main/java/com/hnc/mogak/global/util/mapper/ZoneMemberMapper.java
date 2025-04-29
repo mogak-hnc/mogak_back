@@ -1,6 +1,7 @@
 package com.hnc.mogak.global.util.mapper;
 
 import com.hnc.mogak.member.domain.Member;
+import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
@@ -18,8 +19,10 @@ public class ZoneMemberMapper {
             List<String> tagNames,
             MogakZone mogakZone,
             ZoneOwner zoneOwner,
-            List<ZoneMember> zoneMemberList
-    ) {
+            List<ZoneMember> zoneMemberList,
+            List<ChatMessageResponse> chatHistoryResponses
+            ) {
+
         return MogakZoneDetailResponse.builder()
                 .tagNames(tagNames)
                 .hostMemberId(zoneOwner.getHostMember().getMemberId().value())
@@ -28,6 +31,7 @@ public class ZoneMemberMapper {
                 .endDate(mogakZone.getZoneDuration().endDate())
                 .joinedUserCount(zoneMemberList.size())
                 .zoneMemberInfoList(getZoneMemberInfos(zoneMemberList))
+                .chatHistoryResponses(chatHistoryResponses)
                 .build();
     }
 
