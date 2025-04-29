@@ -4,6 +4,7 @@ import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
+import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
 
 import java.util.List;
 
@@ -16,5 +17,7 @@ public interface ZoneMemberPort {
     int getZoneMemberCount(Long mogakZoneId);
 
     void deleteMemberByMogakZoneId(Long mogakZoneId, Long memberId);
+
+    void changeStatus(Long memberId, Long mogakZoneId, ZoneMemberStatus status);
 
 }

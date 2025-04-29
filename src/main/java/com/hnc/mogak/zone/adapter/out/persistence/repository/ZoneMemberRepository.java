@@ -1,6 +1,7 @@
 package com.hnc.mogak.zone.adapter.out.persistence.repository;
 
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
+import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,11 @@ public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Lo
     @Query("DELETE FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId AND zm.memberEntity.id = :memberId")
     void deleteMemberByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId, @Param("memberId") Long memberId);
 
+    @Modifying
+    @Query("UPDATE ZoneMemberEntity zm SET zm.status = :status WHERE zm.mogakZoneEntity.id = :mogakZoneId AND zm.memberEntity.id = :memberId")
+    void changeStatus(
+            @Param("memberId") Long memberId,
+            @Param("mogakZoneId") Long mogakZoneId,
+            @Param("status") ZoneMemberStatus status
+    );
 }

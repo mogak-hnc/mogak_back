@@ -60,4 +60,10 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
     public void deleteMemberByMogakZoneId(Long mogakZoneId, Long memberId) {
         zoneMemberRepository.deleteMemberByMogakZoneId(mogakZoneId, memberId);
     }
+
+    @Override
+    public void changeStatus(Long memberId, Long mogakZoneId, ZoneMemberStatus status) {
+        zoneMemberRepository.changeStatus(memberId, mogakZoneId, status);
+    }
+
 }
