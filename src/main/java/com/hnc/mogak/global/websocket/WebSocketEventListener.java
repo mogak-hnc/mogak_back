@@ -4,8 +4,7 @@ import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WebSocketException;
-import com.hnc.mogak.zone.application.port.service.event.JoinMogakZoneEvent;
-import com.hnc.mogak.zone.application.port.service.event.OutMogakZoneEvent;
+import com.hnc.mogak.zone.application.port.service.event.model.OutMogakZoneEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -70,6 +69,7 @@ public class WebSocketEventListener {
                             mogakZoneId
                     )
             );
+
         }
 
     }

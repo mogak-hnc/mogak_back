@@ -1,4 +1,4 @@
-package com.hnc.mogak.zone.application.port.service.event;
+package com.hnc.mogak.zone.application.port.service.event.model;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
