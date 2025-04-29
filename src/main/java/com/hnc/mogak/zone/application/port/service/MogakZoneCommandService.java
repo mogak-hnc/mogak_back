@@ -2,6 +2,9 @@ package com.hnc.mogak.zone.application.port.service;
 
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
+import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageRequest;
+import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
+import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
 import com.hnc.mogak.zone.application.port.service.event.JoinMogakZoneEvent;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
@@ -21,6 +24,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +40,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     private final MogakZoneQueryPort mogakZoneQueryPort;
     private final ZoneMemberPort zoneMemberPort;
     private final MemberPort memberPort;
+    private final ChatPort chatPort;
     private final TagPort tagPort;
 
     private final ApplicationEventPublisher eventPublisher;
@@ -60,6 +68,33 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
         publishJoinInfoToRedis(mogakZone);
         return zoneMemberPort.join(mogakZone, findMember);
+    }
+
+    @Override
+    public ChatMessageResponse sendMessage(SendChatMessageCommand command) {
+        Member member = memberPort.loadMemberByMemberId(command.getMemberId());
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        chatPort.save(
+                member.getMemberId().value(),
+                command.getMogakZoneId(),
+                member.getMemberInfo().nickname(),
+                member.getMemberInfo().imagePath(),
+                command.getMessage(),
+                now
+        );
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String formattedNow = now.format(formatter);
+
+        return ChatMessageResponse.builder()
+                .memberId(member.getMemberId().value())
+                .mogakZoneId(command.getMogakZoneId())
+                .nickname(member.getMemberInfo().nickname())
+                .imageUrl(member.getMemberInfo().imagePath())
+                .message(command.getMessage())
+                .now(formattedNow)
+                .build();
     }
 
     private JoinMogakZoneCommand getJoinCommand(CreateMogakZoneCommand command, Member hostMember, MogakZone mogakZone) {

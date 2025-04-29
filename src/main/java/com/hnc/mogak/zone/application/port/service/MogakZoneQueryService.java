@@ -2,10 +2,12 @@ package com.hnc.mogak.zone.application.port.service;
 
 import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
+import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
-import com.hnc.mogak.zone.application.port.in.query.GetMogakZoneDetailQuery;
+import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
+import com.hnc.mogak.zone.application.port.out.ChatPort;
 import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
 import com.hnc.mogak.zone.application.port.out.TagPort;
 import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
@@ -27,17 +29,20 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     private final MogakZoneQueryPort mogakZoneQueryPort;
     private final ZoneMemberPort zoneMemberPort;
+    private final ChatPort chatPort;
     private final TagPort tagPort;
+
     private final RedisTemplate<String, Long> redisTemplate;
 
     @Override
-    public MogakZoneDetailResponse getDetail(GetMogakZoneDetailQuery detailQuery) {
+    public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
         List<String> tagNames = mogakZoneQueryPort.getTags(detailQuery.getMogakZoneId());
         MogakZone mogakZone = mogakZoneQueryPort.findById(detailQuery.getMogakZoneId());
         ZoneOwner zoneOwner = mogakZoneQueryPort.findByMogakZoneId(detailQuery.getMogakZoneId());
         List<ZoneMember> zoneMemberList =  zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(detailQuery.getMogakZoneId());
 
-        return ZoneMemberMapper.mapToMogakZoneDetailResponse(tagNames, mogakZone, zoneOwner, zoneMemberList);
+        List<ChatMessageResponse> chatHistoryResponses = chatPort.loadMessagesByMogakZoneId(mogakZone.getZoneId().value());
+        return ZoneMemberMapper.mapToMogakZoneDetailResponse(tagNames, mogakZone, zoneOwner, zoneMemberList, chatHistoryResponses);
     }
 
     @Override
