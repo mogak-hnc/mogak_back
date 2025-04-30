@@ -8,7 +8,5 @@ import java.util.List;
 
 public interface MogakZoneQueryUseCase {
     MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery);
-
     List<MogakZoneMainResponse> getMainPage();
-
 }

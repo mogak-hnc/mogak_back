@@ -10,10 +10,17 @@ import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,15 +32,31 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mogak/zone")
+@Tag(name = "3. MogakZone", description = "모각존 생성 및 조회 API")
 public class MogakZoneCommandController {
 
     private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "모각존 생성", description = "모각존을 새로 생성합니다.")
     @PostMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateMogakZoneResponse> createMogakZone(
+            @Parameter(
+                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
+                    example = "eyJhbGciOiJIUzI1NiJ...",
+                    required = true
+            )
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+
+            @Parameter(
+                    description = "모각존 생성 정보",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CreateMogakZoneRequest.class)
+                    )
+            )
             @Valid @RequestBody CreateMogakZoneRequest request) {
         String memberId = jwtUtil.getMemberId(token);
 
@@ -60,11 +83,32 @@ public class MogakZoneCommandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.create(command));
     }
 
+    @Operation(summary = "모각존 참여", description = "모각존에 참여합니다.")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PostMapping("{mogakZoneId}/join")
     public ResponseEntity<JoinMogakZoneResponse> joinMogakZone(
+            @Parameter(
+                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
+                    example = "eyJhbGciOiJIUzI1NiJ9...",
+                    required = true
+            )
             @RequestHeader(value = AuthConstant.AUTHORIZATION) String token,
+
+            @Parameter(
+                    description = "참여할 모각존 ID",
+                    example = "1",
+                    required = true
+            )
             @PathVariable(name = "mogakZoneId") Long mogakZoneId,
+
+            @Parameter(
+                    description = "모각존 참여 정보",
+                    required = false,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = JoinMogakZoneRequest.class)
+                    )
+            )
             @Valid @RequestBody JoinMogakZoneRequest request
     ) {
         Long memberId = null;

@@ -7,9 +7,15 @@ import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.util.mapper.DateParser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +26,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mogak/challenge")
 @RequiredArgsConstructor
+@Tag(name = "4. Challenge", description = "모각챌 관련 API")
 public class ChallengeController {
 
     private final ChallengeUseCase challengeUseCase;
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "챌린지 생성", description = "회원 또는 관리자가 챌린지를 생성합니다.")
     @PostMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateChallengeResponse> createChallenge(
+            @Parameter(
+                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
+                    example = "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6...",
+                    required = true
+            )
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+
+            @Parameter(
+                    description = "챌린지 생성 요청 본문",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CreateChallengeRequest.class)
+                    )
+            )
             @Valid @RequestBody CreateChallengeRequest request
     ) {
         Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
@@ -50,10 +72,22 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));
     }
 
+    @Operation(summary = "챌린지 참여", description = "회원 또는 관리자가 챌린지에 참여합니다.")
     @PostMapping("/{challengeId}/join")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<JoinChallengeResponse> joinChallenge(
+            @Parameter(
+                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
+                    example = "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6...",
+                    required = true
+            )
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+
+            @Parameter(
+                    description = "챌린지 ID (참여할 챌린지의 고유 ID)",
+                    example = "1",
+                    required = true
+            )
             @PathVariable(name = "challengeId") Long challengeId
     ) {
         Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
@@ -65,13 +99,20 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.join(command));
     }
 
+    @Operation(summary = "챌린지 상세 조회", description = "챌린지 ID를 기반으로 상세 정보를 조회합니다.")
     @GetMapping("/{challengeId}")
     public ResponseEntity<ChallengeDetailResponse> getChallengeDetail(
+            @Parameter(
+                    description = "조회할 챌린지 ID",
+                    example = "1",
+                    required = true
+            )
             @PathVariable(name = "challengeId") Long challengeId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(challengeId));
     }
 
+    @Operation(summary = "챌린지 메인 페이지", description = "메인 화면에 표시될 챌린지 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<List<MogakChallengeMainResponse>> getMogakChallengeMainPage() {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getMainPage());

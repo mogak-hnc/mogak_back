@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class DateParser {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static LocalDate[] parsePeriod(String period) {
         String[] dates = period.split("~");

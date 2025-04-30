@@ -6,6 +6,11 @@ import com.hnc.mogak.challenge.application.port.in.ChallengeArticleUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateArticleCommand;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mogak/challenge")
 @RequiredArgsConstructor
+@Tag(name = "5. Challenge Article", description = "챌린지 인증 게시글 관련 API")
 public class ChallengeArticleController {
 
     private final ChallengeArticleUseCase challengeArticleUseCase;
@@ -26,15 +32,27 @@ public class ChallengeArticleController {
 
     @PostMapping(
             value = "/{challengeId}/verification",
-            consumes = {
-                    MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.MULTIPART_FORM_DATA_VALUE
-            }
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE} // multipart/form-data로 설정
     )
     public ResponseEntity<CreateChallengeArticleResponse> create(
+            @Parameter(
+                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
+                    example = "eyJhbGciOiJIUzI1NiJ9...",
+                    required = false
+            )
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+
+            @Parameter(description = "챌린지 인증 게시글 정보", required = true)
             @RequestPart("request") CreateChallengeArticleRequest request,
+
+            @Parameter(description = "챌린지 인증 이미지", required = true)
             @RequestPart("images") List<MultipartFile> images,
+
+            @Parameter(
+                    description = "챌린지 ID(챌린지를 먼저 생성하고 그 ID를 받아 써야됩니다.)",
+                    required = true,
+                    example = "1"
+            )
             @PathVariable(name = "challengeId") Long challengeId
     ) {
         long memberId = Long.parseLong(jwtUtil.getMemberId(token));
