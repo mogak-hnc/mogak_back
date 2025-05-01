@@ -4,6 +4,7 @@ import com.hnc.mogak.challenge.adapter.in.web.dto.*;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
+import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.util.mapper.DateParser;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -116,6 +118,37 @@ public class ChallengeController {
     @GetMapping
     public ResponseEntity<List<MogakChallengeMainResponse>> getMogakChallengeMainPage() {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getMainPage());
+    }
+
+    @Operation(summary = "챌린지 목록 조회", description = "챌린지 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
+    @GetMapping("/list")
+    public ResponseEntity<Page<ChallengeSearchResponse>> searchChallenge(
+            @Parameter(description = "검색 키워드 (모각존 이름 등)")
+            @RequestParam(value = "search", required = false) String search,
+
+            @Parameter(description = "공식 챌린지 (true 또는 false)")
+            @RequestParam(value = "official", required = false, defaultValue = "false") boolean official,
+
+            @Parameter(description = "정렬 기준 (recent 또는 participant)")
+            @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort,
+
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+
+            @Parameter(description = "페이지 사이즈")
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
+
+        ChallengeSearchQuery.Sort sortType = ChallengeSearchQuery.Sort.valueOf(sort);
+
+        ChallengeSearchQuery query = ChallengeSearchQuery.builder()
+                .search(search)
+                .official(official)
+                .sort(sortType)
+                .page(page)
+                .size(size)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.searchChallenge(query));
     }
 
 }

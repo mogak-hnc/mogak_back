@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +39,14 @@ public class Challenge {
             if (Objects.equals(member.getMemberId().value(), m.getMemberId().value())) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public boolean isAlreadyStart(LocalDate now) {
+        if (now.isAfter(challengeDuration.startDate())) {
+            return true;
         }
 
         return false;

@@ -60,6 +60,7 @@ public class SecurityConfig {
                                         "/api/mogak/challenge",
                                         "/api/mogak/challenge/*",
                                         "/api/mogak/challenge/*/verification",
+                                        "/api/mogak/challenge/list",
                                         "/ws",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
