@@ -42,7 +42,7 @@ public class MogakZoneQueryController {
             @Parameter(description = "필터링할 태그 목록")
             @RequestParam(value = "tags", required = false) String tag,
 
-            @Parameter(description = "정렬 기준 (latest 또는 participants)")
+            @Parameter(description = "정렬 기준 (recent 또는 participant)")
             @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort,
 
             @Parameter(description = "페이지 번호")
