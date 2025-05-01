@@ -5,8 +5,10 @@ import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
+import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.hnc.mogak.zone.application.port.out.ChatPort;
 import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
 import com.hnc.mogak.zone.application.port.out.TagPort;
@@ -15,6 +17,7 @@ import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -71,6 +74,11 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
                     return new MogakZoneMainResponse(tagNames, mogakZone.getZoneInfo().name(), imageUrls);
                 })
                 .toList();
+    }
+
+    @Override
+    public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery) {
+        return mogakZoneQueryPort.findMogakZoneByQuery(mogakZoneSearchQuery);
     }
 
 }
