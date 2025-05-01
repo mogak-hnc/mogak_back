@@ -26,6 +26,7 @@ public enum ErrorCode {
     // CHALLENGE Exception
     NOT_EXISTS_CHALLENGE("챌린지가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     ALREADY_STARTED("이미 시작된 챌린지는 참여가 불가능합니다.", HttpStatus.BAD_REQUEST),
+    INVALID_CHALLENGE_DATE("시작일은 현재시간보다 이전이여야 합니다.", HttpStatus.BAD_REQUEST),
 
     // CHALLENGE_ARTICLE Exception
     UPLOAD_FAILED("파일 업로드에 실패하였습니다.", HttpStatus.BAD_REQUEST),

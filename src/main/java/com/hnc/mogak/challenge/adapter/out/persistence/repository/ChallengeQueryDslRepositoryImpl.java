@@ -36,6 +36,7 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
             builder.and(challenge.title.containsIgnoreCase(query.getSearch()));
         }
         builder.and(challenge.official.eq(query.isOfficial()));
+        builder.and(challenge.startDate.after(LocalDate.now()));
 
         List<Tuple> challengeInfos = queryFactory
                 .select(challenge.id, challenge.title, challenge.startDate, challenge.endDate)

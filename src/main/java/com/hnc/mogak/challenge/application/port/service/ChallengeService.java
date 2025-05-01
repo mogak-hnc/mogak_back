@@ -37,6 +37,10 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
+        if (command.getStartDate().isBefore(LocalDate.now())) {
+            throw new ChallengeException(ErrorCode.INVALID_CHALLENGE_DATE);
+        }
+
         Member challengeCreator = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = ChallengeMapper.mapToDomain(command);
 
