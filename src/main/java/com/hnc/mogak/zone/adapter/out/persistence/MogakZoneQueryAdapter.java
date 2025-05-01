@@ -5,15 +5,21 @@ import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.domain.Member;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneOwnerEntity;
+import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneQueryDsl;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneOwnerRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneTagRepository;
+import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,6 +32,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     private final ZoneTagRepository zoneTagRepository;
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneOwnerRepository zoneOwnerRepository;
+    private final MogakZoneQueryDsl mogakZoneQueryDsl;
 
     @Override
     public List<String> getTags(Long mogakZoneId) {
@@ -48,4 +55,11 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
         MogakZone mogakZone = MogakZoneMapper.mapToDomainWithId(zoneOwnerEntity.getMogakZoneEntity());
         return ZoneOwner.withId(zoneOwnerEntity.getId(), member, mogakZone);
     }
+
+    @Override
+    public Page<MogakZoneSearchResponse> findMogakZoneByQuery(MogakZoneSearchQuery query) {
+        Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
+        return mogakZoneQueryDsl.findMogakZone(query, pageable);
+    }
+
 }
