@@ -10,9 +10,8 @@ import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,13 +20,10 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository
-public class MogakZoneQueryDslImpl implements MogakZoneQueryDsl {
+@RequiredArgsConstructor
+public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
-
-    public MogakZoneQueryDslImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(JPQLTemplates.DEFAULT, em);
-    }
 
     @Override
     public Page<MogakZoneSearchResponse> findMogakZone(MogakZoneSearchQuery query, Pageable pageable) {
@@ -48,7 +44,7 @@ public class MogakZoneQueryDslImpl implements MogakZoneQueryDsl {
         }
 
         List<Tuple> zoneIdNameAndCount = queryFactory
-                .select(mogakZone.id, mogakZone.name, zoneMember.count())
+                .select(mogakZone.id, mogakZone.name)
                 .from(mogakZone)
                 .leftJoin(zoneMember).on(zoneMember.mogakZoneEntity.eq(mogakZone))
                 .leftJoin(zoneTag).on(zoneTag.zone.eq(mogakZone))
@@ -92,7 +88,7 @@ public class MogakZoneQueryDslImpl implements MogakZoneQueryDsl {
             zoneIdToImages.computeIfAbsent(zoneId, k -> new ArrayList<>());
             List<String> images = zoneIdToImages.get(zoneId);
 
-            if (images.size() < 3) {
+            if (images.size() <= 3) {
                 if (imagePath == null) imagePath = "Default";
                 images.add(imagePath);
             }

@@ -16,6 +16,6 @@ public interface MogakZoneQueryPort {
 
     ZoneOwner findByMogakZoneId(Long mogakZoneId);
 
-    Page<MogakZoneSearchResponse> findMogakZoneByQuery(MogakZoneSearchQuery mogakZoneSearchQuery);
+    Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery);
 
 }

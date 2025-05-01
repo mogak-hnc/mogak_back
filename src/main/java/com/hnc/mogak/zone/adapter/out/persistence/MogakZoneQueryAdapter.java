@@ -8,7 +8,7 @@ import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneOwnerEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneQueryDsl;
+import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneQueryDslRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneOwnerRepository;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneTagRepository;
@@ -32,7 +32,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     private final ZoneTagRepository zoneTagRepository;
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneOwnerRepository zoneOwnerRepository;
-    private final MogakZoneQueryDsl mogakZoneQueryDsl;
+    private final MogakZoneQueryDslRepository mogakZoneQueryDslRepository;
 
     @Override
     public List<String> getTags(Long mogakZoneId) {
@@ -57,9 +57,9 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     }
 
     @Override
-    public Page<MogakZoneSearchResponse> findMogakZoneByQuery(MogakZoneSearchQuery query) {
+    public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery query) {
         Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
-        return mogakZoneQueryDsl.findMogakZone(query, pageable);
+        return mogakZoneQueryDslRepository.findMogakZone(query, pageable);
     }
 
 }

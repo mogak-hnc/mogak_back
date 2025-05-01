@@ -78,7 +78,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery) {
-        return mogakZoneQueryPort.findMogakZoneByQuery(mogakZoneSearchQuery);
+        return mogakZoneQueryPort.searchMogakZone(mogakZoneSearchQuery);
     }
 
 }

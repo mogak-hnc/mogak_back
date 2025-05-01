@@ -35,12 +35,12 @@ public class MogakZoneQueryController {
 
     @Operation(summary = "모각존 목록 조회", description = "모각존 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
     @GetMapping("/list")
-    public ResponseEntity<Page<MogakZoneSearchResponse>> getMogakZoneList(
+    public ResponseEntity<Page<MogakZoneSearchResponse>> searchMogakZone(
             @Parameter(description = "검색 키워드 (모각존 이름 등)")
             @RequestParam(value = "search", required = false) String search,
 
             @Parameter(description = "필터링할 태그 목록")
-            @RequestParam(value = "tags", required = false) String tag,
+            @RequestParam(value = "tag", required = false) String tag,
 
             @Parameter(description = "정렬 기준 (recent 또는 participant)")
             @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort,
