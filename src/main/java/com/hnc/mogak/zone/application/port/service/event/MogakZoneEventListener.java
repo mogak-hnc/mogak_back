@@ -13,7 +13,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class MogakZoneEventListener {
 
-    private final RedisTemplate<String, Long> redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @TransactionalEventListener
     public void handleCreateMogakZoneEvent(CreateMogakZoneEvent event) {
