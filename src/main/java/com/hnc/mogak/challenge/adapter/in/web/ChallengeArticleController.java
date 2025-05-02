@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,16 +31,14 @@ public class ChallengeArticleController {
 
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "챌린지 게시글 생성", description = "챌린지 게시글을 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PostMapping(
             value = "/{challengeId}/verification",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE} // multipart/form-data로 설정
     )
     public ResponseEntity<CreateChallengeArticleResponse> create(
-            @Parameter(
-                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
-                    example = "eyJhbGciOiJIUzI1NiJ9...",
-                    required = false
-            )
+            @Parameter(hidden = true)
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
 
             @Parameter(description = "챌린지 인증 게시글 정보", required = true)
@@ -55,6 +54,7 @@ public class ChallengeArticleController {
             )
             @PathVariable(name = "challengeId") Long challengeId
     ) {
+
         long memberId = Long.parseLong(jwtUtil.getMemberId(token));
 
         CreateArticleCommand command = CreateArticleCommand.builder()

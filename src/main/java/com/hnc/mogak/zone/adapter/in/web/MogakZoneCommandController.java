@@ -38,15 +38,11 @@ public class MogakZoneCommandController {
     private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "모각존 생성", description = "모각존을 새로 생성합니다.")
+    @Operation(summary = "모각존 생성", description = "모각존을 새로 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
     @PostMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateMogakZoneResponse> createMogakZone(
-            @Parameter(
-                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
-                    example = "eyJhbGciOiJIUzI1NiJ...",
-                    required = true
-            )
+            @Parameter(hidden = true)
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
 
             @Parameter(
@@ -83,15 +79,11 @@ public class MogakZoneCommandController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.create(command));
     }
 
-    @Operation(summary = "모각존 참여", description = "모각존에 참여합니다.")
+    @Operation(summary = "모각존 참여", description = "모각존에 참여합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PostMapping("{mogakZoneId}/join")
     public ResponseEntity<JoinMogakZoneResponse> joinMogakZone(
-            @Parameter(
-                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
-                    example = "eyJhbGciOiJIUzI1NiJ9...",
-                    required = true
-            )
+            @Parameter(hidden = true)
             @RequestHeader(value = AuthConstant.AUTHORIZATION) String token,
 
             @Parameter(

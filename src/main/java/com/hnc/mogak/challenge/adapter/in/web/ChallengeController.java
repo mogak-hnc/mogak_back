@@ -34,15 +34,11 @@ public class ChallengeController {
     private final ChallengeUseCase challengeUseCase;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "챌린지 생성", description = "회원 또는 관리자가 챌린지를 생성합니다.")
+    @Operation(summary = "챌린지 생성", description = "회원 또는 관리자가 챌린지를 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
     @PostMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateChallengeResponse> createChallenge(
-            @Parameter(
-                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
-                    example = "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6...",
-                    required = true
-            )
+            @Parameter(hidden = true)
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
 
             @Parameter(
@@ -74,15 +70,11 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));
     }
 
-    @Operation(summary = "챌린지 참여", description = "회원 또는 관리자가 챌린지에 참여합니다.")
+    @Operation(summary = "챌린지 참여", description = "회원 또는 관리자가 챌린지에 참여합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
     @PostMapping("/{challengeId}/join")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<JoinChallengeResponse> joinChallenge(
-            @Parameter(
-                    description = "JWT 인증 토큰, 우측 상단 Authorize 버튼을 눌러 Bearer 없이 사용해주세요.",
-                    example = "eyJhbGciOiJIUzI1NiJ9.eyJtZW1iZXJJZCI6...",
-                    required = true
-            )
+            @Parameter(hidden = true)
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
 
             @Parameter(

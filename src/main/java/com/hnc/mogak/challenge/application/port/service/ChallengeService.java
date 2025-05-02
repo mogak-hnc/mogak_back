@@ -37,7 +37,7 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
-        if (command.getStartDate().isBefore(LocalDate.now())) {
+        if (command.getStartDate().isBefore(LocalDate.now().plusDays(1))) {
             throw new ChallengeException(ErrorCode.INVALID_CHALLENGE_DATE);
         }
 
