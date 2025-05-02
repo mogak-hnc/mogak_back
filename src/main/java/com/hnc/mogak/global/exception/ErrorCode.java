@@ -32,9 +32,10 @@ public enum ErrorCode {
     UPLOAD_FAILED("파일 업로드에 실패하였습니다.", HttpStatus.BAD_REQUEST),
 
     // Member Exception
-    NOT_EXISTS_MEMBER("해당 회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
-    
+    NOT_EXISTS_MEMBER("해당 회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
 
+    // Member Exception
+    NOT_EXISTS_WORRY("해당 고민있어요가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
 
     private final String description;
     private final HttpStatus httpStatus;

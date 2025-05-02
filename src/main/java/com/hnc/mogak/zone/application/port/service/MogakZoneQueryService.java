@@ -35,7 +35,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
     private final ChatPort chatPort;
     private final TagPort tagPort;
 
-    private final RedisTemplate<String, Long> redisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
@@ -52,7 +52,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
     public List<MogakZoneMainResponse> getMainPage() {
         int size = 3;
 
-        Set<ZSetOperations.TypedTuple<Long>> zoneWithParticipants = redisTemplate.opsForZSet()
+        Set<ZSetOperations.TypedTuple<Object>> zoneWithParticipants = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(RedisConstant.ZONE_PARTICIPANT_COUNT, 0, size - 1);
 
         if (zoneWithParticipants == null || zoneWithParticipants.isEmpty()) {
