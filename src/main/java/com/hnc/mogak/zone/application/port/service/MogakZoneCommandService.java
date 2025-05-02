@@ -145,7 +145,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         );
     }
 
-    private static void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, List<ZoneMember> zoneMemberList) {
+    private void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, List<ZoneMember> zoneMemberList) {
         if (mogakZone.isAlreadyJoined(command.getMemberId(), zoneMemberList)) {
             throw new MogakZoneException(ErrorCode.ALREADY_JOINED);
         }

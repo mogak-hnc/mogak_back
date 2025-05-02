@@ -1,8 +1,5 @@
 package com.hnc.mogak.zone.domain.zone;
 
-import com.hnc.mogak.global.exception.ErrorCode;
-import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
-import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneConfig;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneDuration;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneId;
