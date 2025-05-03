@@ -58,12 +58,14 @@ public class WorryController {
     @Operation(summary = "고민 메인 페이지 조회", description = "메인 화면에서 표시할 고민 4개를 조회합니다.")
     @GetMapping
     public ResponseEntity<List<WorryPreview>> getWorryMainPage() {
-        return ResponseEntity.ok(worryService.getWorryList(0, 4));
+        return ResponseEntity.ok(worryService.getWorryList("participant", 0, 4));
     }
 
     @Operation(summary = "고민 목록 조회", description = "고민 목록을 페이지네이션을 통해 조회합니다.")
     @GetMapping("/list")
     public ResponseEntity<List<WorryPreview>> getWorryList(
+            @Parameter(description = "recent or participant", example = "recent")
+            @RequestParam(value = "sort", defaultValue = "recent") String sort,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "10")
@@ -72,7 +74,7 @@ public class WorryController {
         int start = page * size;
         int end = start + size - 1;
 
-        return ResponseEntity.ok(worryService.getWorryList(start, end));
+        return ResponseEntity.ok(worryService.getWorryList(sort, start, end));
     }
 
     @Operation(summary = "공감 토글", description = "특정 고민에 공감을 토글합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")

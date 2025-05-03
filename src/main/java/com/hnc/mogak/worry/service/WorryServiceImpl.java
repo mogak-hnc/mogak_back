@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +30,8 @@ public class WorryServiceImpl implements WorryService {
     private final RedisTemplate<Object, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
+    private static final Duration TTL_24_HOURS = Duration.ofHours(24);
+
     @Override
     public CreateWorryResponse create(CreateWorryRequest request, Long memberId) {
         Integer id = (Integer) redisTemplate.opsForValue().get(WORRY_ID_KEY);
@@ -36,7 +39,7 @@ public class WorryServiceImpl implements WorryService {
             id = 0;
         }
         Integer worryId = id + 1;
-        redisTemplate.opsForValue().set(WORRY_ID_KEY, worryId);
+        redisTemplate.opsForValue().set(WORRY_ID_KEY, worryId, TTL_24_HOURS);
 
         CreateWorryCommand command = CreateWorryCommand.builder()
                 .memberId(memberId)
@@ -46,7 +49,12 @@ public class WorryServiceImpl implements WorryService {
                 .build();
 
         redisTemplate.opsForZSet().add(WORRY_EMPATHY_RANKING_KEY, worryId, 0);
-        redisTemplate.opsForValue().set(WORRY_ID_KEY + worryId, command, Duration.ofSeconds(86400));
+        redisTemplate.opsForZSet().add(
+                WORRY_RECENT_SORT_KEY,
+                worryId,
+                command.getCreatedAt().atZone(ZoneId.systemDefault()).toEpochSecond()
+        );
+        redisTemplate.opsForValue().set(WORRY_ID_KEY + worryId, command, TTL_24_HOURS);
 
         return new CreateWorryResponse(worryId);
     }
@@ -77,7 +85,7 @@ public class WorryServiceImpl implements WorryService {
                 .build();
 
         commentList.add(commentResponse);
-        redisTemplate.opsForValue().set(commentKey, commentList, Duration.ofHours(24));
+        redisTemplate.opsForValue().set(commentKey, commentList, TTL_24_HOURS);
         return commentResponse;
     }
 
@@ -142,15 +150,17 @@ public class WorryServiceImpl implements WorryService {
     }
 
     @Override
-    public List<WorryPreview> getWorryList(int start, int end) {
-        Set<ZSetOperations.TypedTuple<Object>> top3Worries =
-                redisTemplate.opsForZSet().reverseRangeWithScores(WORRY_EMPATHY_RANKING_KEY, start, end);
+    public List<WorryPreview> getWorryList(String sort, int start, int end) {
+        sort = sort.equals("recent") ? WORRY_RECENT_SORT_KEY : WORRY_EMPATHY_RANKING_KEY;
+
+        Set<ZSetOperations.TypedTuple<Object>> sortingList =
+                redisTemplate.opsForZSet().reverseRangeWithScores(sort, start, end);
 
         List<WorryPreview> worryPreviews = new ArrayList<>();
 
-        if (top3Worries == null) return worryPreviews;
+        if (sortingList == null) return worryPreviews;
 
-        for (ZSetOperations.TypedTuple<Object> tuple : top3Worries) {
+        for (ZSetOperations.TypedTuple<Object> tuple : sortingList) {
             Integer worryId = (Integer) tuple.getValue();
             Object articleObj = redisTemplate.opsForValue().get(WORRY_ID_KEY + worryId);
             if (articleObj == null) continue;
@@ -173,6 +183,8 @@ public class WorryServiceImpl implements WorryService {
                     .restTime(restTime)
                     .build());
         }
+
+
 
         return worryPreviews;
     }

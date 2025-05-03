@@ -14,6 +14,6 @@ public interface WorryService {
 
     CommentResponse createComment(CreateWorryCommentRequest request, String memberId, Integer worryId);
 
-    List<WorryPreview> getWorryList(int start, int end);
+    List<WorryPreview> getWorryList(String sort, int start, int end);
 
 }
