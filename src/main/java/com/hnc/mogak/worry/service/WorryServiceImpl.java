@@ -163,7 +163,11 @@ public class WorryServiceImpl implements WorryService {
         for (ZSetOperations.TypedTuple<Object> tuple : sortingList) {
             Integer worryId = (Integer) tuple.getValue();
             Object articleObj = redisTemplate.opsForValue().get(WORRY_ID_KEY + worryId);
-            if (articleObj == null) continue;
+            if (articleObj == null) {
+                redisTemplate.opsForZSet().remove(WORRY_RECENT_SORT_KEY, worryId);
+                redisTemplate.opsForZSet().remove(WORRY_EMPATHY_RANKING_KEY, worryId);
+                continue;
+            }
 
             CreateWorryCommand command = objectMapper.convertValue(articleObj, CreateWorryCommand.class);
             List<Integer> restTime = getRestTime(command);
