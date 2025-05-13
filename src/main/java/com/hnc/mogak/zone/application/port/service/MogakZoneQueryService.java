@@ -2,17 +2,13 @@ package com.hnc.mogak.zone.application.port.service;
 
 import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
-import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.*;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
-import com.hnc.mogak.zone.application.port.out.ChatPort;
-import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
-import com.hnc.mogak.zone.application.port.out.TagPort;
-import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
+import com.hnc.mogak.zone.application.port.out.*;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
@@ -51,6 +47,30 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
     @Override
     public List<MogakZoneMainResponse> getMainPage() {
         int size = 3;
+        List<ZoneSummary> summaryList = mogakZoneQueryPort.findTopZoneSummariesByJoinCount(size);
+        List<MogakZoneMainResponse> responses = new ArrayList<>();
+
+        for (ZoneSummary zoneSummary : summaryList) {
+            List<String> tagNameList = List.of(zoneSummary.getTagNames().split(" "));
+
+            List<String> memberImageUrlList = List.of(zoneSummary.getMemberImageUrls().split(" "));
+
+            MogakZoneMainResponse response = new MogakZoneMainResponse(
+                    zoneSummary.getMogakZoneId(),
+                    tagNameList,
+                    zoneSummary.getName(),
+                    memberImageUrlList
+            );
+
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    @Override
+    public List<MogakZoneMainResponse> getMainPage2() {
+        int size = 3;
 
         Set<ZSetOperations.TypedTuple<Object>> zoneWithParticipants = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(RedisConstant.ZONE_PARTICIPANT_COUNT, 0, size - 1);
@@ -71,7 +91,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
                     }
 
                     List<String> tagNames = tagPort.findTagNameByMogakZoneId(mogakZoneId);
-                    return new MogakZoneMainResponse(tagNames, mogakZone.getZoneInfo().name(), imageUrls);
+                    return new MogakZoneMainResponse(null, tagNames, mogakZone.getZoneInfo().name(), imageUrls);
                 })
                 .toList();
     }
@@ -79,6 +99,11 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
     @Override
     public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery) {
         return mogakZoneQueryPort.searchMogakZone(mogakZoneSearchQuery);
+    }
+
+    @Override
+    public List<TagNameResponse> getTagNames() {
+        return mogakZoneQueryPort.getPopularTags();
     }
 
 }

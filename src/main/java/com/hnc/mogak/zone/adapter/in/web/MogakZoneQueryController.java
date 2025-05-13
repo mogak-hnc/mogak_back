@@ -3,6 +3,7 @@ package com.hnc.mogak.zone.adapter.in.web;
 
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class MogakZoneQueryController {
     @Operation(summary = "모각존 메인 페이지 조회", description = "메인 화면에서 표시할 모각존 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<List<MogakZoneMainResponse>> getMogakZoneMainPage() {
-        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getMainPage());
+        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getMainPage2());
     }
 
     @Operation(summary = "모각존 목록 조회", description = "모각존 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
@@ -61,6 +62,12 @@ public class MogakZoneQueryController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.searchMogakZone(mogakZoneSearchQuery));
+    }
+
+    @Operation(summary = "태그 목록 조회", description = "모각존에 관련된 태그 목록을 조회합니다.")
+    @GetMapping("/tags")
+    public ResponseEntity<List<TagNameResponse>> getTags() {
+        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getTagNames());
     }
 
 }

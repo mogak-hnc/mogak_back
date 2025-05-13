@@ -6,12 +6,12 @@ import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneOwnerEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneQueryDslRepository;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneRepository;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneOwnerRepository;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneTagRepository;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
+import com.hnc.mogak.zone.adapter.out.persistence.repository.*;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
@@ -32,6 +32,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     private final ZoneTagRepository zoneTagRepository;
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneOwnerRepository zoneOwnerRepository;
+    private final ZoneSummaryRepository zoneSummaryRepository;
     private final MogakZoneQueryDslRepository mogakZoneQueryDslRepository;
 
     @Override
@@ -39,6 +40,17 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
         return zoneTagRepository.findAllByZoneId(mogakZoneId).stream()
                 .map(zoneTagEntity -> zoneTagEntity.getTag().getName())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ZoneSummary> findTopZoneSummariesByJoinCount(int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return zoneSummaryRepository.findAllByOrderByJoinCountDesc(pageable);
+    }
+
+    @Override
+    public ZoneSummary getSummaryDetail(Long mogakZoneId) {
+        return zoneSummaryRepository.findByMogakZoneId(mogakZoneId);
     }
 
     @Override
@@ -60,6 +72,13 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery query) {
         Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
         return mogakZoneQueryDslRepository.findMogakZone(query, pageable);
+    }
+
+    @Override
+    public List<TagNameResponse> getPopularTags() {
+        Pageable pageable = PageRequest.of(0, 5);
+        List<String> tagNames = zoneTagRepository.getPopularTagNames(pageable);
+        return tagNames.stream().map(TagNameResponse::new).toList();
     }
 
 }
