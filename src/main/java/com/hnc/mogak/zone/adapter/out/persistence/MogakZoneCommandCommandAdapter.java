@@ -4,14 +4,8 @@ import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import com.hnc.mogak.member.domain.Member;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneOwnerEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneTagEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.MogakZoneRepository;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.TagRepository;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneOwnerRepository;
-import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneTagRepository;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.*;
+import com.hnc.mogak.zone.adapter.out.persistence.repository.*;
 import com.hnc.mogak.zone.application.port.out.MogakZoneCommandPort;
 import com.hnc.mogak.zone.application.port.out.TagPort;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
@@ -30,6 +24,7 @@ public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, Tag
     private final ZoneOwnerRepository zoneOwnerRepository;
     private final ZoneTagRepository zoneTagRepository;
     private final TagRepository tagRepository;
+    private final ZoneSummaryRepository zoneSummaryRepository;
 
 //    @Override
 //    public CreateMogakZoneResponse createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
@@ -40,12 +35,39 @@ public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, Tag
 //        return mogakZoneMapper.mapToMogakZoneResponse(mogakZoneEntity, tagNames);
 //    }
 
+    @Override
+    public void saveZoneSummary(MogakZone mogakZone, Set<TagEntity> tagEntitySet) {
+        StringBuilder sb = new StringBuilder();
+        for (TagEntity tagEntity : tagEntitySet) {
+            sb.append(tagEntity.getName()).append(" ");
+        }
+
+        String tagNames = sb.toString().trim();
+        String memberUrl = "";
+
+        zoneSummaryRepository.save(
+                new ZoneSummary(
+                        null,
+                        mogakZone.getZoneId().value(),
+                        tagNames,
+                        mogakZone.getZoneInfo().name(),
+                        0L,
+                        memberUrl
+                )
+        );
+    }
 
     @Override
     public MogakZone createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
+        MogakZoneEntity mogakZoneEntity1 = MogakZoneMapper.mapToEntity(mogakZone);
         MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(MogakZoneMapper.mapToEntity(mogakZone));
         tagSet.forEach(tagEntity -> zoneTagRepository.save(new ZoneTagEntity(null, tagEntity, mogakZoneEntity)));
         return MogakZoneMapper.mapToDomainWithId(mogakZoneEntity);
+    }
+
+    @Override
+    public void saveMogakZone(MogakZone mogakZone) {
+        mogakZoneRepository.save(MogakZoneMapper.mapToEntity(mogakZone));
     }
 
     @Override

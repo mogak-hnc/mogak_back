@@ -4,7 +4,11 @@ import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WebSocketException;
+import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
+import com.hnc.mogak.zone.application.port.out.MogakZoneCommandPort;
+import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
 import com.hnc.mogak.zone.application.port.service.event.model.OutMogakZoneEvent;
+import com.hnc.mogak.zone.domain.zone.MogakZone;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,7 +29,6 @@ public class WebSocketEventListener {
 
     private final WebSocketSessionManager sessionManager;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ApplicationEventPublisher eventPublisher;
     private final JwtUtil jwtUtil;
 
 
@@ -57,18 +60,17 @@ public class WebSocketEventListener {
             Long mogakZoneId = mogakZoneSessionInfo.getMogakZoneId();
             Long memberId = mogakZoneSessionInfo.getMemberId();
 
-
             messagingTemplate.convertAndSend(
                     "/topic/api/mogak/zone/" + mogakZoneId,
                     new MogakZoneSessionInfo(mogakZoneId, memberId)
             );
 
-            eventPublisher.publishEvent(
-                    new OutMogakZoneEvent(
-                            this,
-                            mogakZoneId
-                    )
-            );
+//            eventPublisher.publishEvent(
+//                    new OutMogakZoneEvent(
+//                            this,
+//                            mogakZoneId
+//                    )
+//            );
 
         }
 

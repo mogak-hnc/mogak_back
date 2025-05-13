@@ -19,4 +19,6 @@ public interface MogakZoneCommandUseCase {
 
     MogakZoneStatusResponse changeStatus(ChangeStatusCommand command);
 
+    void leave(Long mogakZoneId, Long memberId);
+
 }

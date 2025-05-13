@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MogakZoneMainResponse {
 
+    private Long mogakZoneId;
     private List<String> tagNames;
     private String name;
     private List<String> memberImageUrls;

@@ -4,6 +4,7 @@ import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
 import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
 import com.hnc.mogak.zone.application.port.service.event.model.JoinMogakZoneEvent;
@@ -51,9 +52,11 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         Set<TagEntity> tagEntitySet = tagPort.findOrCreateTags(command.getTagNames());
 
         MogakZone mogakZone = createMogakZone(command, tagEntitySet);
-        getSaveZoneOwner(hostMember, mogakZone);
+        saveZoneOwner(hostMember, mogakZone);
 
-        publishZoneCreationToRedis(command, mogakZone);
+//        publishZoneCreationToRedis(command, mogakZone);
+
+        mogakZoneCommandPort.saveZoneSummary(mogakZone, tagEntitySet);
         join(getJoinCommand(command, hostMember, mogakZone));
         return MogakZoneMapper.mapToMogakZoneResponse(mogakZone, command.getTagNames());
     }
@@ -61,13 +64,23 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     @Override
     public JoinMogakZoneResponse join(JoinMogakZoneCommand command) {
         MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
-        List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
+        ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZone.getZoneId().value());
+        Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
 
+        zoneSummary.increaseJoinCount(findMember.getMemberInfo().imagePath());
+        List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
         validateMogakZoneJoin(command, mogakZone, zoneMemberList);
 
-        Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
-        publishJoinInfoToRedis(mogakZone);
+//        publishJoinInfoToRedis(mogakZone);
         return zoneMemberPort.join(mogakZone, findMember);
+    }
+
+    @Override
+    public void leave(Long mogakZoneId, Long memberId) {
+        ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZoneId);
+        Member member = memberPort.loadMemberByMemberId(memberId);
+        zoneSummary.decreaseJoinCount(member.getMemberInfo().imagePath());
+        zoneMemberPort.deleteMemberByMogakZoneId(mogakZoneId, memberId);
     }
 
     @Override
@@ -115,14 +128,13 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
                 .build();
     }
 
-    private void getSaveZoneOwner(Member hostMember, MogakZone mogakZone) {
+    private void saveZoneOwner(Member hostMember, MogakZone mogakZone) {
         mogakZoneCommandPort.saveZoneOwner(hostMember, mogakZone);
     }
 
     private MogakZone createMogakZone(CreateMogakZoneCommand command, Set<TagEntity> tagEntitySet) {
         MogakZone mogakZone = MogakZoneMapper.mapToDomainWithoutId(command);
-        mogakZone = mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
-        return mogakZone;
+        return mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
     }
 
     private void publishZoneCreationToRedis(CreateMogakZoneCommand command, MogakZone mogakZone) {

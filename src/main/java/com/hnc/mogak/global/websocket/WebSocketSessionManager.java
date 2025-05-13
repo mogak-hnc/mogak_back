@@ -1,5 +1,6 @@
 package com.hnc.mogak.global.websocket;
 
+import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class WebSocketSessionManager {
 
-    private final ZoneMemberPort zoneMemberPort;
+    private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
     private final Map<Long, Set<Long>> webSocketSessions = new ConcurrentHashMap<>();
     private final Map<String, MogakZoneSessionInfo> sessionIdToInfo = new ConcurrentHashMap<>();
 
@@ -29,7 +30,7 @@ public class WebSocketSessionManager {
             Set<Long> sessions = webSocketSessions.get(mogakZoneId);
             if (sessions != null) {
                 sessions.remove(memberId);
-                zoneMemberPort.deleteMemberByMogakZoneId(mogakZoneId, memberId);
+                mogakZoneCommandUseCase.leave(mogakZoneId, memberId);
                 if (sessions.isEmpty()) {
                     webSocketSessions.remove(mogakZoneId);
                 }

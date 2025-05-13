@@ -1,7 +1,6 @@
 package com.hnc.mogak.zone.application.port.out;
 
 import com.hnc.mogak.member.domain.Member;
-import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 
@@ -14,5 +13,8 @@ public interface MogakZoneCommandPort {
 
     void saveZoneOwner(Member member, MogakZone mogakZone);
 
+    void saveMogakZone(MogakZone mogakZone);
+
+    void saveZoneSummary(MogakZone mogakZone, Set<TagEntity> tagEntitySet);
 
 }

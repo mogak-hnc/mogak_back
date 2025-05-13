@@ -33,7 +33,7 @@ public class AuthService implements AuthUseCase {
                     .build();
         }
 
-        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, null, null);
+        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, "Default", null);
         PlatformInfo platformInfo = new PlatformInfo(provider, providerId);
         Role roleInfo = new Role(AuthConstant.ROLE_MEMBER);
         Member newMember = Member.withoutId(memberInfo, platformInfo, roleInfo);
