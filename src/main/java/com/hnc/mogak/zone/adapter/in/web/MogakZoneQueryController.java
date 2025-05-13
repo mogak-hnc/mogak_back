@@ -31,7 +31,7 @@ public class MogakZoneQueryController {
     @Operation(summary = "모각존 메인 페이지 조회", description = "메인 화면에서 표시할 모각존 정보를 조회합니다.")
     @GetMapping
     public ResponseEntity<List<MogakZoneMainResponse>> getMogakZoneMainPage() {
-        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getMainPage2());
+        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getMainPage());
     }
 
     @Operation(summary = "모각존 목록 조회", description = "모각존 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
