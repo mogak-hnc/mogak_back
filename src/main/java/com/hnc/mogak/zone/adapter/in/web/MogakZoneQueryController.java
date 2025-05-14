@@ -1,10 +1,12 @@
 package com.hnc.mogak.zone.adapter.in.web;
 
 
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
+import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -70,4 +69,14 @@ public class MogakZoneQueryController {
         return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getTagNames());
     }
 
+    @GetMapping("/detail/{mogakZoneId}")
+    public MogakZoneDetailResponse getMogakZoneDetail(
+            @PathVariable(value = "mogakZoneId") Long mogakZoneId
+    ) {
+        MogakZoneDetailQuery detailQuery = MogakZoneDetailQuery.builder()
+                .mogakZoneId(mogakZoneId)
+                .build();
+
+        return mogakZoneQueryUseCase.getDetail(detailQuery);
+    }
 }

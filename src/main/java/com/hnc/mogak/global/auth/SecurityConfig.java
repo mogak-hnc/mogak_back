@@ -64,6 +64,7 @@ public class SecurityConfig {
                                         "/api/mogak/zone/join/*",
                                         "/api/mogak/zone/list",
                                         "/api/mogak/zone/tags",
+                                        "/api/mogak/zone/detail/*",
                                         "/api/mogak/challenge",
                                         "/api/mogak/challenge/*",
                                         "/api/mogak/challenge/*/verification",
