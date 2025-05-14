@@ -70,7 +70,7 @@ public class MogakZoneQueryController {
     }
 
     @Operation(summary = "모각존 디테일", description = "모각존 디테일 조회합니다.")
-    @GetMapping("/detail/{mogakZoneId}")
+    @GetMapping("/{mogakZoneId}/detail")
     public MogakZoneDetailResponse getMogakZoneDetail(
             @PathVariable(value = "mogakZoneId") Long mogakZoneId
     ) {
