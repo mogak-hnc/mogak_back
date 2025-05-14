@@ -59,7 +59,6 @@ public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, Tag
 
     @Override
     public MogakZone createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
-        MogakZoneEntity mogakZoneEntity1 = MogakZoneMapper.mapToEntity(mogakZone);
         MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(MogakZoneMapper.mapToEntity(mogakZone));
         tagSet.forEach(tagEntity -> zoneTagRepository.save(new ZoneTagEntity(null, tagEntity, mogakZoneEntity)));
         return MogakZoneMapper.mapToDomainWithId(mogakZoneEntity);

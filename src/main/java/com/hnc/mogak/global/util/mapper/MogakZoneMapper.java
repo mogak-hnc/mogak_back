@@ -17,10 +17,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class MogakZoneMapper {
 
-    public static MogakZone mapToDomainWithoutId(CreateMogakZoneCommand command) {
+    public static MogakZone mapToDomainWithoutId(CreateMogakZoneCommand command, String imageUrl) {
         ZoneInfo zoneInfo = new ZoneInfo(
                 command.getName(),
-                command.getImageUrl(),
+                imageUrl,
                 command.getPassword()
         );
 

@@ -1,6 +1,7 @@
 package com.hnc.mogak.zone.adapter.in.web;
 
 
+import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,6 +73,7 @@ public class MogakZoneQueryController {
 
     @Operation(summary = "모각존 디테일", description = "모각존 디테일 조회합니다.")
     @GetMapping("/{mogakZoneId}/detail")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public MogakZoneDetailResponse getMogakZoneDetail(
             @PathVariable(value = "mogakZoneId") Long mogakZoneId
     ) {

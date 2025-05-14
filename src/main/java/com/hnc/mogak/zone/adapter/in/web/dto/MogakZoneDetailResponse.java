@@ -17,6 +17,7 @@ public class MogakZoneDetailResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private int joinedUserCount;
+    private String imageUrl;
     private List<ZoneMemberInfo> zoneMemberInfoList;
     private List<ChatMessageResponse> chatHistoryResponses;
 

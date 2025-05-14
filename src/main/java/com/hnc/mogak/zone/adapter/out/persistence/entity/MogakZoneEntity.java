@@ -25,7 +25,7 @@ public class MogakZoneEntity extends BaseEntity {
     @Column(name = "max_capacity")
     private int maxCapacity;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 1024)
     private String imageUrl;
 
     @Column(name = "password")

@@ -1,5 +1,6 @@
 package com.hnc.mogak.zone.application.port.service;
 
+import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
@@ -45,13 +46,21 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     private final TagPort tagPort;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final S3Service s3Service;
 
     @Override
     public CreateMogakZoneResponse create(CreateMogakZoneCommand command) {
         Member hostMember = memberPort.loadMemberByMemberId(command.getMemberId());
         Set<TagEntity> tagEntitySet = tagPort.findOrCreateTags(command.getTagNames());
 
-        MogakZone mogakZone = createMogakZone(command, tagEntitySet);
+        String imageUrl = "Default";
+        if (command.getImageUrl() != null) {
+            imageUrl = s3Service.uploadImage(command.getImageUrl(), "mogakzone");
+        }
+
+        MogakZone mogakZone = createMogakZone(command, tagEntitySet, imageUrl);
+
+
         saveZoneOwner(hostMember, mogakZone);
 
 //        publishZoneCreationToRedis(command, mogakZone);
@@ -132,8 +141,8 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         mogakZoneCommandPort.saveZoneOwner(hostMember, mogakZone);
     }
 
-    private MogakZone createMogakZone(CreateMogakZoneCommand command, Set<TagEntity> tagEntitySet) {
-        MogakZone mogakZone = MogakZoneMapper.mapToDomainWithoutId(command);
+    private MogakZone createMogakZone(CreateMogakZoneCommand command, Set<TagEntity> tagEntitySet, String imageUrl) {
+        MogakZone mogakZone = MogakZoneMapper.mapToDomainWithoutId(command, imageUrl);
         return mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
     }
 

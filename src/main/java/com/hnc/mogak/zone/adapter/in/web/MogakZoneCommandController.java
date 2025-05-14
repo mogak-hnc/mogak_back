@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class MogakZoneCommandController {
     private final JwtUtil jwtUtil;
 
     @Operation(summary = "모각존 생성", description = "모각존을 새로 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateMogakZoneResponse> createMogakZone(
             @Parameter(hidden = true)
@@ -53,7 +54,8 @@ public class MogakZoneCommandController {
                             schema = @Schema(implementation = CreateMogakZoneRequest.class)
                     )
             )
-            @Valid @RequestBody CreateMogakZoneRequest request) {
+            @Valid @RequestPart CreateMogakZoneRequest request,
+            @RequestParam(value = "image", required = false) MultipartFile image) {
         String memberId = jwtUtil.getMemberId(token);
 
         LocalDate[] localDates = DateParser.parsePeriod(request.getPeriod());
@@ -66,7 +68,7 @@ public class MogakZoneCommandController {
         CreateMogakZoneCommand command = CreateMogakZoneCommand.builder()
                 .name(request.getName())
                 .maxCapacity(request.getMaxCapacity())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(image)
                 .password(request.getPassword() == null ? "" : request.getPassword())
                 .chatEnabled(request.isChatEnabled())
                 .loginRequired(request.isLoginRequired())

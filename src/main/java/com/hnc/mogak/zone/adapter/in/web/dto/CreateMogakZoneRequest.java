@@ -22,9 +22,6 @@ public class CreateMogakZoneRequest {
     @Schema(description = "최대 참여 인원", example = "5")
     private int maxCapacity;
 
-    @Schema(description = "모각존 대표 이미지 URL", example = "미구현")
-    private String imageUrl;
-
     @Schema(description = "비밀번호 (비공개 모각존일 경우)", example = "")
     private String password;
 
