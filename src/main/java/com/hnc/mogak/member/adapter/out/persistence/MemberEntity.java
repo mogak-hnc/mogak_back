@@ -27,7 +27,7 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "image_path")
+    @Column(name = "image_path", length = 1024)
     private String imagePath;
 
     @Column(name = "name")
@@ -41,5 +41,8 @@ public class MemberEntity extends BaseEntity {
 
     @Column(name = "role", nullable = false)
     private String role;
+
+    @Column(name = "withdrawn")
+    private boolean withdrawn;
 
 }

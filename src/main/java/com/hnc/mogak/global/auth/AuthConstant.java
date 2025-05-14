@@ -10,4 +10,5 @@ public final class AuthConstant {
     public static final String ROLE_MEMBER = "ROLE_MEMBER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ACCESS_ONLY_MEMBER_OR_ADMIN = "hasAnyRole('MEMBER', 'ADMIN')";
+    public static final String ACCESS_ONLY_MEMBER = "hasAnyRole('MEMBER')";
 }

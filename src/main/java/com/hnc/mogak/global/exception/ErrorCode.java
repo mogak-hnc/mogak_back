@@ -33,8 +33,14 @@ public enum ErrorCode {
 
     // Member Exception
     NOT_EXISTS_MEMBER("해당 회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
+    MEMBER_ALREADY_DELETED("탈퇴한 회원입니다.", HttpStatus.BAD_REQUEST),
 
-    // Member Exception
+    // S3 Exception
+    FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE("업로드 가능한 파일 용량을 초과했습니다.", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_TYPE("이미지만 업로드 가능합니다.", HttpStatus.BAD_REQUEST),
+
+    // Worry Exception
     NOT_EXISTS_WORRY("해당 고민있어요가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
 
     private final String description;

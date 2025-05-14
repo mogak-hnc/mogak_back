@@ -2,6 +2,9 @@ package com.hnc.mogak.member.application.port.service;
 
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
+import com.hnc.mogak.global.cloud.S3Service;
+import com.hnc.mogak.global.redis.RedisConstant;
+import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
 import com.hnc.mogak.member.application.port.out.MemberPort;
@@ -11,15 +14,23 @@ import com.hnc.mogak.member.domain.vo.PlatformInfo;
 import com.hnc.mogak.member.domain.vo.Role;
 import com.hnc.mogak.member.util.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.Duration;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService implements AuthUseCase {
 
     private final MemberPort memberPort;
+    private final S3Service s3Service;
     private final NicknameGenerator nicknameGenerator;
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public SocialLoginResponse handleSocialLogin(String provider, String providerId) {
@@ -33,7 +44,7 @@ public class AuthService implements AuthUseCase {
                     .build();
         }
 
-        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, "Default", null);
+        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, "Default", null, false);
         PlatformInfo platformInfo = new PlatformInfo(provider, providerId);
         Role roleInfo = new Role(AuthConstant.ROLE_MEMBER);
         Member newMember = Member.withoutId(memberInfo, platformInfo, roleInfo);
@@ -45,6 +56,43 @@ public class AuthService implements AuthUseCase {
                 .memberId(memberId)
                 .token(token)
                 .build();
+    }
+
+    @Override
+    public MemberInfoResponse getMemberInfo(Long memberId) {
+        Member member = memberPort.loadMemberByMemberId(memberId);
+        return new MemberInfoResponse(member.getMemberInfo().imagePath(), member.getMemberInfo().nickname());
+    }
+
+    @Override
+    public Long deleteMember(Long memberId, String token) {
+        memberPort.deleteMember(memberId);
+        redisTemplate.opsForValue().set(
+                RedisConstant.BLACK_LIST + token,
+                "true",
+                Duration.ofMillis(86400000)
+        );
+
+        // 웹소켓, 모각존 방장일 경우, 모각존 참여한 곳, 챌린지 방장일경우, 챌린지 참여한 곳
+        return memberId;
+    }
+
+    @Override
+    public Long updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage) {
+        Member member = memberPort.loadMemberByMemberId(memberId);
+
+        if (deleteImage) {
+            member.updateProfileImage("Default");
+        } else if (file != null && !file.isEmpty()) {
+            String s3ImageUrl = s3Service.uploadImage(file, "member");
+            member.updateProfileImage(s3ImageUrl);
+        }
+
+        if (nickname != null && !nickname.trim().isEmpty()) {
+            member.updateNickname(nickname);
+        }
+
+        return memberPort.persist(member);
     }
 
     private String getToken(Member member) {

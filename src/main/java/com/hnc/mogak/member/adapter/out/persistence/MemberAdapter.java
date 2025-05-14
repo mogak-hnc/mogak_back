@@ -10,17 +10,20 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class MemberPersistenceAdapter implements MemberPort {
+public class MemberAdapter implements MemberPort {
 
     private final MemberRepository memberRepository;
-    private final MemberMapper memberMapper;
 
     @Override
     public Member loadMemberByProviderId(String providerId) {
         MemberEntity memberEntity = memberRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new MemberException(ErrorCode.NOT_EXISTS_MEMBER));
 
-        return memberMapper.mapToDomainEntity(memberEntity);
+        if (memberEntity.isWithdrawn()) {
+            throw new MemberException(ErrorCode.MEMBER_ALREADY_DELETED);
+        }
+
+        return MemberMapper.mapToDomainEntity(memberEntity);
     }
 
     @Override
@@ -43,7 +46,15 @@ public class MemberPersistenceAdapter implements MemberPort {
     public Member loadMemberByMemberId(Long memberId) {
         MemberEntity memberEntity = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(ErrorCode.NOT_EXISTS_MEMBER));
-        return memberMapper.mapToDomainEntity(memberEntity);
+
+        return MemberMapper.mapToDomainEntity(memberEntity);
+    }
+
+    @Override
+    public void deleteMember(Long memberId) {
+        Member member = loadMemberByMemberId(memberId);
+        member.deleteMember();
+        memberRepository.save(MemberMapper.mapToJpaEntity(member));
     }
 
 }

@@ -25,18 +25,22 @@ public class MemberMapper {
                 memberInfo.name(),
                 platformInfo.provider(),
                 platformInfo.providerId(),
-                role.value()
+                role.value(),
+                memberInfo.withdrawn()
         );
     }
 
     public static Member mapToDomainEntity(MemberEntity memberEntity) {
+        String nickname = memberEntity.isWithdrawn() ? "탈퇴한 사용자" : memberEntity.getNickname();
+
         MemberId memberId = new MemberId(memberEntity.getId());
         MemberInfo memberInfo = new MemberInfo(
-                memberEntity.getNickname(),
+                nickname,
                 memberEntity.getEmail(),
                 memberEntity.getPassword(),
                 memberEntity.getImagePath(),
-                memberEntity.getName()
+                memberEntity.getName(),
+                memberEntity.isWithdrawn()
         );
         PlatformInfo platformInfo = new PlatformInfo(
                 memberEntity.getProvider(),

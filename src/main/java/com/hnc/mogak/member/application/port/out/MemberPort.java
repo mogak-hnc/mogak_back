@@ -12,4 +12,6 @@ public interface MemberPort {
 
     Long persist(Member member);
 
+    void deleteMember(Long memberId);
+
 }

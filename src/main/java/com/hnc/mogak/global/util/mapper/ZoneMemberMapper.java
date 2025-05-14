@@ -30,6 +30,7 @@ public class ZoneMemberMapper {
                 .startDate(mogakZone.getZoneDuration().startDate())
                 .endDate(mogakZone.getZoneDuration().endDate())
                 .joinedUserCount(zoneMemberList.size())
+                .imageUrl(mogakZone.getZoneInfo().imageUrl())
                 .zoneMemberInfoList(getZoneMemberInfos(zoneMemberList))
                 .chatHistoryResponses(chatHistoryResponses)
                 .build();

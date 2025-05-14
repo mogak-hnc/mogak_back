@@ -42,4 +42,15 @@ public class Member {
         if (this.memberId == null) this.memberId = new MemberId(memberId);
     }
 
+    public void deleteMember() {
+        this.memberInfo = memberInfo.deleteMember();
+    }
+
+    public void updateProfileImage(String s3ImageUrl) {
+        this.memberInfo = memberInfo.updateImage(s3ImageUrl);
+    }
+
+    public void updateNickname(String nickname) {
+        this.memberInfo = memberInfo.updateNickname(nickname);
+    }
 }
