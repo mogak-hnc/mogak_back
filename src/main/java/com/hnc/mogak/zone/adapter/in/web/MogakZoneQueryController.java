@@ -69,6 +69,7 @@ public class MogakZoneQueryController {
         return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getTagNames());
     }
 
+    @Operation(summary = "모각존 디테일", description = "모각존 디테일 조회합니다.")
     @GetMapping("/detail/{mogakZoneId}")
     public MogakZoneDetailResponse getMogakZoneDetail(
             @PathVariable(value = "mogakZoneId") Long mogakZoneId
