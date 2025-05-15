@@ -21,10 +21,6 @@ public class CreateMogakZoneResponse {
     private String password;
 
     private boolean chatEnabled;
-    private boolean loginRequired;
-
-    private LocalDate startDate;
-    private LocalDate endDate;
 
     private Set<String> tagNames;
 

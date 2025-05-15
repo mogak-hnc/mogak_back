@@ -31,16 +31,8 @@ public class MogakZoneEntity extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "login_required")
-    private boolean loginRequired;
-
     @Column(name = "chat_enabled")
     private boolean chatEnabled;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
-
-    @Column(name = "end_date")
-    private LocalDate endDate;
 
 }

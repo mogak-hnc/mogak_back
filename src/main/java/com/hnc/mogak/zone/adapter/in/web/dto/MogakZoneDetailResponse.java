@@ -14,8 +14,6 @@ public class MogakZoneDetailResponse {
     private List<String> tagNames;
     private long hostMemberId;
     private String name;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private int joinedUserCount;
     private String imageUrl;
     private List<ZoneMemberInfo> zoneMemberInfoList;

@@ -1,7 +1,6 @@
 package com.hnc.mogak.zone.domain.zone;
 
 import com.hnc.mogak.zone.domain.zone.vo.ZoneConfig;
-import com.hnc.mogak.zone.domain.zone.vo.ZoneDuration;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneId;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneInfo;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
@@ -21,30 +20,25 @@ public class MogakZone {
     private ZoneId zoneId;
     private ZoneInfo zoneInfo;
     private ZoneConfig zoneConfig;
-    private ZoneDuration zoneDuration;
 
     public static MogakZone withId(
             ZoneId zoneId,
-            ZoneDuration zoneDuration,
             ZoneConfig zoneConfig,
             ZoneInfo zoneInfo
     ) {
         return MogakZone.builder()
                 .zoneId(zoneId)
-                .zoneDuration(zoneDuration)
                 .zoneConfig(zoneConfig)
                 .zoneInfo(zoneInfo)
                 .build();
     }
 
     public static MogakZone withoutId(
-            ZoneDuration zoneDuration,
             ZoneConfig zoneConfig,
             ZoneInfo zoneInfo
     ) {
         return MogakZone.builder()
                 .zoneId(null)
-                .zoneDuration(zoneDuration)
                 .zoneConfig(zoneConfig)
                 .zoneInfo(zoneInfo)
                 .build();
@@ -52,14 +46,6 @@ public class MogakZone {
 
     public boolean isCapacityAvailableForJoin(int maxCapacity, int currentMemberCount) {
         return maxCapacity <= currentMemberCount;
-    }
-
-    public boolean isLoginRequired(boolean isLoginRequired, Long memberId) {
-        if (isLoginRequired && memberId == null) {
-            return true;
-        }
-
-        return false;
     }
 
     public boolean isAlreadyJoined(Long memberId, List<ZoneMember> zoneMemberList) {

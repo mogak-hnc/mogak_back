@@ -58,10 +58,6 @@ public class MogakZoneCommandController {
             @RequestParam(value = "image", required = false) MultipartFile image) {
         String memberId = jwtUtil.getMemberId(token);
 
-        LocalDate[] localDates = DateParser.parsePeriod(request.getPeriod());
-        LocalDate startDate = localDates[0];
-        LocalDate endDate = localDates[1];
-
         Set<String> tagNames = Arrays.stream(request.getTag().split(" "))
                 .collect(Collectors.toSet());
 
@@ -71,9 +67,6 @@ public class MogakZoneCommandController {
                 .imageUrl(image)
                 .password(request.getPassword() == null ? "" : request.getPassword())
                 .chatEnabled(request.isChatEnabled())
-                .loginRequired(request.isLoginRequired())
-                .startDate(startDate)
-                .endDate(endDate)
                 .memberId(Long.parseLong(memberId))
                 .tagNames(tagNames)
                 .build();

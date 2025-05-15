@@ -45,7 +45,6 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     private final ChatPort chatPort;
     private final TagPort tagPort;
 
-    private final ApplicationEventPublisher eventPublisher;
     private final S3Service s3Service;
 
     @Override
@@ -59,11 +58,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         }
 
         MogakZone mogakZone = createMogakZone(command, tagEntitySet, imageUrl);
-
-
         saveZoneOwner(hostMember, mogakZone);
-
-//        publishZoneCreationToRedis(command, mogakZone);
 
         mogakZoneCommandPort.saveZoneSummary(mogakZone, tagEntitySet);
         join(getJoinCommand(command, hostMember, mogakZone));
@@ -80,7 +75,6 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
         validateMogakZoneJoin(command, mogakZone, zoneMemberList);
 
-//        publishJoinInfoToRedis(mogakZone);
         return zoneMemberPort.join(mogakZone, findMember);
     }
 
@@ -146,33 +140,9 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         return mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
     }
 
-    private void publishZoneCreationToRedis(CreateMogakZoneCommand command, MogakZone mogakZone) {
-        eventPublisher.publishEvent(
-                new CreateMogakZoneEvent(
-                        this,
-                        mogakZone.getZoneId().value(),
-                        mogakZone.getZoneInfo().name(),
-                        command.getTagNames()
-                )
-        );
-    }
-
-    private void publishJoinInfoToRedis(MogakZone mogakZone) {
-        eventPublisher.publishEvent(
-                new JoinMogakZoneEvent(
-                        this,
-                        mogakZone.getZoneId().value()
-                )
-        );
-    }
-
     private void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, List<ZoneMember> zoneMemberList) {
         if (mogakZone.isAlreadyJoined(command.getMemberId(), zoneMemberList)) {
             throw new MogakZoneException(ErrorCode.ALREADY_JOINED);
-        }
-
-        if (mogakZone.isLoginRequired(mogakZone.getZoneConfig().loginRequired(), command.getMemberId())) {
-            throw new MogakZoneException(ErrorCode.LOGIN_REQUIRED_FOR_JOIN);
         }
 
         if (!mogakZone.isMatchPassword(mogakZone.getZoneInfo().password(), command.getPassword())) {

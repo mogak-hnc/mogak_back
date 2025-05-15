@@ -28,10 +28,4 @@ public class CreateMogakZoneRequest {
     @Schema(description = "채팅 기능 사용 여부", example = "false")
     private boolean chatEnabled;
 
-    @Schema(description = "로그인 필수 여부", example = "false")
-    private boolean loginRequired;
-
-    @Schema(description = "모각존 운영 기간(예제 형식에 맞춰야합니다.)", example = "2025-04-18~2025-04-25")
-    private String period;
-
 }
