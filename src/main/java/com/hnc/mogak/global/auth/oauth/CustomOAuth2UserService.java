@@ -75,7 +75,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 null,
                 null,
                 oAuth2UserInfo.getName(),
-                false
+                false,
+                true
         );
 
         PlatformInfo platformInfo = new PlatformInfo(

@@ -5,6 +5,7 @@ import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginRequest;
 import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,15 +58,16 @@ public class AuthController {
     @Operation(summary = "회원 수정", description = "로그인한 사용자의 정보를 수정합니다.")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER)
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> updateMember(
+    public ResponseEntity<UpdateMemberInfoResponse> updateMember(
             @Parameter(hidden = true)
             @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @RequestParam(value = "nickname", required = false) String nickname,
             @RequestParam(value = "image", required = false) MultipartFile file,
-            @RequestParam(value = "deleteImage", required = false, defaultValue = "false") boolean deleteImage
+            @RequestParam(value = "deleteImage", required = false, defaultValue = "false") boolean deleteImage,
+            @RequestParam(value = "showBadge", required = false) boolean showBadge
     ) {
         Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
-        return ResponseEntity.ok(authUseCase.updateMemberInfo(memberId, nickname, file, deleteImage));
+        return ResponseEntity.ok(authUseCase.updateMemberInfo(memberId, nickname, file, deleteImage, showBadge));
     }
 
 }

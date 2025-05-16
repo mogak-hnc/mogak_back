@@ -26,7 +26,8 @@ public class MemberMapper {
                 platformInfo.provider(),
                 platformInfo.providerId(),
                 role.value(),
-                memberInfo.withdrawn()
+                memberInfo.withdrawn(),
+                memberInfo.showBadge()
         );
     }
 
@@ -40,8 +41,10 @@ public class MemberMapper {
                 memberEntity.getPassword(),
                 memberEntity.getImagePath(),
                 memberEntity.getName(),
-                memberEntity.isWithdrawn()
+                memberEntity.isWithdrawn(),
+                memberEntity.isShowBadge()
         );
+
         PlatformInfo platformInfo = new PlatformInfo(
                 memberEntity.getProvider(),
                 memberEntity.getProviderId()

@@ -46,11 +46,7 @@ public class Member {
         this.memberInfo = memberInfo.deleteMember();
     }
 
-    public void updateProfileImage(String s3ImageUrl) {
-        this.memberInfo = memberInfo.updateImage(s3ImageUrl);
-    }
-
-    public void updateNickname(String nickname) {
-        this.memberInfo = memberInfo.updateNickname(nickname);
+    public void  updateMemberInfo(String imageUrl, String nickname, boolean showBadge) {
+        this.memberInfo = memberInfo.updateMemberInfo(imageUrl, nickname, showBadge);
     }
 }

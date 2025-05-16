@@ -45,4 +45,7 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "withdrawn")
     private boolean withdrawn;
 
+    @Column(name = "show_badge")
+    private boolean showBadge;
+
 }

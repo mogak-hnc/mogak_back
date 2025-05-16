@@ -4,15 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-
-@NoArgsConstructor
 @Getter
-public class MemberInfoResponse {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UpdateMemberInfoResponse {
 
     private Long memberId;
-    private String imageUrl;
-    private String nickname;
-    private boolean showBadge;
 
 }

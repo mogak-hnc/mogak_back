@@ -8,19 +8,16 @@ public record MemberInfo(
         String password,
         String imagePath,
         String name,
-        boolean withdrawn
+        boolean withdrawn,
+        boolean showBadge
 ) {
 
     public MemberInfo deleteMember() {
-        return new MemberInfo(UUID.randomUUID().toString(), email, password, "Default", name, true);
+        return new MemberInfo(UUID.randomUUID().toString(), email, password, "Default", name, true, false);
     }
 
-    public MemberInfo updateImage(String s3ImageUrl) {
-        return new MemberInfo(nickname, email, password, s3ImageUrl, name, withdrawn);
-    }
-
-    public MemberInfo updateNickname(String nickname) {
-        return new MemberInfo(nickname, email, password, imagePath, name, withdrawn);
+    public MemberInfo updateMemberInfo(String imageUrl, String nickname, boolean showBadge) {
+        return new MemberInfo(nickname, email, password, imageUrl, name, withdrawn, showBadge);
     }
 
 }

@@ -3,9 +3,12 @@ package com.hnc.mogak.member.application.port.service;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.cloud.S3Service;
+import com.hnc.mogak.global.exception.ErrorCode;
+import com.hnc.mogak.global.exception.exceptions.MemberException;
 import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
@@ -44,7 +47,7 @@ public class AuthService implements AuthUseCase {
                     .build();
         }
 
-        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, "Default", null, false);
+        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, "Default", null, false, true);
         PlatformInfo platformInfo = new PlatformInfo(provider, providerId);
         Role roleInfo = new Role(AuthConstant.ROLE_MEMBER);
         Member newMember = Member.withoutId(memberInfo, platformInfo, roleInfo);
@@ -61,7 +64,13 @@ public class AuthService implements AuthUseCase {
     @Override
     public MemberInfoResponse getMemberInfo(Long memberId) {
         Member member = memberPort.loadMemberByMemberId(memberId);
-        return new MemberInfoResponse(member.getMemberInfo().imagePath(), member.getMemberInfo().nickname());
+        MemberInfo memberInfo = member.getMemberInfo();
+        return new MemberInfoResponse(
+                member.getMemberId().value(),
+                memberInfo.imagePath(),
+                memberInfo.nickname(),
+                memberInfo.showBadge()
+        );
     }
 
     @Override
@@ -78,21 +87,34 @@ public class AuthService implements AuthUseCase {
     }
 
     @Override
-    public Long updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage) {
+    public UpdateMemberInfoResponse updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage, boolean showBadge) {
         Member member = memberPort.loadMemberByMemberId(memberId);
 
+        String updateImageUrl = member.getMemberInfo().imagePath();
+        String updateNickname = member.getMemberInfo().nickname();
+        boolean updateShowBadge = member.getMemberInfo().showBadge();
+
         if (deleteImage) {
-            member.updateProfileImage("Default");
+            updateImageUrl = "Default";
         } else if (file != null && !file.isEmpty()) {
-            String s3ImageUrl = s3Service.uploadImage(file, "member");
-            member.updateProfileImage(s3ImageUrl);
+            updateImageUrl = s3Service.uploadImage(file, "member");
         }
 
         if (nickname != null && !nickname.trim().isEmpty()) {
-            member.updateNickname(nickname);
+            if (memberPort.existsByNickname(nickname)) {
+                throw new MemberException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+            }
+
+            updateNickname = nickname;
         }
 
-        return memberPort.persist(member);
+        if (updateShowBadge != showBadge) {
+            updateShowBadge = showBadge;
+        }
+
+        member.updateMemberInfo(updateImageUrl, updateNickname, updateShowBadge);
+        Long savedMemberId = memberPort.persist(member);
+        return new UpdateMemberInfoResponse(savedMemberId);
     }
 
     private String getToken(Member member) {

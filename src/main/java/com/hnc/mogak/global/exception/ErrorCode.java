@@ -34,6 +34,7 @@ public enum ErrorCode {
     // Member Exception
     NOT_EXISTS_MEMBER("해당 회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     MEMBER_ALREADY_DELETED("탈퇴한 회원입니다.", HttpStatus.BAD_REQUEST),
+    NICKNAME_ALREADY_EXISTS("이미 사용 중인 닉네임입니다.", HttpStatus.BAD_REQUEST),
 
     // S3 Exception
     FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다.", HttpStatus.BAD_REQUEST),
