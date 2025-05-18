@@ -2,6 +2,7 @@ package com.hnc.mogak.zone.adapter.in.web;
 
 
 import com.hnc.mogak.global.auth.AuthConstant;
+import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
@@ -28,6 +29,7 @@ import java.util.List;
 public class MogakZoneQueryController {
 
     private final MogakZoneQueryUseCase mogakZoneQueryUseCase;
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "모각존 메인 페이지 조회", description = "메인 화면에서 표시할 모각존 정보를 조회합니다.")
     @GetMapping
@@ -75,12 +77,16 @@ public class MogakZoneQueryController {
     @GetMapping("/{mogakZoneId}/detail")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public MogakZoneDetailResponse getMogakZoneDetail(
+            @RequestHeader(value = AuthConstant.AUTHORIZATION) String token,
             @PathVariable(value = "mogakZoneId") Long mogakZoneId
     ) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
         MogakZoneDetailQuery detailQuery = MogakZoneDetailQuery.builder()
                 .mogakZoneId(mogakZoneId)
+                .memberId(memberId)
                 .build();
 
         return mogakZoneQueryUseCase.getDetail(detailQuery);
     }
+
 }

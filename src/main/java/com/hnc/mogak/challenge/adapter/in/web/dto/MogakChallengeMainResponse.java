@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class MogakChallengeMainResponse {
 
+    private Long challengeId;
     private boolean official;
     private String title;
     List<String> memberImageUrls;

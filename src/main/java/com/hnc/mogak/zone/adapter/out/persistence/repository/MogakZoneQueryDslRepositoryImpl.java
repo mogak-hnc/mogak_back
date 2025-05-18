@@ -101,6 +101,7 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                     List<String> tags = zoneIdToTags.getOrDefault(zoneId, List.of());
                     List<String> images = zoneIdToImages.getOrDefault(zoneId, List.of());
                     return MogakZoneSearchResponse.builder()
+                            .mogakZoneId(zoneId)
                             .name(name)
                             .tagNames(tags)
                             .memberImageUrls(images)

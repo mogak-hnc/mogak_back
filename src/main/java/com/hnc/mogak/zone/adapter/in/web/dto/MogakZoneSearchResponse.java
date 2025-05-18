@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 public class MogakZoneSearchResponse {
 
+    private Long mogakZoneId;
     private String name;
     private List<String> tagNames;
     private List<String> memberImageUrls;

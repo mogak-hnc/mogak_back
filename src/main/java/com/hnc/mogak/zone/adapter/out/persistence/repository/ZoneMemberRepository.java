@@ -32,4 +32,11 @@ public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Lo
             @Param("mogakZoneId") Long mogakZoneId,
             @Param("status") ZoneMemberStatus status
     );
+
+
+    @Query("SELECT CASE WHEN COUNT(zm) > 0 THEN true ELSE false END " +
+            "FROM ZoneMemberEntity zm " +
+            "WHERE zm.mogakZoneEntity.id = :mogakZoneId AND zm.memberEntity.id = :memberId")
+    boolean isMemberInMogakZone(@Param("mogakZoneId") Long mogakZoneId,
+                                @Param("memberId") Long memberId);
 }

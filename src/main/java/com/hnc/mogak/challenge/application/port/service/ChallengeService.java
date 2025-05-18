@@ -92,6 +92,7 @@ public class ChallengeService implements ChallengeUseCase {
                 .map(challenge -> {
                     List<String> memberUrlList = challengeMemberPort.getMemberImageByChallengeId(challenge.getChallengeId().value(), memberUrlLimit);
                     return MogakChallengeMainResponse.builder()
+                            .challengeId(challenge.getChallengeId().value())
                             .official(challenge.getExtraDetails().official())
                             .title(challenge.getContent().title())
                             .startDate(challenge.getChallengeDuration().startDate())

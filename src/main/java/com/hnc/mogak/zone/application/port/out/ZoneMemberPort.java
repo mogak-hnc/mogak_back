@@ -20,4 +20,6 @@ public interface ZoneMemberPort {
 
     void changeStatus(Long memberId, Long mogakZoneId, ZoneMemberStatus status);
 
+    boolean isMemberInMogakZone(Long mogakZoneId, Long memberId);
+
 }

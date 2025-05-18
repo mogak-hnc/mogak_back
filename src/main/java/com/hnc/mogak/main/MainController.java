@@ -25,7 +25,6 @@ public class MainController {
     @Operation(summary = "모각존 & 챌린지 메인 조회", description = "모각존과 챌린지의 메인 화면 정보를 조회합니다.")
     @GetMapping("/api/mogak")
     public ResponseEntity<MainPage> getMainPage() {
-//        List<MogakZoneMainResponse> mogakZoneMainResponses = mogakZoneQueryService.getMainPage2();
         List<MogakZoneMainResponse> mogakZoneMainResponses = mogakZoneQueryService.getMainPage();
         List<MogakChallengeMainResponse> mogakChallengeResponses = challengeService.getMainPage();
         return ResponseEntity.status(HttpStatus.OK).body(new MainPage(mogakZoneMainResponses, mogakChallengeResponses));

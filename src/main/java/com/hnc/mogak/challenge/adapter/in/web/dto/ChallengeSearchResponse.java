@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class ChallengeSearchResponse {
 
+    private Long challengeId;
     private boolean official;
     private String title;
     private List<String> memberImageUrl;

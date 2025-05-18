@@ -20,8 +20,9 @@ public class ZoneMemberMapper {
             MogakZone mogakZone,
             ZoneOwner zoneOwner,
             List<ZoneMember> zoneMemberList,
-            List<ChatMessageResponse> chatHistoryResponses
-            ) {
+            List<ChatMessageResponse> chatHistoryResponses,
+            boolean isJoined
+    ) {
 
         return MogakZoneDetailResponse.builder()
                 .tagNames(tagNames)
@@ -31,6 +32,7 @@ public class ZoneMemberMapper {
                 .imageUrl(mogakZone.getZoneInfo().imageUrl())
                 .zoneMemberInfoList(getZoneMemberInfos(zoneMemberList))
                 .chatHistoryResponses(chatHistoryResponses)
+                .isJoined(isJoined)
                 .build();
     }
 

@@ -14,4 +14,5 @@ public class MogakApplication {
 		SpringApplication.run(MogakApplication.class, args);
 	}
 
+
 }

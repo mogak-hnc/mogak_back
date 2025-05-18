@@ -8,5 +8,5 @@ import lombok.Getter;
 public class MogakZoneDetailQuery {
 
     private Long mogakZoneId;
-
+    private Long memberId;
 }

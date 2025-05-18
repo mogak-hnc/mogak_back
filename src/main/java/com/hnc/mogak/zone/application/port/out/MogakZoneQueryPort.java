@@ -1,9 +1,7 @@
 package com.hnc.mogak.zone.application.port.out;
 
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;

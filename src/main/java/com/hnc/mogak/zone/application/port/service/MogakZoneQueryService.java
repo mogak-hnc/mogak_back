@@ -3,7 +3,6 @@ package com.hnc.mogak.zone.application.port.service;
 import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
 import com.hnc.mogak.zone.adapter.in.web.dto.*;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
@@ -41,7 +40,9 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
         List<ZoneMember> zoneMemberList =  zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(detailQuery.getMogakZoneId());
 
         List<ChatMessageResponse> chatHistoryResponses = chatPort.loadMessagesByMogakZoneId(mogakZone.getZoneId().value());
-        return ZoneMemberMapper.mapToMogakZoneDetailResponse(tagNames, mogakZone, zoneOwner, zoneMemberList, chatHistoryResponses);
+
+        boolean isJoined = zoneMemberPort.isMemberInMogakZone(detailQuery.getMogakZoneId(), detailQuery.getMemberId());
+        return ZoneMemberMapper.mapToMogakZoneDetailResponse(tagNames, mogakZone, zoneOwner, zoneMemberList, chatHistoryResponses, isJoined);
     }
 
     @Override

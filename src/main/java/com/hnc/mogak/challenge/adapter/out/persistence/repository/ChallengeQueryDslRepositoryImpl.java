@@ -82,6 +82,7 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                     List<String> images = challengeIdToImages.getOrDefault(challengeId, List.of());
 
                     return ChallengeSearchResponse.builder()
+                            .challengeId(challengeId)
                             .official(query.isOfficial())
                             .title(title)
                             .startDate(start)

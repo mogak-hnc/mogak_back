@@ -18,6 +18,7 @@ public class MogakZoneDetailResponse {
     private String imageUrl;
     private List<ZoneMemberInfo> zoneMemberInfoList;
     private List<ChatMessageResponse> chatHistoryResponses;
+    private boolean isJoined;
 
     @Builder
     @Getter

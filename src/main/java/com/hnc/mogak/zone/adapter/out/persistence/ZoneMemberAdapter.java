@@ -38,6 +38,11 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
     }
 
     @Override
+    public boolean isMemberInMogakZone(Long mogakZoneId, Long memberId) {
+        return zoneMemberRepository.isMemberInMogakZone(mogakZoneId, memberId);
+    }
+
+    @Override
     public JoinMogakZoneResponse join(MogakZone mogakZone, Member findMember) {
         MogakZoneEntity mogakZoneEntity = MogakZoneMapper.mapToEntity(mogakZone);
         MemberEntity memberEntity = MemberMapper.mapToJpaEntity(findMember);
