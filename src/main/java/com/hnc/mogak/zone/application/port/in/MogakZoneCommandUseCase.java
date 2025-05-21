@@ -21,4 +21,6 @@ public interface MogakZoneCommandUseCase {
 
     void leave(Long mogakZoneId, Long memberId);
 
+    Long deleteMogakZone(Long mogakZoneId, Long memberId, String role);
+
 }

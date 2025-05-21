@@ -19,6 +19,7 @@ public class MogakZoneDetailResponse {
     private List<ZoneMemberInfo> zoneMemberInfoList;
     private List<ChatMessageResponse> chatHistoryResponses;
     private boolean isJoined;
+    private boolean passwordRequired;
 
     @Builder
     @Getter

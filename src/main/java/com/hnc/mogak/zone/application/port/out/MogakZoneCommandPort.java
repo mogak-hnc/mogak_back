@@ -17,4 +17,8 @@ public interface MogakZoneCommandPort {
 
     void saveZoneSummary(MogakZone mogakZone, Set<TagEntity> tagEntitySet);
 
+    void deleteZoneSummaryMemberImage(Long mogakZoneId, Long memberId);
+
+    void deleteMogakZone(MogakZone mogakZone);
+
 }

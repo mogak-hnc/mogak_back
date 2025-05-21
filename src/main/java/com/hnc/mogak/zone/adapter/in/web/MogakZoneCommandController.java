@@ -2,6 +2,8 @@ package com.hnc.mogak.zone.adapter.in.web;
 
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
+import com.hnc.mogak.global.exception.ErrorCode;
+import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.global.util.mapper.DateParser;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneRequest;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
@@ -61,14 +63,18 @@ public class MogakZoneCommandController {
         Set<String> tagNames = Arrays.stream(request.getTag().split(" "))
                 .collect(Collectors.toSet());
 
+        String pw = request.isPasswordRequired() ? request.getPassword() : "";
+        if (pw == null) throw new MogakZoneException(ErrorCode.NEED_PASSWORD);
+
         CreateMogakZoneCommand command = CreateMogakZoneCommand.builder()
                 .name(request.getName())
                 .maxCapacity(request.getMaxCapacity())
                 .imageUrl(image)
-                .password(request.getPassword() == null ? "" : request.getPassword())
+                .password(pw)
                 .chatEnabled(request.isChatEnabled())
                 .memberId(Long.parseLong(memberId))
                 .tagNames(tagNames)
+                .passwordRequired(request.isPasswordRequired())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.create(command));
@@ -108,6 +114,19 @@ public class MogakZoneCommandController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(mogakZoneCommandUseCase.join(command));
+    }
+
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @DeleteMapping("/{mogakZoneId}")
+    public ResponseEntity<Long> deleteMogakZone(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "삭제할 모각존 ID")
+            @PathVariable(name = "mogakZoneId") Long mogakZoneId
+    ) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        String role = jwtUtil.getRole(token);
+        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneCommandUseCase.deleteMogakZone(mogakZoneId, memberId, role));
     }
 
 }

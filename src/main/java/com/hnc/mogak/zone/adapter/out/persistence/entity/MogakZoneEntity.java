@@ -31,8 +31,10 @@ public class MogakZoneEntity extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "password_required")
+    private boolean passwordRequired;
+
     @Column(name = "chat_enabled")
     private boolean chatEnabled;
-
 
 }

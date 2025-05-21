@@ -14,4 +14,6 @@ public interface ZoneSummaryRepository extends JpaRepository<ZoneSummary, Long> 
 
     List<ZoneSummary> findAllByOrderByJoinCountDesc(Pageable pageable);
 
+    void deleteByMogakZoneId(Long id);
+
 }

@@ -8,9 +8,9 @@ import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneOwnerEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummaryMemberImage;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.*;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
@@ -22,7 +22,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,6 +36,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneOwnerRepository zoneOwnerRepository;
     private final ZoneSummaryRepository zoneSummaryRepository;
+    private final ZoneSummaryMemberImageRepository zoneSummaryMemberImageRepository;
     private final MogakZoneQueryDslRepository mogakZoneQueryDslRepository;
 
     @Override
@@ -61,7 +65,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     }
 
     @Override
-    public ZoneOwner findByMogakZoneId(Long mogakZoneId) {
+    public ZoneOwner findZoneOwnerByMogakZoneId(Long mogakZoneId) {
         ZoneOwnerEntity zoneOwnerEntity = zoneOwnerRepository.findByMogakZoneId(mogakZoneId);
         Member member = MemberMapper.mapToDomainEntity(zoneOwnerEntity.getMemberEntity());
         MogakZone mogakZone = MogakZoneMapper.mapToDomainWithId(zoneOwnerEntity.getMogakZoneEntity());
@@ -81,4 +85,27 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
         return tagNames.stream().map(TagNameResponse::new).toList();
     }
 
+    @Override
+    public Map<Long, List<String>> getZoneMemberImagesByZoneIds(List<Long> zoneIds, int size) {
+        List<Object[]> results = zoneSummaryMemberImageRepository.findTopImagesByZoneIds(zoneIds, size);
+        Map<Long, List<String>> map = new HashMap<>();
+        for (Object[] row : results) {
+            Long zoneId = ((Number) row[0]).longValue();
+            String imageUrl = (String) row[1];
+
+            map.computeIfAbsent(zoneId, k -> new ArrayList<>()).add(imageUrl);
+        }
+
+        return map;
+    }
+
+    @Override
+    public void saveZoneSummaryMemberImage(Long mogakZoneId, Long memberId, String memberImageUrl) {
+        zoneSummaryMemberImageRepository.save(new ZoneSummaryMemberImage(null, mogakZoneId, memberId, memberImageUrl));
+    }
+
+    @Override
+    public Long findZoneOwnerIdByMogakZoneId(Long mogakZoneId) {
+        return zoneOwnerRepository.findZoneOwnerIdByMogakZoneId(mogakZoneId);
+    }
 }

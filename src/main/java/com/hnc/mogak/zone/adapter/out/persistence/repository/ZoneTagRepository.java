@@ -1,6 +1,7 @@
 package com.hnc.mogak.zone.adapter.out.persistence.repository;
 
 import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneTagEntity;
 import org.springframework.data.domain.Pageable;
@@ -25,5 +26,7 @@ public interface ZoneTagRepository extends JpaRepository<ZoneTagEntity, Long> {
             "GROUP BY zt.tag.name " +
             "ORDER BY COUNT(zt.tag.name) DESC")
     List<String> getPopularTagNames(Pageable pageable);
+
+    void deleteByZone(MogakZoneEntity zoneEntity);
 
 }

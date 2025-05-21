@@ -43,8 +43,8 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
             builder.and(zoneTag.tag.name.eq(query.getTag()));
         }
 
-        List<Tuple> zoneIdNameAndCount = queryFactory
-                .select(mogakZone.id, mogakZone.name)
+        List<Tuple> zoneInfos = queryFactory
+                .select(mogakZone.id, mogakZone.name, mogakZone.passwordRequired)
                 .from(mogakZone)
                 .leftJoin(zoneMember).on(zoneMember.mogakZoneEntity.eq(mogakZone))
                 .leftJoin(zoneTag).on(zoneTag.zone.eq(mogakZone))
@@ -56,7 +56,7 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        List<Long> zoneIds = zoneIdNameAndCount.stream()
+        List<Long> zoneIds = zoneInfos.stream()
                 .map(t -> t.get(mogakZone.id))
                 .toList();
 
@@ -94,10 +94,11 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
             }
         }
 
-        List<MogakZoneSearchResponse> content = zoneIdNameAndCount.stream()
-                .map(tuple -> {
-                    Long zoneId = tuple.get(mogakZone.id);
-                    String name = tuple.get(mogakZone.name);
+        List<MogakZoneSearchResponse> content = zoneInfos.stream()
+                .map(zoneInfo -> {
+                    Long zoneId = zoneInfo.get(mogakZone.id);
+                    String name = zoneInfo.get(mogakZone.name);
+                    Boolean passwordRequired = zoneInfo.get(mogakZone.passwordRequired);
                     List<String> tags = zoneIdToTags.getOrDefault(zoneId, List.of());
                     List<String> images = zoneIdToImages.getOrDefault(zoneId, List.of());
                     return MogakZoneSearchResponse.builder()
@@ -105,6 +106,7 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                             .name(name)
                             .tagNames(tags)
                             .memberImageUrls(images)
+                            .passwordRequired(Boolean.TRUE.equals(passwordRequired))
                             .build();
                 }).toList();
 

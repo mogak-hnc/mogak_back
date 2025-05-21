@@ -74,9 +74,10 @@ public class MogakZoneQueryController {
     }
 
     @Operation(summary = "모각존 디테일", description = "모각존 디테일 조회합니다.")
-    @GetMapping("/{mogakZoneId}/detail")
+    @GetMapping("/{mogakZoneId}")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public MogakZoneDetailResponse getMogakZoneDetail(
+            @Parameter(hidden = true)
             @RequestHeader(value = AuthConstant.AUTHORIZATION) String token,
             @PathVariable(value = "mogakZoneId") Long mogakZoneId
     ) {

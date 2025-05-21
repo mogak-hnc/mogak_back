@@ -21,7 +21,8 @@ public class ZoneMemberMapper {
             ZoneOwner zoneOwner,
             List<ZoneMember> zoneMemberList,
             List<ChatMessageResponse> chatHistoryResponses,
-            boolean isJoined
+            boolean isJoined,
+            boolean passwordRequired
     ) {
 
         return MogakZoneDetailResponse.builder()
@@ -33,6 +34,7 @@ public class ZoneMemberMapper {
                 .zoneMemberInfoList(getZoneMemberInfos(zoneMemberList))
                 .chatHistoryResponses(chatHistoryResponses)
                 .isJoined(isJoined)
+                .passwordRequired(passwordRequired)
                 .build();
     }
 

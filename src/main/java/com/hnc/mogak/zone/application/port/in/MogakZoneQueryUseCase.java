@@ -16,12 +16,8 @@ public interface MogakZoneQueryUseCase {
 
     List<MogakZoneMainResponse> getMainPage();
 
-    List<MogakZoneMainResponse> getMainPage2();
-
     Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery);
 
     List<TagNameResponse> getTagNames();
-
-
 
 }

@@ -9,6 +9,7 @@ import com.hnc.mogak.zone.domain.zone.MogakZone;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MogakZoneQueryPort {
 
@@ -16,7 +17,7 @@ public interface MogakZoneQueryPort {
 
     MogakZone findById(Long mogakZoneId);
 
-    ZoneOwner findByMogakZoneId(Long mogakZoneId);
+    ZoneOwner findZoneOwnerByMogakZoneId(Long mogakZoneId);
 
     Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery);
 
@@ -25,4 +26,11 @@ public interface MogakZoneQueryPort {
     List<ZoneSummary> findTopZoneSummariesByJoinCount(int size);
 
     List<TagNameResponse> getPopularTags();
+
+    void saveZoneSummaryMemberImage(Long mogakZoneId, Long memberId, String memberImageUrl);
+
+    Map<Long, List<String>> getZoneMemberImagesByZoneIds(List<Long> zoneIds, int size);
+
+    Long findZoneOwnerIdByMogakZoneId(Long mogakZoneId);
+
 }

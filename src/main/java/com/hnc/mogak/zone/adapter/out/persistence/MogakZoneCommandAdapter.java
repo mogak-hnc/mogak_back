@@ -18,13 +18,15 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, TagPort {
+public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
 
     private final MogakZoneRepository mogakZoneRepository;
     private final ZoneOwnerRepository zoneOwnerRepository;
     private final ZoneTagRepository zoneTagRepository;
     private final TagRepository tagRepository;
     private final ZoneSummaryRepository zoneSummaryRepository;
+    private final ZoneSummaryMemberImageRepository zoneSummaryMemberImageRepository;
+    private final ZoneMemberRepository zoneMemberRepository;
 
 //    @Override
 //    public CreateMogakZoneResponse createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
@@ -43,7 +45,6 @@ public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, Tag
         }
 
         String tagNames = sb.toString().trim();
-        String memberUrl = "";
 
         zoneSummaryRepository.save(
                 new ZoneSummary(
@@ -52,7 +53,7 @@ public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, Tag
                         tagNames,
                         mogakZone.getZoneInfo().name(),
                         0L,
-                        memberUrl
+                        mogakZone.getZoneConfig().passwordEnabled()
                 )
         );
     }
@@ -92,5 +93,21 @@ public class MogakZoneCommandCommandAdapter implements MogakZoneCommandPort, Tag
     @Override
     public List<String> findTagNameByMogakZoneId(Long mogakZoneId) {
         return zoneTagRepository.findTagNamesByMogakZoneId(mogakZoneId);
+    }
+
+    @Override
+    public void deleteZoneSummaryMemberImage(Long mogakZoneId, Long memberId) {
+        zoneSummaryMemberImageRepository.deleteByMogakZoneIdAndMemberId(mogakZoneId, memberId);
+    }
+
+    @Override
+    public void deleteMogakZone(MogakZone mogakZone) {
+        MogakZoneEntity mogakZoneEntity = MogakZoneMapper.mapToEntity(mogakZone);
+        mogakZoneRepository.delete(mogakZoneEntity);
+        zoneMemberRepository.deleteAllByMogakZoneEntity(mogakZoneEntity);
+        zoneTagRepository.deleteByZone(mogakZoneEntity);
+        zoneSummaryRepository.deleteByMogakZoneId(mogakZoneEntity.getId());
+        zoneSummaryMemberImageRepository.deleteByMogakZoneId(mogakZoneEntity.getId());
+        zoneOwnerRepository.deleteByMogakZoneEntity(mogakZoneEntity);
     }
 }

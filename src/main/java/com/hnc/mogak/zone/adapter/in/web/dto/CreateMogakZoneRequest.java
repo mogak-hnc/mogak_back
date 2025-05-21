@@ -25,6 +25,9 @@ public class CreateMogakZoneRequest {
     @Schema(description = "비밀번호 (비공개 모각존일 경우)", example = "")
     private String password;
 
+    @Schema(description = "비밀번호 사용 여부", example = "false")
+    private boolean passwordRequired;
+
     @Schema(description = "채팅 기능 사용 여부", example = "false")
     private boolean chatEnabled;
 

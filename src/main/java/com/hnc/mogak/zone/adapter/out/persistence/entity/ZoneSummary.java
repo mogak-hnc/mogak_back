@@ -35,33 +35,15 @@ public class ZoneSummary extends BaseEntity {
 
     private Long joinCount;
 
-    @Column(length = 1000)
-    private String memberImageUrls;
+    private boolean passwordRequired;
 
-    public void increaseJoinCount(String memberImageUrl) {
+    public void increaseJoinCount() {
         this.joinCount++;
-
-        if (joinCount <= 4) {
-            if (this.memberImageUrls == null || this.memberImageUrls.isEmpty()) {
-                this.memberImageUrls = memberImageUrl;
-            } else {
-                this.memberImageUrls = this.memberImageUrls + " " + memberImageUrl;
-            }
-        }
     }
 
-    public void decreaseJoinCount(String memberImageUrl) {
+    public void decreaseJoinCount() {
         if (this.joinCount > 0) {
             this.joinCount--;
-        }
-
-        if (this.joinCount <= 4 && this.memberImageUrls != null && !this.memberImageUrls.isEmpty()) {
-            String[] images = this.memberImageUrls.split(" ");
-
-            List<String> imageList = new ArrayList<>(List.of(images));
-            imageList.remove(memberImageUrl);
-
-            this.memberImageUrls = String.join(" ", imageList);
         }
     }
 

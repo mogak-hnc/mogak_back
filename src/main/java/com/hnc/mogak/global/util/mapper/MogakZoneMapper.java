@@ -25,6 +25,7 @@ public class MogakZoneMapper {
 
         ZoneConfig zoneConfig = new ZoneConfig(
                 command.isChatEnabled(),
+                command.isPasswordRequired(),
                 command.getMaxCapacity()
         );
 
@@ -42,6 +43,7 @@ public class MogakZoneMapper {
 
         ZoneConfig zoneConfig = new ZoneConfig(
                 mogakZoneEntity.isChatEnabled(),
+                mogakZoneEntity.isPasswordRequired(),
                 mogakZoneEntity.getMaxCapacity()
         );
 
@@ -59,6 +61,7 @@ public class MogakZoneMapper {
                 .imageUrl(zoneInfo.imageUrl())
                 .password(zoneInfo.password())
                 .maxCapacity(zoneConfig.maxCapacity())
+                .passwordRequired(zoneConfig.passwordEnabled())
                 .chatEnabled(zoneConfig.chatEnabled())
                 .build();
     }

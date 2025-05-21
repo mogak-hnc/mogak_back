@@ -1,18 +1,18 @@
 package com.hnc.mogak.zone.application.port.service;
 
+import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
+import com.hnc.mogak.global.exception.exceptions.ChallengeException;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
 import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
-import com.hnc.mogak.zone.application.port.service.event.model.JoinMogakZoneEvent;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
-import com.hnc.mogak.zone.application.port.service.event.model.CreateMogakZoneEvent;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
@@ -20,10 +20,10 @@ import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.out.*;
+import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,8 +70,12 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
         ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZone.getZoneId().value());
         Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
-
-        zoneSummary.increaseJoinCount(findMember.getMemberInfo().imagePath());
+        mogakZoneQueryPort.saveZoneSummaryMemberImage(
+                mogakZone.getZoneId().value(),
+                findMember.getMemberId().value(),
+                findMember.getMemberInfo().imagePath()
+        );
+        zoneSummary.increaseJoinCount();
         List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
         validateMogakZoneJoin(command, mogakZone, zoneMemberList);
 
@@ -81,8 +85,8 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     @Override
     public void leave(Long mogakZoneId, Long memberId) {
         ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZoneId);
-        Member member = memberPort.loadMemberByMemberId(memberId);
-        zoneSummary.decreaseJoinCount(member.getMemberInfo().imagePath());
+        zoneSummary.decreaseJoinCount();
+        mogakZoneCommandPort.deleteZoneSummaryMemberImage(mogakZoneId, memberId);
         zoneMemberPort.deleteMemberByMogakZoneId(mogakZoneId, memberId);
     }
 
@@ -121,6 +125,19 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
                 .mogakZoneId(command.getMogakZoneId())
                 .memberId(command.getMemberId())
                 .build();
+    }
+
+    @Override
+    public Long deleteMogakZone(Long mogakZoneId, Long memberId, String role) {
+        MogakZone mogakZone = mogakZoneQueryPort.findById(mogakZoneId);
+        Long ownerMemberId = mogakZoneQueryPort.findZoneOwnerIdByMogakZoneId(mogakZoneId);
+
+        if (!role.equals(AuthConstant.ROLE_ADMIN) && !mogakZone.isCreator(memberId, ownerMemberId)) {
+            throw new ChallengeException(ErrorCode.NOT_CREATOR);
+        }
+
+        mogakZoneCommandPort.deleteMogakZone(mogakZone);
+        return mogakZoneId;
     }
 
     private JoinMogakZoneCommand getJoinCommand(CreateMogakZoneCommand command, Member hostMember, MogakZone mogakZone) {

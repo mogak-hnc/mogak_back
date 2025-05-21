@@ -13,5 +13,6 @@ public class MogakZoneSearchResponse {
     private String name;
     private List<String> tagNames;
     private List<String> memberImageUrls;
+    private boolean passwordRequired;
 
 }

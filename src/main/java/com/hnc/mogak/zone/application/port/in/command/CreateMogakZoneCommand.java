@@ -16,6 +16,7 @@ public class CreateMogakZoneCommand {
     private MultipartFile imageUrl;
     private String password;
     private boolean chatEnabled;
+    private boolean passwordRequired;
     private Long memberId;
     private Set<String> tagNames;
 
