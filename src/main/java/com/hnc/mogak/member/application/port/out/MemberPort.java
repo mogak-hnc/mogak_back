@@ -14,4 +14,6 @@ public interface MemberPort {
 
     void deleteMember(Long memberId);
 
+    Member getAdminAccount(String id, String pw);
+
 }

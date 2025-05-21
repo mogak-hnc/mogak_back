@@ -15,6 +15,18 @@ public class MemberAdapter implements MemberPort {
     private final MemberRepository memberRepository;
 
     @Override
+    public Member getAdminAccount(String id, String pw) {
+        MemberEntity memberEntity = memberRepository.findByProviderId(id)
+                .orElseThrow(() -> new MemberException(ErrorCode.NOT_EXISTS_MEMBER)
+                );
+        if (!memberEntity.getPassword().equals(pw)) {
+            throw new MemberException(ErrorCode.WRONG_PASSWORD);
+        }
+
+        return MemberMapper.mapToDomainEntity(memberEntity);
+    }
+
+    @Override
     public Member loadMemberByProviderId(String providerId) {
         MemberEntity memberEntity = memberRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new MemberException(ErrorCode.NOT_EXISTS_MEMBER));

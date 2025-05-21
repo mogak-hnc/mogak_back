@@ -65,13 +65,6 @@ public class WebSocketEventListener {
                     new MogakZoneSessionInfo(mogakZoneId, memberId)
             );
 
-//            eventPublisher.publishEvent(
-//                    new OutMogakZoneEvent(
-//                            this,
-//                            mogakZoneId
-//                    )
-//            );
-
         }
 
     }

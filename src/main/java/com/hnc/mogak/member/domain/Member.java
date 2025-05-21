@@ -4,11 +4,11 @@ import com.hnc.mogak.member.domain.vo.MemberId;
 import com.hnc.mogak.member.domain.vo.MemberInfo;
 import com.hnc.mogak.member.domain.vo.PlatformInfo;
 import com.hnc.mogak.member.domain.vo.Role;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member {
 
