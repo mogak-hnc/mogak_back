@@ -26,7 +26,7 @@ public class ChallengeArticleEntity extends BaseEntity {
     @JoinColumn(name = "challenge_id")
     private ChallengeEntity challengeEntity;
 
-    @OneToMany(mappedBy = "challengeArticleEntity")
+    @OneToMany(mappedBy = "challengeArticleEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Builder.Default
     private List<ChallengeImageEntity> challengeImageEntityList = new ArrayList<>();
 

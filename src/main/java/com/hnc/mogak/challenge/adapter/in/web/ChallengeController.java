@@ -143,4 +143,16 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.searchChallenge(query));
     }
 
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @DeleteMapping("/{challengeId}")
+    public ResponseEntity<Long> deleteChallenge(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "삭제할 챌린지 ID")
+            @PathVariable(name = "challengeId") Long challengeId
+    ) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        String role = jwtUtil.getRole(token);
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.deleteChallenge(challengeId, memberId, role));
+    }
 }

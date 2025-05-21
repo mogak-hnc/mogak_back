@@ -1,5 +1,6 @@
 package com.hnc.mogak.challenge.adapter.out.persistence.repository;
 
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,23 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
     @Query("SELECT cm.memberEntity FROM ChallengeMemberEntity cm WHERE cm.challengeEntity.id = :challengeId")
     List<MemberEntity> findMembersByChallengeId(@Param("challengeId") Long challengeId);
 
+    @Query(value = """
+    SELECT sub.challenge_id, m.image_path
+    FROM (
+        SELECT
+            cm.challenge_id,
+            cm.member_id,
+            ROW_NUMBER() OVER (PARTITION BY cm.challenge_id ORDER BY cm.challenge_member_id) AS rn
+        FROM challenge_member cm
+        WHERE cm.challenge_id IN (:challengeIds)
+    ) AS sub
+    JOIN member m ON sub.member_id = m.member_id
+    WHERE sub.rn <= :limitPerChallenge
+    """, nativeQuery = true)
+    List<Object[]> findMemberImagesGroupedByChallengeIds(
+            @Param("challengeIds") List<Long> challengeIds,
+            @Param("limitPerChallenge") int limitPerChallenge
+    );
+
+    void deleteAllByChallengeEntity(ChallengeEntity challengeEntity);
 }

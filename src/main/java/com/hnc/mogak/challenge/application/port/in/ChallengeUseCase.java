@@ -20,4 +20,6 @@ public interface ChallengeUseCase {
 
     Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query);
 
+    Long deleteChallenge(Long challengeId, Long memberId, String role);
+
 }

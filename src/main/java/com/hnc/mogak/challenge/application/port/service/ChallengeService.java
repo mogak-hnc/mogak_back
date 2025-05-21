@@ -11,6 +11,7 @@ import com.hnc.mogak.challenge.application.port.out.ChallengeCommandPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeMemberPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeQueryPort;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
+import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.ChallengeException;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
@@ -82,6 +83,34 @@ public class ChallengeService implements ChallengeUseCase {
         return ChallengeDetailResponse.build(memberImageList, challenge, imageThumbnailList, survivorCount);
     }
 
+//    @Override
+//    public List<MogakChallengeMainResponse> getMainPage() {
+//        int mainChallengeLimit = 3;
+//        int memberUrlLimit = 4;
+//
+//        List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
+//        List<Long> challengeIds = topChallenges.stream()
+//                .map(ch -> ch.getChallengeId().value())
+//                .toList();
+//
+//        Map<Long, List<String>> challengeImageMap =
+//                challengeMemberPort.getMemberImagesByChallengeIds(challengeIds, memberUrlLimit);
+//
+//        return topChallenges.stream()
+//                .map(challenge -> {
+//                    Long challengeId = challenge.getChallengeId().value();
+//                    List<String> memberUrls = challengeImageMap.getOrDefault(challengeId, List.of());
+//
+//                    return MogakChallengeMainResponse.builder()
+//                            .challengeId(challengeId)
+//                            .official(challenge.getExtraDetails().official())
+//                            .title(challenge.getContent().title())
+//                            .startDate(challenge.getChallengeDuration().startDate())
+//                            .endDate(challenge.getChallengeDuration().endDate())
+//                            .memberImageUrls(memberUrls)
+//                            .build();
+//                }).toList();
+//    }
     @Override
     public List<MogakChallengeMainResponse> getMainPage() {
         int mainChallengeLimit = 3;
@@ -106,6 +135,19 @@ public class ChallengeService implements ChallengeUseCase {
     @Override
     public Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query) {
         return challengeQueryPort.searchChallenge(query);
+    }
+
+    @Override
+    public Long deleteChallenge(Long challengeId, Long memberId, String role) {
+        Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
+        Long memberOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
+
+        if (!role.equals(AuthConstant.ROLE_ADMIN) && !challenge.isCreator(memberId, memberOwnerId)) {
+            throw new ChallengeException(ErrorCode.NOT_CREATOR);
+        }
+
+        challengeCommandPort.deleteChallenge(challenge);
+        return challengeId;
     }
 
     private JoinChallengeCommand getJoinChallengeJoinCommand(CreateChallengeCommand command, Challenge savedChallenge) {

@@ -1,6 +1,7 @@
 package com.hnc.mogak.challenge.adapter.out.persistence.repository;
 
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeArticleEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,5 +15,7 @@ public interface ChallengeArticleRepository extends JpaRepository<ChallengeArtic
 
     @Query("SELECT ca FROM ChallengeArticleEntity ca WHERE ca.challengeEntity.id = :challengeId")
     List<ChallengeArticleEntity> getChallengeArticleListByChallengeId(@Param("challengeId") Long challengeId);
+
+    void deleteByChallengeEntity(ChallengeEntity challengeEntity);
 
 }

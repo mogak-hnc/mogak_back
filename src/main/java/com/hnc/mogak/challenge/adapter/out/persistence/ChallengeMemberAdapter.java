@@ -14,7 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -48,5 +51,19 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
     public List<Member> findMembersByChallengeId(Long challengeId) {
         return challengeMemberRepository.findMembersByChallengeId(challengeId)
                 .stream().map(MemberMapper::mapToDomainEntity).toList();
+    }
+
+    @Override
+    public Map<Long, List<String>> getMemberImagesByChallengeIds(List<Long> challengeIds, int limitPerChallenge) {
+        List<Object[]> results = challengeMemberRepository.findMemberImagesGroupedByChallengeIds(challengeIds, limitPerChallenge);
+
+        Map<Long, List<String>> imageMap = new HashMap<>();
+        for (Object[] row : results) {
+            Long challengeId = (Long) row[0];
+            String imageUrl = (String) row[1];
+
+            imageMap.computeIfAbsent(challengeId, k -> new ArrayList<>()).add(imageUrl);
+        }
+        return imageMap;
     }
 }

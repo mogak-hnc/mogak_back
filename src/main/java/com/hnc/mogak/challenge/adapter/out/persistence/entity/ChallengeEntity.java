@@ -9,7 +9,8 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Builder
-@Table(name = "challenge")
+@Table(name = "challenge",
+indexes = @Index(name = "idx_total_participants", columnList = "total_participants"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChallengeEntity extends BaseEntity {

@@ -5,6 +5,7 @@ import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.member.domain.Member;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ChallengeMemberPort {
 
@@ -15,4 +16,7 @@ public interface ChallengeMemberPort {
     int getSurvivorCount(Long challengeId);
 
     List<Member> findMembersByChallengeId(Long challengeId);
+
+    Map<Long, List<String>> getMemberImagesByChallengeIds(List<Long> challengeIds, int memberUrlLimit);
+
 }

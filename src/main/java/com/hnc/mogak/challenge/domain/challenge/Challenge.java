@@ -52,4 +52,7 @@ public class Challenge {
         return false;
     }
 
+    public boolean isCreator(Long memberId, Long memberOwnerId) {
+        return Objects.equals(memberId, memberOwnerId);
+    }
 }

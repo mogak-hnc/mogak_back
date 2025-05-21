@@ -2,6 +2,8 @@ package com.hnc.mogak.challenge.adapter.out.persistence;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeSearchResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeOwnerEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeOwnerRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeQueryDslRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
@@ -17,12 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class ChallengeQueryAdapter implements ChallengeQueryPort {
 
     private final ChallengeRepository challengeRepository;
+    private final ChallengeOwnerRepository challengeOwnerRepository;
     private final ChallengeQueryDslRepository challengeQueryDslRepository;
 
     @Override
@@ -46,4 +50,9 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
         return challengeQueryDslRepository.searchChallenge(query, pageable);
     }
 
+    @Override
+    public Long findChallengeOwnerMemberIdByChallengeId(Long challengeId) {
+        return challengeOwnerRepository.findChallengeOwnerMemberIdByChallengeEntityId(challengeId)
+                .orElseThrow(() -> new ChallengeException(ErrorCode.NOT_EXISTS_CHALLENGE));
+    }
 }

@@ -6,4 +6,6 @@ import com.hnc.mogak.member.domain.Member;
 public interface ChallengeCommandPort {
     Challenge persist(Member member, Challenge challenge);
 
+    void deleteChallenge(Challenge challenge);
+
 }
