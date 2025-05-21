@@ -6,8 +6,9 @@ import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MemberException;
 import com.hnc.mogak.global.redis.RedisConstant;
+import com.hnc.mogak.member.adapter.in.web.dto.AdminLoginRequest;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
-import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.LoginResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
 import com.hnc.mogak.member.application.port.out.MemberPort;
@@ -36,12 +37,23 @@ public class AuthService implements AuthUseCase {
     private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
-    public SocialLoginResponse handleSocialLogin(String provider, String providerId) {
+    public LoginResponse loginAdmin(String id, String pw) {
+        Member adminMember = memberPort.getAdminAccount(id, pw);
+        String token = getToken(adminMember);
+
+        return LoginResponse.builder()
+                .memberId(adminMember.getMemberId().value())
+                .token(token)
+                .build();
+    }
+
+    @Override
+    public LoginResponse handleSocialLogin(String provider, String providerId) {
         if (memberPort.existsByProviderId(providerId)) {
             Member findMember = memberPort.loadMemberByProviderId(providerId);
             String token = getToken(findMember);
 
-            return SocialLoginResponse.builder()
+            return LoginResponse.builder()
                     .memberId(findMember.getMemberId().value())
                     .token(token)
                     .build();
@@ -55,7 +67,7 @@ public class AuthService implements AuthUseCase {
         newMember.assignId(memberId);
         String token = getToken(newMember);
 
-        return SocialLoginResponse.builder()
+        return LoginResponse.builder()
                 .memberId(memberId)
                 .token(token)
                 .build();

@@ -59,6 +59,7 @@ public class SecurityConfig {
                                         "/",
                                         "/login",
                                         "/api/mogak/auth/social-login",
+                                        "/api/mogak/auth/admin-login",
                                         "/api/mogak",
                                         "/api/mogak/zone",
                                         "/api/mogak/zone/join/*",

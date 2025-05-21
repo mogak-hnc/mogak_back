@@ -2,10 +2,7 @@ package com.hnc.mogak.member.adapter.in.web;
 
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
-import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
-import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginRequest;
-import com.hnc.mogak.member.adapter.in.web.dto.SocialLoginResponse;
-import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.*;
 import com.hnc.mogak.member.application.port.in.AuthUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +27,7 @@ public class AuthController {
 
     @Operation(summary = "소셜 로그인", description = "소셜 로그인 요청을 처리하고 JWT 토큰을 반환합니다.")
     @PostMapping("/social-login")
-    public ResponseEntity<SocialLoginResponse> socialLogin(@Valid @RequestBody SocialLoginRequest request) {
+    public ResponseEntity<LoginResponse> socialLogin(@Valid @RequestBody SocialLoginRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authUseCase.handleSocialLogin(request.getProvider(), request.getProviderId()));
     }
@@ -69,5 +66,13 @@ public class AuthController {
         Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
         return ResponseEntity.ok(authUseCase.updateMemberInfo(memberId, nickname, file, deleteImage, showBadge));
     }
+
+    @Operation(summary = "운영자 로그인", description = "운영자 로그인 요청을 처리하고 JWT 토큰을 반환합니다.")
+    @PostMapping("/admin-login")
+    public ResponseEntity<LoginResponse> loginAdmin(@Valid @RequestBody AdminLoginRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(authUseCase.loginAdmin(request.getId(), request.getPw()));
+    }
+
 
 }
