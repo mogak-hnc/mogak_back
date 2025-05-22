@@ -1,10 +1,12 @@
 package com.hnc.mogak.worry.service.command;
 
+import com.hnc.mogak.worry.dto.WorryDuration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,6 +18,7 @@ public class CreateWorryCommand {
     private Long memberId;
     private String title;
     private String body;
+    private Duration duration;
     private LocalDateTime createdAt;
 
 }

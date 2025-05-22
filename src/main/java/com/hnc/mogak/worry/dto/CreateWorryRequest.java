@@ -9,5 +9,6 @@ public class CreateWorryRequest {
 
     private String title;
     private String body;
+    private WorryDuration duration;
 
 }

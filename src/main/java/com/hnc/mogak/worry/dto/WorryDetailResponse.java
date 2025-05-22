@@ -14,5 +14,6 @@ public class WorryDetailResponse {
     private Integer empathyCount;
     private List<Integer> restTime;
     private List<CommentResponse> commentResponses;
+    private boolean hasEmpathized;
 
 }

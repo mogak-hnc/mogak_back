@@ -1,5 +1,6 @@
 package com.hnc.mogak.worry.controller;
 
+import com.hnc.mogak.global.PageResponse;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.worry.dto.*;
@@ -24,7 +25,8 @@ public class WorryController {
     private final WorryService worryService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "고민 생성", description = "새로운 고민을 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
+    @Operation(summary = "고민 생성", description = "새로운 고민을 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)\n" +
+            "duration에 ONE_MINUTE(실험용), ONE_HOUR, THREE_HOURS, SIX_HOURS, TWELVE_HOURS, TWENTY_FOUR_HOURS 넣으면 됩니다.")
     @PostMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<CreateWorryResponse> createWorry(
@@ -43,38 +45,38 @@ public class WorryController {
             @RequestBody CreateWorryCommentRequest request,
             @Parameter(description = "댓글을 작성할 고민 ID") @PathVariable(value = "worryId") Integer worryId
     ) {
-        String memberId = jwtUtil.getMemberId(token);
+        Long memberId = Long.valueOf(jwtUtil.getMemberId(token));
         return ResponseEntity.status(HttpStatus.CREATED).body(worryService.createComment(request, memberId, worryId));
     }
 
     @Operation(summary = "고민 상세 조회", description = "특정 고민의 상세 정보를 조회합니다.")
     @GetMapping("/{worryId}")
     public ResponseEntity<WorryDetailResponse> getWorry(
+            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @Parameter(description = "조회할 고민 ID") @PathVariable Integer worryId
     ) {
-        return ResponseEntity.ok(worryService.getWorry(worryId));
+        String memberId = jwtUtil.getMemberId(token);
+        return ResponseEntity.ok(worryService.getWorryDetail(worryId, memberId));
     }
 
     @Operation(summary = "고민 메인 페이지 조회", description = "메인 화면에서 표시할 고민 4개를 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<WorryPreview>> getWorryMainPage() {
+    public ResponseEntity<PageResponse<WorryPreview>> getWorryMainPage() {
         return ResponseEntity.ok(worryService.getWorryList("participant", 0, 4));
     }
 
     @Operation(summary = "고민 목록 조회", description = "고민 목록을 페이지네이션을 통해 조회합니다.")
     @GetMapping("/list")
-    public ResponseEntity<List<WorryPreview>> getWorryList(
-            @Parameter(description = "recent or participant", example = "recent")
+    public ResponseEntity<PageResponse<WorryPreview>> getWorryList(
+            @Parameter(description = "recent or empathy", example = "recent")
             @RequestParam(value = "sort", defaultValue = "recent") String sort,
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
             @Parameter(description = "페이지 크기", example = "10")
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        int start = page * size;
-        int end = start + size - 1;
 
-        return ResponseEntity.ok(worryService.getWorryList(sort, start, end));
+        return ResponseEntity.ok(worryService.getWorryList(sort, page, size));
     }
 
     @Operation(summary = "공감 토글", description = "특정 고민에 공감을 토글합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
