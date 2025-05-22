@@ -118,8 +118,8 @@ public class ChallengeController {
             @Parameter(description = "검색 키워드 (모각존 이름 등)")
             @RequestParam(value = "search", required = false) String search,
 
-            @Parameter(description = "공식 챌린지 (true 또는 false)")
-            @RequestParam(value = "official", required = false, defaultValue = "false") boolean official,
+            @Parameter(description = "공식 챌린지 (true, false)")
+            @RequestParam(value = "official", required = false) Boolean official,
 
             @Parameter(description = "정렬 기준 (recent 또는 participant)")
             @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort,

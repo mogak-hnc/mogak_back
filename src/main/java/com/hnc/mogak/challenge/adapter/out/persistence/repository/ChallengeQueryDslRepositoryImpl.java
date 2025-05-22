@@ -35,11 +35,17 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
         if (query.getSearch() != null && !query.getSearch().isBlank()) {
             builder.and(challenge.title.containsIgnoreCase(query.getSearch()));
         }
-        builder.and(challenge.official.eq(query.isOfficial()));
+
+        if (query.getOfficial() == null) {
+            builder.and(challenge.official.eq(true).or(challenge.official.eq(false)));
+        } else {
+            builder.and(challenge.official.eq(query.getOfficial()));
+        }
+
         builder.and(challenge.startDate.after(LocalDate.now()));
 
         List<Tuple> challengeInfos = queryFactory
-                .select(challenge.id, challenge.title, challenge.startDate, challenge.endDate)
+                .select(challenge.id, challenge.official, challenge.title, challenge.startDate, challenge.endDate)
                 .from(challenge)
                 .leftJoin(challengeMember).on(challengeMember.challengeEntity.eq(challenge))
                 .where(builder)
@@ -79,11 +85,12 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                     String title = tuple.get(challenge.title);
                     LocalDate start = tuple.get(challenge.startDate);
                     LocalDate end = tuple.get(challenge.endDate);
+                    Boolean official = tuple.get(challenge.official);
                     List<String> images = challengeIdToImages.getOrDefault(challengeId, List.of());
 
                     return ChallengeSearchResponse.builder()
                             .challengeId(challengeId)
-                            .official(query.isOfficial())
+                            .official(official)
                             .title(title)
                             .startDate(start)
                             .endDate(end)

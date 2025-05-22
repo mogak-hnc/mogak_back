@@ -11,7 +11,7 @@ import java.util.List;
 public class ChallengeSearchResponse {
 
     private Long challengeId;
-    private boolean official;
+    private Boolean official;
     private String title;
     private List<String> memberImageUrl;
     private LocalDate startDate;

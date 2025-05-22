@@ -8,7 +8,7 @@ import lombok.Getter;
 public class ChallengeSearchQuery {
 
     private String search;
-    private boolean official;
+    private Boolean official;
     private Sort sort;
     private int page;
     private int size;
