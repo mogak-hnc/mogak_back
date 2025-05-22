@@ -31,10 +31,6 @@ public class MemberAdapter implements MemberPort {
         MemberEntity memberEntity = memberRepository.findByProviderId(providerId)
                 .orElseThrow(() -> new MemberException(ErrorCode.NOT_EXISTS_MEMBER));
 
-        if (memberEntity.isWithdrawn()) {
-            throw new MemberException(ErrorCode.MEMBER_ALREADY_DELETED);
-        }
-
         return MemberMapper.mapToDomainEntity(memberEntity);
     }
 

@@ -49,28 +49,14 @@ public class AuthService implements AuthUseCase {
 
     @Override
     public LoginResponse handleSocialLogin(String provider, String providerId) {
-        if (memberPort.existsByProviderId(providerId)) {
-            Member findMember = memberPort.loadMemberByProviderId(providerId);
-            String token = getToken(findMember);
-
-            return LoginResponse.builder()
-                    .memberId(findMember.getMemberId().value())
-                    .token(token)
-                    .build();
+        if (!memberPort.existsByProviderId(providerId)) {
+            return createNewMember(provider, providerId);
         }
 
-        MemberInfo memberInfo = new MemberInfo(nicknameGenerator.generate(), null, null, "Default", null, false, true);
-        PlatformInfo platformInfo = new PlatformInfo(provider, providerId);
-        Role roleInfo = new Role(AuthConstant.ROLE_MEMBER);
-        Member newMember = Member.withoutId(memberInfo, platformInfo, roleInfo);
-        Long memberId = memberPort.persist(newMember);
-        newMember.assignId(memberId);
-        String token = getToken(newMember);
-
-        return LoginResponse.builder()
-                .memberId(memberId)
-                .token(token)
-                .build();
+        Member findMember = memberPort.loadMemberByProviderId(providerId);
+        return findMember.getMemberInfo().withdrawn()
+                ? createNewMember(provider, providerId)
+                : loginExistingMember(findMember);
     }
 
     @Override
@@ -135,6 +121,40 @@ public class AuthService implements AuthUseCase {
                 member.getMemberInfo().nickname(),
                 member.getRole().value()
         );
+    }
+
+    private LoginResponse createNewMember(String provider, String providerId) {
+        MemberInfo memberInfo = new MemberInfo(
+                nicknameGenerator.generate(),
+                null,
+                null,
+                "Default",
+                null,
+                false,
+                true
+        );
+
+        Member newMember = Member.withoutId(
+                memberInfo,
+                new PlatformInfo(provider, providerId),
+                new Role(AuthConstant.ROLE_MEMBER)
+        );
+
+        Long memberId = memberPort.persist(newMember);
+        newMember.assignId(memberId);
+
+        return createLoginResponse(newMember);
+    }
+
+    private LoginResponse loginExistingMember(Member member) {
+        return createLoginResponse(member);
+    }
+
+    private LoginResponse createLoginResponse(Member member) {
+        return LoginResponse.builder()
+                .memberId(member.getMemberId().value())
+                .token(getToken(member))
+                .build();
     }
 
 }

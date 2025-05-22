@@ -44,6 +44,7 @@ public class Member {
 
     public void deleteMember() {
         this.memberInfo = memberInfo.deleteMember();
+        this.platformInfo = platformInfo.deleteMember();
     }
 
     public void  updateMemberInfo(String imageUrl, String nickname, boolean showBadge) {
