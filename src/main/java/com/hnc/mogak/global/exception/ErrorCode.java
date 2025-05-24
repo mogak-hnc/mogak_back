@@ -45,7 +45,8 @@ public enum ErrorCode {
     INVALID_FILE_TYPE("이미지만 업로드 가능합니다.", HttpStatus.BAD_REQUEST),
 
     // Worry Exception
-    NOT_EXISTS_WORRY("해당 고민있어요가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+    NOT_EXISTS_WORRY("해당 고민있어요가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
+    NOT_EXISTS_COMMENT("해당 댓글이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
 
     private final String description;
     private final HttpStatus httpStatus;

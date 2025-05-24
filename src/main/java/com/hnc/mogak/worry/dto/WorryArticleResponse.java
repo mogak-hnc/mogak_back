@@ -7,13 +7,12 @@ import java.util.List;
 
 @Getter
 @Builder
-public class WorryDetailResponse {
+public class WorryArticleResponse {
 
     private String title;
     private String body;
     private Integer empathyCount;
     private List<Integer> restTime;
-    private List<CommentResponse> commentResponses;
     private boolean hasEmpathized;
 
 }

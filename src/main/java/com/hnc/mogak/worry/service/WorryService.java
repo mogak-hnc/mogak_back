@@ -7,12 +7,18 @@ public interface WorryService {
 
     CreateWorryResponse create(CreateWorryRequest request, Long memberId);
 
-    WorryDetailResponse getWorryDetail(Integer worryId, String memberId);
+    WorryArticleResponse getWorryArticle(Integer worryId, String memberId);
 
     WorryEmpathyResponse toggleEmpathy(Integer worryId, String memberId);
 
-    CommentResponse createComment(CreateWorryCommentRequest request, Long memberId, Integer worryId);
+    WorryCommentResponse createComment(CreateWorryCommentRequest request, Long memberId, Integer worryId);
 
     PageResponse<WorryPreview> getWorryList(String sort, int page, int size);
+
+    PageResponse<WorryCommentResponse> getWorryComments(Integer worryId, int page, int size);
+
+    WorryArticleDeleteResponse deleteWorryArticle(Integer worryId, Long memberId, String role);
+
+    WorryCommentDeleteResponse deleteWorryComment(Integer worryId, Long memberId, Integer commentId, String role);
 
 }

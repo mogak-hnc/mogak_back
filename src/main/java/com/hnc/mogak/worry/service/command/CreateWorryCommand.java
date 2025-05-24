@@ -1,6 +1,5 @@
 package com.hnc.mogak.worry.service.command;
 
-import com.hnc.mogak.worry.dto.WorryDuration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

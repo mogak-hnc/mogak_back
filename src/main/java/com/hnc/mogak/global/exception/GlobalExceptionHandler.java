@@ -63,6 +63,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleAllException(Exception ex) {
+        log.error("Unhandled Exception 발생: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private ResponseEntity<String> buildErrorResponse(Exception ex, HttpStatus status) {
         log.error("{} 발생: {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
         return new ResponseEntity<>(ex.getMessage(), status);

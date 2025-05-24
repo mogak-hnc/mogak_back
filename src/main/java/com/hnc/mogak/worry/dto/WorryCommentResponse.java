@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentResponse {
+public class WorryCommentResponse {
 
     private Long memberId;
     private Integer commentId;

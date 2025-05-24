@@ -3,6 +3,7 @@ package com.hnc.mogak.worry.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hnc.mogak.global.PageResponse;
+import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WorryException;
 import com.hnc.mogak.worry.dto.*;
@@ -49,27 +50,42 @@ public class WorryServiceImpl implements WorryService {
     }
 
     @Override
-    public CommentResponse createComment(CreateWorryCommentRequest request, Long memberId, Integer worryId) {
+    public WorryCommentResponse createComment(CreateWorryCommentRequest request, Long memberId, Integer worryId) {
         validateWorryId(worryId);
 
-        CommentResponse commentResponse = getCommentResponse(request, memberId);
-        saveComment(worryId, commentResponse);
+        WorryCommentResponse worryCommentResponse = getCommentResponse(request, memberId);
+        saveComment(worryId, worryCommentResponse);
 
-        return commentResponse;
+        return worryCommentResponse;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public WorryDetailResponse getWorryDetail(Integer worryId, String memberId) {
+    public WorryArticleResponse getWorryArticle(Integer worryId, String memberId) {
         validateWorryId(worryId);
 
         CreateWorryCommand command = getCreateWorryCommand(worryId);
         Integer empathyScore = (Objects.requireNonNull(redisTemplate.opsForZSet().score(WORRY_EMPATHY_RANKING_KEY, worryId))).intValue();
-
         List<Integer> restTime = getRestTime(command);
-        List<CommentResponse> commentResponses = getCommentListByCommentKey(worryId);
 
-        return getWorryDetailResponse(worryId, memberId, command, empathyScore, restTime, commentResponses);
+        return getWorryDetailResponse(worryId, memberId, command, empathyScore, restTime);
+    }
+
+    @Override
+    public PageResponse<WorryCommentResponse> getWorryComments(Integer worryId, int page, int size) {
+        validateWorryId(worryId);
+        List<WorryCommentResponse> commentList = getCommentListByWorryId(worryId);
+
+        int start = page * size;
+        int end = Math.min(start + size, commentList.size());
+
+        if (start >= commentList.size()) {
+            return PageResponse.of(new ArrayList<>(), page, size, commentList.size());
+        }
+
+        List<WorryCommentResponse> pagedList = commentList.subList(start, end);
+
+        return PageResponse.of(pagedList, page, size, commentList.size());
     }
 
     @Override
@@ -108,6 +124,49 @@ public class WorryServiceImpl implements WorryService {
         return getWorryEmpathyResponse(worryId, alreadyEmpathized);
     }
 
+    @Override
+    public WorryArticleDeleteResponse deleteWorryArticle(Integer worryId, Long memberId, String role) {
+        validateWorryId(worryId);
+        CreateWorryCommand createWorryCommand = getCreateWorryCommand(worryId);
+
+        if (!role.equals(AuthConstant.ROLE_ADMIN) && !createWorryCommand.getMemberId().equals(memberId)) {
+            throw new WorryException(ErrorCode.NOT_CREATOR);
+        }
+
+        redisTemplate.delete(WORRY_ID_SEQ_KEY + worryId);
+        redisTemplate.delete(WORRY_COMMENT_ID_KEY + worryId);
+        redisTemplate.delete(WORRY_EMPATHY_USER_KEY_PREFIX + worryId);
+        redisTemplate.opsForZSet().remove(WORRY_RECENT_SORT_KEY, worryId);
+        redisTemplate.opsForZSet().remove(WORRY_EMPATHY_RANKING_KEY, worryId);
+
+        return new WorryArticleDeleteResponse(worryId);
+    }
+
+    @Override
+    public WorryCommentDeleteResponse deleteWorryComment(Integer worryId, Long memberId, Integer commentId, String role) {
+        validateWorryId(worryId);
+
+        List<WorryCommentResponse> commentList = getCommentListByWorryId(worryId);
+
+        boolean isExist = false;
+        for (WorryCommentResponse comment : commentList) {
+            if (!Objects.equals(comment.getCommentId(), commentId)) continue;
+
+            if (!role.equals(AuthConstant.ROLE_ADMIN) && !comment.getMemberId().equals(memberId)) {
+                throw new WorryException(ErrorCode.NOT_CREATOR);
+            }
+
+            isExist = true;
+            commentList.remove(comment);
+            break;
+        }
+
+        if (!isExist) throw new WorryException(ErrorCode.NOT_EXISTS_COMMENT);
+
+        redisTemplate.opsForValue().set(WORRY_COMMENT_ID_KEY + worryId, commentList, getWorryArticleTTL(worryId));
+        return new WorryCommentDeleteResponse(worryId, commentId);
+    }
+
     private WorryPreview buildWorryPreview(Integer worryId) {
         CreateWorryCommand createWorryCommand = getCreateWorryCommand(worryId);
 
@@ -127,16 +186,18 @@ public class WorryServiceImpl implements WorryService {
     }
 
     private Integer getCommentCount(Integer worryId) {
-        return getCommentListByCommentKey(worryId).size();
+        return getCommentListByWorryId(worryId).size();
     }
 
     private CreateWorryCommand buildWorryCommand(CreateWorryRequest request, Long memberId, LocalDateTime creationTime) {
         WorryDuration worryDuration = request.getDuration();
+        Duration duration = worryDuration == null ? Duration.ofHours(24) : worryDuration.getDuration();
+
         return CreateWorryCommand.builder()
                 .memberId(memberId)
                 .title(request.getTitle())
                 .body(request.getBody())
-                .duration(worryDuration.getDuration())
+                .duration(duration)
                 .createdAt(creationTime)
                 .build();
     }
@@ -163,15 +224,15 @@ public class WorryServiceImpl implements WorryService {
         worryScheduler.scheduleWorryDeletion(worryId, creationTime.plus(duration));
     }
 
-    private void saveComment(Integer worryId, CommentResponse commentResponse) {
+    private void saveComment(Integer worryId, WorryCommentResponse worryCommentResponse) {
         String commentKey = WORRY_COMMENT_ID_KEY + worryId;
-        List<CommentResponse> commentList = getCommentListByCommentKey(worryId);
-        commentList.add(commentResponse);
+        List<WorryCommentResponse> commentList = getCommentListByWorryId(worryId);
+        commentList.add(worryCommentResponse);
         redisTemplate.opsForValue().set(commentKey, commentList, getWorryArticleTTL(worryId));
     }
 
-    private CommentResponse getCommentResponse(CreateWorryCommentRequest request, Long memberId) {
-        return CommentResponse.builder()
+    private WorryCommentResponse getCommentResponse(CreateWorryCommentRequest request, Long memberId) {
+        return WorryCommentResponse.builder()
                 .memberId(memberId)
                 .commentId(generateId(WORRY_COMMENT_ID_SEQ_KEY))
                 .comment(request.getComment())
@@ -179,10 +240,10 @@ public class WorryServiceImpl implements WorryService {
                 .build();
     }
     
-    private List<CommentResponse> getCommentListByCommentKey(Integer worryId) {
+    private List<WorryCommentResponse> getCommentListByWorryId(Integer worryId) {
         String commentKey = WORRY_COMMENT_ID_KEY + worryId;
         Object fromValue = redisTemplate.opsForValue().get(commentKey);
-        List<CommentResponse> commentList;
+        List<WorryCommentResponse> commentList;
 
         if (fromValue == null) {
             commentList = new ArrayList<>();
@@ -207,17 +268,17 @@ public class WorryServiceImpl implements WorryService {
         return objectMapper.convertValue(fromValue, CreateWorryCommand.class);
     }
 
-    private WorryDetailResponse getWorryDetailResponse(
-            Integer worryId, String memberId, CreateWorryCommand command, Integer score,
-            List<Integer> restTime, List<CommentResponse> commentResponses) {
-        boolean hasEmpathized = redisTemplate.opsForHash().hasKey(WORRY_EMPATHY_USER_KEY_PREFIX + worryId, memberId);
+    private WorryArticleResponse getWorryDetailResponse(
+            Integer worryId, String memberId, CreateWorryCommand command,
+            Integer score, List<Integer> restTime) {
+        boolean hasEmpathized = memberId !=
+                null && redisTemplate.opsForHash().hasKey(WORRY_EMPATHY_USER_KEY_PREFIX + worryId, memberId);
 
-        return WorryDetailResponse.builder()
+        return WorryArticleResponse.builder()
                 .title(command.getTitle())
                 .body(command.getBody())
                 .empathyCount(score)
                 .restTime(restTime)
-                .commentResponses(commentResponses)
                 .hasEmpathized(hasEmpathized)
                 .build();
     }

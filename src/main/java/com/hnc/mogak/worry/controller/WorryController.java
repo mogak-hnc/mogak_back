@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mogak/worry")
@@ -40,7 +38,7 @@ public class WorryController {
     @Operation(summary = "댓글 생성", description = "해당 고민에 댓글을 작성합니다.")
     @PostMapping("/{worryId}/comment")
     @PreAuthorize((AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN))
-    public ResponseEntity<CommentResponse> createComment(
+    public ResponseEntity<WorryCommentResponse> createComment(
             @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @RequestBody CreateWorryCommentRequest request,
             @Parameter(description = "댓글을 작성할 고민 ID") @PathVariable(value = "worryId") Integer worryId
@@ -49,14 +47,27 @@ public class WorryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(worryService.createComment(request, memberId, worryId));
     }
 
-    @Operation(summary = "고민 상세 조회", description = "특정 고민의 상세 정보를 조회합니다.")
+    @Operation(summary = "고민 게시글 조회", description = "특정 고민의 게시글 정보를 조회합니다.")
     @GetMapping("/{worryId}")
-    public ResponseEntity<WorryDetailResponse> getWorry(
-            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+    public ResponseEntity<WorryArticleResponse> getWorry(
+            @Parameter(hidden = true) @RequestHeader(value = AuthConstant.AUTHORIZATION, required = false) String token,
             @Parameter(description = "조회할 고민 ID") @PathVariable Integer worryId
     ) {
-        String memberId = jwtUtil.getMemberId(token);
-        return ResponseEntity.ok(worryService.getWorryDetail(worryId, memberId));
+        String memberId = (token == null) ? null : jwtUtil.getMemberId(token);
+        return ResponseEntity.ok(worryService.getWorryArticle(worryId, memberId));
+    }
+
+    @Operation(summary = "고민 댓글 조회", description = "특정 고민의 댓글 정보를 조회합니다.")
+    @GetMapping("/{worryId}/comments")
+    public ResponseEntity<PageResponse<WorryCommentResponse>> getComments(
+            @Parameter(description = "조회할 고민 ID") @PathVariable Integer worryId,
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기", example = "10")
+            @RequestParam(value = "size", defaultValue = "10") int size
+
+    ) {
+        return ResponseEntity.ok(worryService.getWorryComments(worryId, page, size));
     }
 
     @Operation(summary = "고민 메인 페이지 조회", description = "메인 화면에서 표시할 고민 4개를 조회합니다.")
@@ -88,6 +99,31 @@ public class WorryController {
     ) {
         String memberId = jwtUtil.getMemberId(token);
         return ResponseEntity.status(HttpStatus.CREATED).body(worryService.toggleEmpathy(worryId, memberId));
+    }
+
+    @Operation(summary = "고민 게시글 삭제", description = "특정 고민을 삭제합니다.")
+    @DeleteMapping("/{worryId}")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<WorryArticleDeleteResponse> deleteWorryArticle(
+            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "삭제할 고민 ID") @PathVariable(value = "worryId") Integer worryId
+    ) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        String role = jwtUtil.getRole(token);
+        return ResponseEntity.status(HttpStatus.OK).body(worryService.deleteWorryArticle(worryId, memberId, role));
+    }
+
+    @Operation(summary = "고민 댓글 삭제", description = "특정 고민 댓글을 삭제합니다.")
+    @DeleteMapping("/{worryId}/comments/{commentId}")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<WorryCommentDeleteResponse> deleteWorryComment(
+            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "삭제할 고민 ID") @PathVariable(value = "worryId") Integer worryId,
+            @Parameter(description = "삭제할 고민 ID") @PathVariable(value = "commentId") Integer commentId
+    ) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        String role = jwtUtil.getRole(token);
+        return ResponseEntity.status(HttpStatus.OK).body(worryService.deleteWorryComment(worryId, memberId, commentId, role));
     }
 
 }

@@ -27,6 +27,7 @@ public class WorryScheduler {
         redisTemplate.opsForZSet().remove(WORRY_RECENT_SORT_KEY, worryId);
         redisTemplate.opsForZSet().remove(WORRY_EMPATHY_RANKING_KEY, worryId);
         redisTemplate.delete(WORRY_EMPATHY_USER_KEY_PREFIX + worryId);
+        redisTemplate.delete(WORRY_COMMENT_ID_KEY + worryId);
     }
 
 }
