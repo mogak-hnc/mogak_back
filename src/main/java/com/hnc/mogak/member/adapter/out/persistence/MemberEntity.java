@@ -36,7 +36,7 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "provider", nullable = false)
     private String provider;
 
-    @Column(name = "provider_id", nullable = false, unique = true)
+    @Column(name = "provider_id", nullable = false)
     private String providerId;
 
     @Column(name = "role", nullable = false)
