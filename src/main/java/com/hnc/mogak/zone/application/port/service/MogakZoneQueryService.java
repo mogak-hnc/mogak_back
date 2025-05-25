@@ -45,7 +45,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public List<MogakZoneMainResponse> getMainPage() {
-        int size = 3;
+        int size = 4;
 
         List<ZoneSummary> summaryList = mogakZoneQueryPort.findTopZoneSummariesByJoinCount(size);
         List<Long> zoneIds = summaryList.stream()

@@ -14,7 +14,7 @@ public interface ChallengeUseCase {
 
     JoinChallengeResponse join(JoinChallengeCommand command);
 
-    ChallengeDetailResponse getDetail(Long challengeId);
+    ChallengeDetailResponse getDetail(Long memberId, Long challengeId);
 
     List<MogakChallengeMainResponse> getMainPage();
 

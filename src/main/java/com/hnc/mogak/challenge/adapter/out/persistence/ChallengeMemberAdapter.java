@@ -66,4 +66,10 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
         }
         return imageMap;
     }
+
+    @Override
+    public boolean isMember(Long challengeId, Long memberId) {
+        return challengeMemberRepository.existsByChallengeIdAndMemberId(challengeId, memberId);
+    }
+
 }

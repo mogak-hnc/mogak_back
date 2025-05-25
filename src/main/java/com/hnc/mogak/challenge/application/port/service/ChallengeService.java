@@ -70,7 +70,7 @@ public class ChallengeService implements ChallengeUseCase {
     }
 
     @Override
-    public ChallengeDetailResponse getDetail(Long challengeId) {
+    public ChallengeDetailResponse getDetail(Long memberId, Long challengeId) {
         int limit = 6;
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
@@ -80,40 +80,14 @@ public class ChallengeService implements ChallengeUseCase {
                 .map(entity -> entity.getChallengeImageEntityList().get(0).getImageUrl())
                 .toList();
 
-        return ChallengeDetailResponse.build(memberImageList, challenge, imageThumbnailList, survivorCount);
+        boolean isJoined = challengeMemberPort.isMember(challengeId, memberId);
+        Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
+        return ChallengeDetailResponse.build(memberImageList, challenge, imageThumbnailList, survivorCount, isJoined, challengeOwnerId);
     }
 
-//    @Override
-//    public List<MogakChallengeMainResponse> getMainPage() {
-//        int mainChallengeLimit = 3;
-//        int memberUrlLimit = 4;
-//
-//        List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
-//        List<Long> challengeIds = topChallenges.stream()
-//                .map(ch -> ch.getChallengeId().value())
-//                .toList();
-//
-//        Map<Long, List<String>> challengeImageMap =
-//                challengeMemberPort.getMemberImagesByChallengeIds(challengeIds, memberUrlLimit);
-//
-//        return topChallenges.stream()
-//                .map(challenge -> {
-//                    Long challengeId = challenge.getChallengeId().value();
-//                    List<String> memberUrls = challengeImageMap.getOrDefault(challengeId, List.of());
-//
-//                    return MogakChallengeMainResponse.builder()
-//                            .challengeId(challengeId)
-//                            .official(challenge.getExtraDetails().official())
-//                            .title(challenge.getContent().title())
-//                            .startDate(challenge.getChallengeDuration().startDate())
-//                            .endDate(challenge.getChallengeDuration().endDate())
-//                            .memberImageUrls(memberUrls)
-//                            .build();
-//                }).toList();
-//    }
     @Override
     public List<MogakChallengeMainResponse> getMainPage() {
-        int mainChallengeLimit = 3;
+        int mainChallengeLimit = 4;
         List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
 
         int memberUrlLimit = 4;

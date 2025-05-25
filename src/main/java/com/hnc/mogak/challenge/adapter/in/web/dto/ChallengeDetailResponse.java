@@ -1,5 +1,6 @@
 package com.hnc.mogak.challenge.adapter.in.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,8 +23,17 @@ public class ChallengeDetailResponse {
     private int survivorCount;
     private List<String> memberImageList;
     private List<String> challengeArticlesThumbnail;
+    private boolean isJoined;
+    private Long challengeOwnerId;
 
-    public static ChallengeDetailResponse build(List<String> memberImageList, Challenge challenge, List<String> imageThumbnailList, int survivorCount) {
+    public static ChallengeDetailResponse build(
+            List<String> memberImageList,
+            Challenge challenge,
+            List<String> imageThumbnailList,
+            int survivorCount,
+            boolean isJoined,
+            Long challengeOwnerId) {
+
         return new ChallengeDetailResponse(
                 challenge.getExtraDetails().official(),
                 challenge.getContent().title(),
@@ -32,7 +42,9 @@ public class ChallengeDetailResponse {
                 challenge.getExtraDetails().totalParticipants(),
                 survivorCount,
                 memberImageList,
-                imageThumbnailList
+                imageThumbnailList,
+                isJoined,
+                challengeOwnerId
         );
     }
 

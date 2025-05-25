@@ -40,4 +40,13 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
     );
 
     void deleteAllByChallengeEntity(ChallengeEntity challengeEntity);
+
+    @Query("SELECT COUNT(cm) > 0 FROM ChallengeMemberEntity cm " +
+            "WHERE cm.challengeEntity.id = :challengeId " +
+            "AND cm.memberEntity.id = :memberId")
+    boolean existsByChallengeIdAndMemberId(
+            @Param("challengeId") Long challengeId,
+            @Param("memberId") Long memberId
+    );
+
 }

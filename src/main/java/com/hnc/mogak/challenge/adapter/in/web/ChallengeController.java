@@ -93,9 +93,12 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.join(command));
     }
 
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @Operation(summary = "챌린지 상세 조회", description = "챌린지 ID를 기반으로 상세 정보를 조회합니다.")
     @GetMapping("/{challengeId}")
     public ResponseEntity<ChallengeDetailResponse> getChallengeDetail(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @Parameter(
                     description = "조회할 챌린지 ID",
                     example = "1",
@@ -103,7 +106,8 @@ public class ChallengeController {
             )
             @PathVariable(name = "challengeId") Long challengeId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(challengeId));
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(memberId, challengeId));
     }
 
     @Operation(summary = "챌린지 메인 페이지", description = "메인 화면에 표시될 챌린지 목록을 조회합니다.")

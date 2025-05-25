@@ -19,4 +19,5 @@ public interface ChallengeMemberPort {
 
     Map<Long, List<String>> getMemberImagesByChallengeIds(List<Long> challengeIds, int memberUrlLimit);
 
+    boolean isMember(Long challengeId, Long memberId);
 }
