@@ -31,10 +31,8 @@ import java.time.Duration;
 public class AuthService implements AuthUseCase {
 
     private final MemberPort memberPort;
-    private final S3Service s3Service;
     private final NicknameGenerator nicknameGenerator;
     private final JwtUtil jwtUtil;
-    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public LoginResponse loginAdmin(String id, String pw) {
@@ -57,62 +55,6 @@ public class AuthService implements AuthUseCase {
         return findMember.getMemberInfo().withdrawn()
                 ? createNewMember(provider, providerId)
                 : loginExistingMember(findMember);
-    }
-
-    @Override
-    public MemberInfoResponse getMemberInfo(Long memberId) {
-        Member member = memberPort.loadMemberByMemberId(memberId);
-        MemberInfo memberInfo = member.getMemberInfo();
-        return new MemberInfoResponse(
-                member.getMemberId().value(),
-                memberInfo.imagePath(),
-                memberInfo.nickname(),
-                memberInfo.showBadge()
-        );
-    }
-
-    @Override
-    public Long deleteMember(Long memberId, String token) {
-        memberPort.deleteMember(memberId);
-        redisTemplate.opsForValue().set(
-                RedisConstant.BLACK_LIST + token,
-                "true",
-                Duration.ofMillis(86400000)
-        );
-
-        // 웹소켓, 모각존 방장일 경우, 모각존 참여한 곳, 챌린지 방장일경우, 챌린지 참여한 곳
-        return memberId;
-    }
-
-    @Override
-    public UpdateMemberInfoResponse updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage, boolean showBadge) {
-        Member member = memberPort.loadMemberByMemberId(memberId);
-
-        String updateImageUrl = member.getMemberInfo().imagePath();
-        String updateNickname = member.getMemberInfo().nickname();
-        boolean updateShowBadge = member.getMemberInfo().showBadge();
-
-        if (deleteImage) {
-            updateImageUrl = "Default";
-        } else if (file != null && !file.isEmpty()) {
-            updateImageUrl = s3Service.uploadImage(file, "member");
-        }
-
-        if (nickname != null && !nickname.trim().isEmpty()) {
-            if (memberPort.existsByNickname(nickname)) {
-                throw new MemberException(ErrorCode.NICKNAME_ALREADY_EXISTS);
-            }
-
-            updateNickname = nickname;
-        }
-
-        if (updateShowBadge != showBadge) {
-            updateShowBadge = showBadge;
-        }
-
-        member.updateMemberInfo(updateImageUrl, updateNickname, updateShowBadge);
-        Long savedMemberId = memberPort.persist(member);
-        return new UpdateMemberInfoResponse(savedMemberId);
     }
 
     private String getToken(Member member) {

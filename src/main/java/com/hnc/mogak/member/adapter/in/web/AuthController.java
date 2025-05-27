@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthController {
 
     private final AuthUseCase authUseCase;
-    private final JwtUtil jwtUtil;
 
     @Operation(summary = "소셜 로그인", description = "소셜 로그인 요청을 처리하고 JWT 토큰을 반환합니다.")
     @PostMapping("/social-login")
@@ -32,47 +31,11 @@ public class AuthController {
                 .body(authUseCase.handleSocialLogin(request.getProvider(), request.getProviderId()));
     }
 
-    @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 반환합니다.")
-    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER)
-    @GetMapping
-    public ResponseEntity<MemberInfoResponse> getMemberInfo(
-            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token
-    ) {
-        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
-        return ResponseEntity.status(HttpStatus.OK).body(authUseCase.getMemberInfo(memberId));
-    }
-
-    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자를 탈퇴시킵니다.")
-    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER)
-    @DeleteMapping
-    public ResponseEntity<Long> deleteMember (
-            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token
-    ) {
-        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
-        return ResponseEntity.status(HttpStatus.OK).body(authUseCase.deleteMember(memberId, token));
-    }
-
-    @Operation(summary = "회원 수정", description = "로그인한 사용자의 정보를 수정합니다.")
-    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER)
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UpdateMemberInfoResponse> updateMember(
-            @Parameter(hidden = true)
-            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
-            @RequestParam(value = "nickname", required = false) String nickname,
-            @RequestParam(value = "image", required = false) MultipartFile file,
-            @RequestParam(value = "deleteImage", required = false, defaultValue = "false") boolean deleteImage,
-            @RequestParam(value = "showBadge", required = false) boolean showBadge
-    ) {
-        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
-        return ResponseEntity.ok(authUseCase.updateMemberInfo(memberId, nickname, file, deleteImage, showBadge));
-    }
-
     @Operation(summary = "운영자 로그인", description = "운영자 로그인 요청을 처리하고 JWT 토큰을 반환합니다.")
     @PostMapping("/admin-login")
     public ResponseEntity<LoginResponse> loginAdmin(@Valid @RequestBody AdminLoginRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(authUseCase.loginAdmin(request.getId(), request.getPw()));
     }
-
 
 }

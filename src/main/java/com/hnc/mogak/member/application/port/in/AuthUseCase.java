@@ -9,12 +9,6 @@ public interface AuthUseCase {
 
     LoginResponse handleSocialLogin(String provider, String providerId);
 
-    MemberInfoResponse getMemberInfo(Long memberId);
-
-    Long deleteMember(Long memberId, String token);
-
-    UpdateMemberInfoResponse updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage, boolean showBadge);
-
     LoginResponse loginAdmin(String id, String pw);
 
 }
