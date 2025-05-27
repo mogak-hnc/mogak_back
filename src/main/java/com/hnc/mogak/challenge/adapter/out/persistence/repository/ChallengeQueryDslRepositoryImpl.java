@@ -45,7 +45,7 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
         builder.and(challenge.startDate.after(LocalDate.now()));
 
         List<Tuple> challengeInfos = queryFactory
-                .select(challenge.id, challenge.official, challenge.title, challenge.startDate, challenge.endDate)
+                .select(challenge.id, challenge.official, challenge.title, challenge.startDate, challenge.endDate, challenge.status)
                 .from(challenge)
                 .leftJoin(challengeMember).on(challengeMember.challengeEntity.eq(challenge))
                 .where(builder)
@@ -95,6 +95,7 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                             .startDate(start)
                             .endDate(end)
                             .memberImageUrl(images)
+                            .status(tuple.get(challenge.status))
                             .build();
                 })
                 .toList();

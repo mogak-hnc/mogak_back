@@ -37,4 +37,5 @@ public class BadgeCommandAdapter implements BadgeCommandPort {
         BadgeEntity badgeEntity = badgeRepository.save(BadgeMapper.mapToJpaEntity(badge));
         return badgeEntity.getId();
     }
+
 }

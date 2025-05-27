@@ -1,5 +1,6 @@
 package com.hnc.mogak.challenge.adapter.in.web.dto;
 
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,5 +17,6 @@ public class MogakChallengeMainResponse {
     List<String> memberImageUrls;
     private LocalDate startDate;
     private LocalDate endDate;
+    private ChallengeStatus status;
 
 }

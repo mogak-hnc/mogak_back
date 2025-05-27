@@ -92,6 +92,7 @@ public class ChallengeService implements ChallengeUseCase {
                             .startDate(challenge.getChallengeDuration().startDate())
                             .endDate(challenge.getChallengeDuration().endDate())
                             .memberImageUrls(memberUrlList)
+                            .status(challenge.getStatus())
                             .build();
                 }
         ).toList();
