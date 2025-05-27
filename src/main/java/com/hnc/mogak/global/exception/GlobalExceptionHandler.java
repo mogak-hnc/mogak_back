@@ -39,6 +39,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadgeException.class)
+    public ResponseEntity<String> handleBadgeException(BadgeException ex) {
+        return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(WebSocketException.class)
     public ResponseEntity<String> handleWebSocketException(WebSocketException ex) {
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);

@@ -50,4 +50,9 @@ public class Member {
     public void  updateMemberInfo(String imageUrl, String nickname, boolean showBadge) {
         this.memberInfo = memberInfo.updateMemberInfo(imageUrl, nickname, showBadge);
     }
+
+    public boolean isShowBadge() {
+        return this.memberInfo.showBadge();
+    }
+
 }
