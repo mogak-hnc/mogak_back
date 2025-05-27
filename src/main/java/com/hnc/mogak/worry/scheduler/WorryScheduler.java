@@ -1,6 +1,7 @@
 package com.hnc.mogak.worry.scheduler;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -12,11 +13,18 @@ import java.time.ZoneId;
 import static com.hnc.mogak.global.redis.RedisConstant.*;
 
 @Component
-@RequiredArgsConstructor
 public class WorryScheduler {
 
     private final TaskScheduler taskScheduler;
     private final RedisTemplate<Object, Object> redisTemplate;
+
+    public WorryScheduler(
+            @Qualifier("worryTaskScheduler") TaskScheduler taskScheduler,
+            RedisTemplate<Object, Object> redisTemplate) {
+        this.taskScheduler = taskScheduler;
+        this.redisTemplate = redisTemplate;
+    }
+
 
     public void scheduleWorryDeletion(Integer worryId, LocalDateTime deleteAt) {
         Instant deleteAtInstant = deleteAt.atZone(ZoneId.systemDefault()).toInstant();
