@@ -10,7 +10,15 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @Table(name = "challenge",
-indexes = @Index(name = "idx_total_participants", columnList = "total_participants"))
+        indexes = {
+                @Index(name = "idx_challenge_start_date_status",
+                        columnList = "start_date, status"),
+                @Index(name = "idx_challenge_end_date_status",
+                        columnList = "end_date, status"),
+                @Index(name = "idx_challenge_participants_start_date",
+                        columnList = "total_participants, start_date")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChallengeEntity extends BaseEntity {
@@ -36,5 +44,13 @@ public class ChallengeEntity extends BaseEntity {
 
     @Column(name = "official")
     private boolean official;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ChallengeStatus status;
+
+    public void updateChallengeStatus(ChallengeStatus newStatus) {
+        this.status = newStatus;
+    }
 
 }

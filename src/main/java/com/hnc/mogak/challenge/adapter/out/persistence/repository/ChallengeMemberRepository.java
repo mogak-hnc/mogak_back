@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChallengeMemberRepository extends JpaRepository<ChallengeMemberEntity, Long> {
 
@@ -48,5 +49,11 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
             @Param("challengeId") Long challengeId,
             @Param("memberId") Long memberId
     );
+
+    @Query("SELECT cm.memberEntity.id FROM ChallengeMemberEntity cm WHERE cm.challengeEntity.id = :challengeId")
+    List<Long> findSurvivorMemberIds(Long challengeId);
+
+    @Query("SELECT COUNT(cm) FROM ChallengeMemberEntity cm WHERE cm.challengeEntity.id = :challengeId")
+    Optional<Integer> getTotalParticipants(Long challengeId);
 
 }

@@ -1,6 +1,7 @@
 package com.hnc.mogak.challenge.adapter.in.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class ChallengeDetailResponse {
     private List<String> challengeArticlesThumbnail;
     private boolean isJoined;
     private Long challengeOwnerId;
+    private ChallengeStatus status;
 
     public static ChallengeDetailResponse build(
             List<String> memberImageList,
@@ -44,7 +46,8 @@ public class ChallengeDetailResponse {
                 memberImageList,
                 imageThumbnailList,
                 isJoined,
-                challengeOwnerId
+                challengeOwnerId,
+                challenge.getStatus()
         );
     }
 

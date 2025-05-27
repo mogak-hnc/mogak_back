@@ -44,6 +44,10 @@ public enum ErrorCode {
     FILE_TOO_LARGE("업로드 가능한 파일 용량을 초과했습니다.", HttpStatus.BAD_REQUEST),
     INVALID_FILE_TYPE("이미지만 업로드 가능합니다.", HttpStatus.BAD_REQUEST),
 
+    // Badge Exception
+    NOT_EXISTS_BADGE("해당 뱃지가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
+    ONLY_ACCESS_ADMIN("운영자만 접근할 수 있습니다.", HttpStatus.BAD_REQUEST),
+
     // Worry Exception
     NOT_EXISTS_WORRY("해당 고민있어요가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
     NOT_EXISTS_COMMENT("해당 댓글이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);

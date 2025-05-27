@@ -7,6 +7,8 @@ import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
+import com.hnc.mogak.global.exception.ErrorCode;
+import com.hnc.mogak.global.exception.exceptions.ChallengeException;
 import com.hnc.mogak.global.util.mapper.DateParser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -58,14 +60,9 @@ public class ChallengeController {
         LocalDate endDate = localDates[1];
         boolean isOfficial = role.equals(AuthConstant.ROLE_ADMIN);
 
-        CreateChallengeCommand command = CreateChallengeCommand.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .startDate(startDate)
-                .endDate(endDate)
-                .memberId(memberId)
-                .official(isOfficial)
-                .build();
+        dateValidCheck(startDate, endDate);
+
+        CreateChallengeCommand command = getChallengeCommand(request, startDate, endDate, memberId, isOfficial);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));
     }
@@ -159,4 +156,27 @@ public class ChallengeController {
         String role = jwtUtil.getRole(token);
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.deleteChallenge(challengeId, memberId, role));
     }
+
+    private void dateValidCheck(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isBefore(LocalDate.now().plusDays(1))) {
+            throw new ChallengeException(ErrorCode.INVALID_CHALLENGE_DATE);
+        }
+
+        if (endDate.isBefore(startDate)) {
+            throw new ChallengeException(ErrorCode.INVALID_CHALLENGE_DATE);
+        }
+    }
+
+    private CreateChallengeCommand getChallengeCommand(CreateChallengeRequest request, LocalDate startDate, LocalDate endDate, Long memberId, boolean isOfficial) {
+        return CreateChallengeCommand.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .startDate(startDate)
+                .endDate(endDate)
+                .memberId(memberId)
+                .official(isOfficial)
+                .badgeId(request.getBadgeId())
+                .build();
+    }
+
 }

@@ -75,6 +75,7 @@ public class SecurityConfig {
                                         "/api/mogak/worry/*/comments",
                                         "/api/mogak/worry/*/comments/*",
                                         "/api/mogak/worry/*/empathy",
+                                        "/api/mogak/profile",
                                         "/ws",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",

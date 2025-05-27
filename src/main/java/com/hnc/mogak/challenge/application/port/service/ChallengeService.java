@@ -38,16 +38,12 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
-        if (command.getStartDate().isBefore(LocalDate.now().plusDays(1))) {
-            throw new ChallengeException(ErrorCode.INVALID_CHALLENGE_DATE);
-        }
-
         Member challengeCreator = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = ChallengeMapper.mapToDomain(command);
 
-        Challenge savedChallenge = challengeCommandPort.persist(challengeCreator, challenge);
-
+        Challenge savedChallenge = saveChallenge(command, challenge, challengeCreator);
         join(getJoinChallengeJoinCommand(command, savedChallenge));
+
         return CreateChallengeResponse.build(command, savedChallenge, challengeCreator.getMemberId().value());
     }
 
@@ -55,16 +51,10 @@ public class ChallengeService implements ChallengeUseCase {
     public JoinChallengeResponse join(JoinChallengeCommand command) {
         Member member = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());
-
         List<Member> members = challengeMemberPort.findMembersByChallengeId(challenge.getChallengeId().value());
 
-        if (challenge.isAlreadyStart(LocalDate.now())) {
-            throw new ChallengeException(ErrorCode.ALREADY_STARTED);
-        }
-
-        if (challenge.isAlreadyJoin(member, members)) {
-            throw new ChallengeException(ErrorCode.ALREADY_JOINED);
-        }
+        joinValidateCheck(challenge, member, members);
+        increaseParticipantCount(challenge);
 
         return challengeMemberPort.join(member, challenge);
     }
@@ -75,6 +65,7 @@ public class ChallengeService implements ChallengeUseCase {
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
         int survivorCount = challengeMemberPort.getSurvivorCount(challengeId);
+
         List<ChallengeArticleEntity> challengeArticleEntityList = challengeArticlePort.findImagesByChallengeId(challengeId);
         List<String> imageThumbnailList = challengeArticleEntityList.stream()
                 .map(entity -> entity.getChallengeImageEntityList().get(0).getImageUrl())
@@ -124,11 +115,38 @@ public class ChallengeService implements ChallengeUseCase {
         return challengeId;
     }
 
+    private Challenge saveChallenge(CreateChallengeCommand command, Challenge challenge, Member challengeCreator) {
+        Challenge savedChallenge = challengeCommandPort.persist(challenge);
+        challengeCommandPort.saveChallengeOwner(challengeCreator, savedChallenge);
+        saveChallengeBadgeIfOfficial(savedChallenge, command.getBadgeId());
+        return savedChallenge;
+    }
+
     private JoinChallengeCommand getJoinChallengeJoinCommand(CreateChallengeCommand command, Challenge savedChallenge) {
         return JoinChallengeCommand.builder()
                 .memberId(command.getMemberId())
                 .challengeId(savedChallenge.getChallengeId().value())
                 .build();
+    }
+
+    private void saveChallengeBadgeIfOfficial(Challenge challenge, Long badgeId) {
+        if (!challenge.getExtraDetails().official()) return;
+        challengeCommandPort.saveChallengeBadge(challenge, badgeId);
+    }
+
+    private void joinValidateCheck(Challenge challenge, Member member, List<Member> members) {
+        if (challenge.isAlreadyStart()) {
+            throw new ChallengeException(ErrorCode.ALREADY_STARTED);
+        }
+
+        if (challenge.isAlreadyJoin(member, members)) {
+            throw new ChallengeException(ErrorCode.ALREADY_JOINED);
+        }
+    }
+
+    private void increaseParticipantCount(Challenge challenge) {
+        challenge.increaseParticipantCount();
+        challengeCommandPort.persist(challenge);
     }
 
 }

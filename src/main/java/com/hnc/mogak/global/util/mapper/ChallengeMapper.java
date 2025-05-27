@@ -2,6 +2,7 @@ package com.hnc.mogak.global.util.mapper;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.challenge.domain.challenge.vo.ChallengeDuration;
@@ -33,6 +34,7 @@ public class ChallengeMapper {
                 .startDate(startDate)
                 .endDate(endDate)
                 .official(official)
+                .status(challenge.getStatus())
                 .build();
     }
 
@@ -53,7 +55,7 @@ public class ChallengeMapper {
                         challengeEntity.getEndDate()
                 );
 
-        return Challenge.withId(challengeId, content, extraDetails, challengeDuration);
+        return Challenge.withId(challengeId, content, extraDetails, challengeDuration, challengeEntity.getStatus());
     }
 
     public static Challenge mapToDomain(CreateChallengeCommand command) {
@@ -69,7 +71,7 @@ public class ChallengeMapper {
                         command.getEndDate()
                 );
 
-        return Challenge.withoutId(content, extraDetails, challengeDuration);
+        return Challenge.withoutId(content, extraDetails, challengeDuration, ChallengeStatus.BEFORE);
     }
 
     public static CreateChallengeResponse mapToChallengeResponse(ChallengeEntity savedChallengeEntity, MemberEntity memberEntity) {

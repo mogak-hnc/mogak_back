@@ -24,4 +24,6 @@ public class CreateChallengeRequest {
 
     @NotBlank
     private String period;
+
+    private Long badgeId;
 }

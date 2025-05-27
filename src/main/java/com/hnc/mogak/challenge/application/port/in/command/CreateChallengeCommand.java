@@ -16,5 +16,6 @@ public class CreateChallengeCommand {
     private LocalDate endDate;
     private Long memberId;
     private boolean official;
+    private Long badgeId;
 
 }
