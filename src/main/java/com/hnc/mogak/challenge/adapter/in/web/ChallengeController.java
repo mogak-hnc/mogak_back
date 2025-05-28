@@ -1,6 +1,7 @@
 package com.hnc.mogak.challenge.adapter.in.web;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
+import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
@@ -25,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @RestController
@@ -125,6 +127,9 @@ public class ChallengeController {
             @Parameter(description = "정렬 기준 (recent 또는 participant)")
             @RequestParam(value = "sort", required = false, defaultValue = "recent") String sort,
 
+            @Parameter(description = "챌린지 상태 (BEFORE, ONGOING, COMPLETED(default = 전부)")
+            @RequestParam(value = "status", required = false) ChallengeStatus status,
+
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
 
@@ -138,6 +143,7 @@ public class ChallengeController {
                 .official(official)
                 .sort(sortType)
                 .page(page)
+                .status(status)
                 .size(size)
                 .build();
 
@@ -158,7 +164,7 @@ public class ChallengeController {
     }
 
     private void dateValidCheck(LocalDate startDate, LocalDate endDate) {
-        if (startDate.isBefore(LocalDate.now().plusDays(1))) {
+        if (startDate.isBefore(LocalDate.now(ZoneId.of("Asia/Seoul")).plusDays(1))) {
             throw new ChallengeException(ErrorCode.INVALID_CHALLENGE_DATE);
         }
 

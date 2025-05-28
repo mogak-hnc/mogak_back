@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
     @Override
     public List<Challenge> findTopChallengesByParticipants(int limit) {
         List<ChallengeEntity> topChallenges = challengeRepository
-                .findByStartDateAfterOrderByTotalParticipantsDesc(LocalDate.now(), PageRequest.of(0, limit));
+                .findByStartDateAfterOrderByTotalParticipantsDesc(LocalDate.now(ZoneId.of("Asia/Seoul")), PageRequest.of(0, limit));
 
         return topChallenges.stream().map(ChallengeMapper::mapToDomain).toList();
     }

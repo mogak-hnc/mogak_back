@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class ChallengeStatusScheduler {
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void updateChallengesByDate() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 //        LocalDate today = LocalDate.now().plusDays(1);
 
         updateStartChallenge(today);

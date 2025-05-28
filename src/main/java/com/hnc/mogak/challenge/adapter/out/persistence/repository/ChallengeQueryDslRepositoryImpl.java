@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Repository
@@ -42,7 +43,9 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
             builder.and(challenge.official.eq(query.getOfficial()));
         }
 
-        builder.and(challenge.startDate.after(LocalDate.now()));
+        if (query.getStatus() != null) {
+            builder.and(challenge.status.eq(query.getStatus()));
+        }
 
         List<Tuple> challengeInfos = queryFactory
                 .select(challenge.id, challenge.official, challenge.title, challenge.startDate, challenge.endDate, challenge.status)
