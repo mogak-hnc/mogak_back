@@ -6,10 +6,15 @@ import com.hnc.mogak.global.PageResponse;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WorryException;
+import com.hnc.mogak.member.application.port.out.MemberPort;
+import com.hnc.mogak.member.domain.Member;
+import com.hnc.mogak.member.domain.vo.MemberInfo;
 import com.hnc.mogak.worry.dto.*;
+import com.hnc.mogak.worry.event.CreateAiCommentEvent;
 import com.hnc.mogak.worry.scheduler.WorryScheduler;
 import com.hnc.mogak.worry.service.command.CreateWorryCommand;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -30,9 +35,12 @@ import static com.hnc.mogak.global.redis.RedisConstant.*;
 @RequiredArgsConstructor
 public class WorryServiceImpl implements WorryService {
 
+    private final MemberPort memberPort;
+
     private final WorryScheduler worryScheduler;
     private final RedisTemplate<Object, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final ZoneId SEOUL_ZONE = ZoneId.of("Asia/Seoul");
 
@@ -46,6 +54,8 @@ public class WorryServiceImpl implements WorryService {
 
         saveWorryData(worryId, command, creationTime);
         scheduleWorryDeletion(worryId, creationTime, command.getDuration());
+        aiCommentEvent(request, worryId);
+
         return new CreateWorryResponse(worryId);
     }
 
@@ -53,7 +63,12 @@ public class WorryServiceImpl implements WorryService {
     public WorryCommentResponse createComment(CreateWorryCommentRequest request, Long memberId, Integer worryId) {
         validateWorryId(worryId);
 
-        WorryCommentResponse worryCommentResponse = getCommentResponse(request, memberId);
+        Member member = null;
+        if (memberId == 2L) {
+            member = memberPort.loadMemberByMemberId(memberId);
+        }
+
+        WorryCommentResponse worryCommentResponse = getCommentResponse(request, memberId, member);
         saveComment(worryId, worryCommentResponse);
 
         return worryCommentResponse;
@@ -167,6 +182,10 @@ public class WorryServiceImpl implements WorryService {
         return new WorryCommentDeleteResponse(worryId, commentId);
     }
 
+    private void aiCommentEvent(CreateWorryRequest request, Integer worryId) {
+        eventPublisher.publishEvent(new CreateAiCommentEvent(request.getTitle(), request.getBody(), worryId));
+    }
+
     private WorryPreview buildWorryPreview(Integer worryId) {
         CreateWorryCommand createWorryCommand = getCreateWorryCommand(worryId);
 
@@ -231,12 +250,17 @@ public class WorryServiceImpl implements WorryService {
         redisTemplate.opsForValue().set(commentKey, commentList, getWorryArticleTTL(worryId));
     }
 
-    private WorryCommentResponse getCommentResponse(CreateWorryCommentRequest request, Long memberId) {
+    private WorryCommentResponse getCommentResponse(CreateWorryCommentRequest request, Long memberId, Member member) {
+        String nickname = member == null ? null : member.getMemberInfo().nickname();
+        String profileImageUrl = member == null ? null : member.getMemberInfo().imagePath();
+
         return WorryCommentResponse.builder()
                 .memberId(memberId)
                 .commentId(generateId(WORRY_COMMENT_ID_SEQ_KEY))
                 .comment(request.getComment())
                 .createdAt(LocalDateTime.now(SEOUL_ZONE))
+                .nickname(nickname)
+                .profileImageUrl(profileImageUrl)
                 .build();
     }
     

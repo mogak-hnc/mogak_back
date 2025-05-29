@@ -17,5 +17,7 @@ public class WorryCommentResponse {
     private Integer commentId;
     private String comment;
     private LocalDateTime createdAt;
+    private String nickname;
+    private String profileImageUrl;
 
 }
