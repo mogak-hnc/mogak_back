@@ -1,7 +1,5 @@
 package com.hnc.mogak.member.application.port.service;
 
-import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeEntity;
-import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MemberException;
@@ -19,9 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -29,20 +24,13 @@ import java.util.Objects;
 public class ProfileService implements ProfileUseCase {
 
     private final MemberPort memberPort;
-    private final BadgeQueryPort badgeQueryPort;
     private final S3Service s3Service;
     private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public MemberInfoResponse getProfile(Long requestMemberId, Long targetMemberId) {
         Member member = memberPort.loadMemberByMemberId(targetMemberId);
-
-        List<BadgeEntity> obtainBadgeList = new ArrayList<>();
-        if (Objects.equals(member.getMemberId().value(), requestMemberId) || member.isShowBadge()) {
-            obtainBadgeList = badgeQueryPort.findByBadgeByMemberId(member.getMemberId().value());
-        }
-
-        return buildMemberInfoResponse(member, obtainBadgeList);
+        return buildMemberInfoResponse(member);
     }
 
     @Override
@@ -89,15 +77,15 @@ public class ProfileService implements ProfileUseCase {
         return new UpdateMemberInfoResponse(savedMemberId);
     }
 
-    private MemberInfoResponse buildMemberInfoResponse(Member member, List<BadgeEntity> obtainBadgeList) {
+    private MemberInfoResponse buildMemberInfoResponse(Member member) {
         MemberInfo memberInfo = member.getMemberInfo();
 
         return new MemberInfoResponse(
                 member.getMemberId().value(),
                 memberInfo.imagePath(),
                 memberInfo.nickname(),
-                memberInfo.showBadge(),
-                obtainBadgeList
+                memberInfo.showBadge()
         );
     }
+
 }

@@ -41,8 +41,11 @@ public class BadgeQueryAdapter implements BadgeQueryPort {
     }
 
     @Override
-    public List<BadgeEntity> findByBadgeByMemberId(Long memberId) {
-        return memberBadgeRepository.findBadgesByMemberId(memberId);
+    public List<Badge> findByBadgeByMemberId(Long memberId) {
+        List<BadgeEntity> badgeEntityList = memberBadgeRepository.findBadgesByMemberId(memberId);
+        return badgeEntityList.stream()
+                .map(BadgeMapper::mapToDomainEntity)
+                .toList();
     }
 
 }

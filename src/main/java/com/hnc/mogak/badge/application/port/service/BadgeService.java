@@ -2,12 +2,12 @@ package com.hnc.mogak.badge.application.port.service;
 
 import com.hnc.mogak.badge.adapter.in.web.dto.CreateBadgeRequest;
 import com.hnc.mogak.badge.adapter.in.web.dto.CreateBadgeResponse;
+import com.hnc.mogak.badge.adapter.in.web.dto.GetBadgeResponse;
 import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeType;
-import com.hnc.mogak.badge.application.port.in.BadgeCommandUseCase;
+import com.hnc.mogak.badge.application.port.in.BadgeUseCase;
 import com.hnc.mogak.badge.application.port.out.BadgeCommandPort;
 import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
 import com.hnc.mogak.badge.domain.Badge;
-import com.hnc.mogak.badge.domain.vo.BadgeId;
 import com.hnc.mogak.badge.domain.vo.BadgeImage;
 import com.hnc.mogak.badge.domain.vo.BadgeInfo;
 import com.hnc.mogak.member.application.port.out.MemberPort;
@@ -16,10 +16,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class BadgeCommandService implements BadgeCommandUseCase {
+public class BadgeService implements BadgeUseCase {
 
     private final MemberPort memberPort;
     private final BadgeQueryPort badgeQueryPort;
@@ -39,6 +41,20 @@ public class BadgeCommandService implements BadgeCommandUseCase {
     public CreateBadgeResponse createBadge(CreateBadgeRequest request) {
         return new CreateBadgeResponse(
                 badgeCommandPort.createBadge(getBadgeDomain(request)));
+    }
+
+    @Override
+    public List<GetBadgeResponse> getBadge(Long memberId) {
+        List<Badge> badgeList = badgeQueryPort.findByBadgeByMemberId(memberId);
+
+        return badgeList.stream().map(badge -> new GetBadgeResponse(
+                        badge.getBadgeId().value(),
+                        badge.getBadgeType().name(),
+                        badge.getBadgeInfo().description(),
+                        badge.getBadgeImage().iconUrl(),
+                        badge.getBadgeType()
+                ))
+                .toList();
     }
 
     private Badge getBadgeDomain(CreateBadgeRequest request) {

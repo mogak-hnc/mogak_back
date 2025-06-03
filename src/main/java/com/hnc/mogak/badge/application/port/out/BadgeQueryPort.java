@@ -1,9 +1,7 @@
 package com.hnc.mogak.badge.application.port.out;
 
-import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeEntity;
 import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeType;
 import com.hnc.mogak.badge.domain.Badge;
-import com.hnc.mogak.member.domain.Member;
 
 import java.util.List;
 
@@ -15,6 +13,6 @@ public interface BadgeQueryPort {
 
     List<Badge> findAll();
 
-    List<BadgeEntity> findByBadgeByMemberId(Long memberId);
+    List<Badge> findByBadgeByMemberId(Long memberId);
 
 }

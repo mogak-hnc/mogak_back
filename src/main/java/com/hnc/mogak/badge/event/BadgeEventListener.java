@@ -1,7 +1,7 @@
 package com.hnc.mogak.badge.event;
 
 import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeType;
-import com.hnc.mogak.badge.application.port.in.BadgeCommandUseCase;
+import com.hnc.mogak.badge.application.port.in.BadgeUseCase;
 import com.hnc.mogak.global.exception.exceptions.BadgeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class BadgeEventListener {
 
-    private final BadgeCommandUseCase badgeCommandUseCase;
+    private final BadgeUseCase badgeUseCase;
 
     @Async
     @TransactionalEventListener
@@ -51,7 +51,7 @@ public class BadgeEventListener {
 
     private void executeEvent(Long memberId, Long challengeId, BadgeType badgeType) {
         try {
-            badgeCommandUseCase.acquireBadge(memberId, challengeId, badgeType);
+            badgeUseCase.acquireBadge(memberId, challengeId, badgeType);
         } catch (BadgeException e) {
             log.info("뱃지 예외: {}", memberId, e);
         } catch (RuntimeException e) {
