@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -32,19 +33,19 @@ public class ChallengeStatusScheduler {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    @Scheduled(cron = "0 * * * * *")
-//    @Scheduled(cron = "0 0 0 * * *")
+//    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void updateChallengesByDate() {
-//        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
-        LocalDate today = LocalDate.now().plusDays(1);
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+//        LocalDate today = LocalDate.now().plusDays(1);
 
         updateStartChallenge(today);
 
         LocalDate testDate = today.plusDays(30);
         List<ChallengeEntity> completedChallenges = challengeRepository.findAllByEndDateAndStatus(
-//                today.minusDays(1),
-                testDate,
+                today.minusDays(1),
+//                testDate,
                 ChallengeStatus.ONGOING
         );
 
