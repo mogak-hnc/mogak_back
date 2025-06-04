@@ -32,4 +32,7 @@ public class BadgeEntity extends BaseEntity {
     @Column(nullable = false)
     private BadgeType badgeType;
 
+    @Column(name = "condition_value")
+    private int conditionValue;
+
 }

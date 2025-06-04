@@ -1,17 +1,17 @@
 package com.hnc.mogak.badge.event;
 
-import com.hnc.mogak.badge.domain.Badge;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class ChallengeCompletionOfficialEvent {
+@RequiredArgsConstructor
+public class ChallengeCompletionCountEvent {
 
     private Long challengeId;
     private List<Long> memberIdList;
-    private Badge badge;
 
 }

@@ -18,13 +18,14 @@ public class BadgeMapper {
                 badge.getBadgeInfo().name(),
                 badge.getBadgeInfo().description(),
                 badge.getBadgeImage().iconUrl(),
-                badge.getBadgeType()
+                badge.getBadgeType(),
+                badge.getBadgeInfo().conditionValue()
         );
     }
 
     public static Badge mapToDomainEntity(BadgeEntity badgeEntity) {
         BadgeId badgeId = new BadgeId(badgeEntity.getId());
-        BadgeInfo badgeInfo = new BadgeInfo(badgeEntity.getName(), badgeEntity.getDescription());
+        BadgeInfo badgeInfo = new BadgeInfo(badgeEntity.getName(), badgeEntity.getDescription(), badgeEntity.getConditionValue());
         BadgeImage badgeImage = new BadgeImage(badgeEntity.getIconUrl());
         return Badge.withId(badgeId, badgeInfo, badgeImage, badgeEntity.getBadgeType());
     }

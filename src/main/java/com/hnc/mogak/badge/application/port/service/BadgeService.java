@@ -10,11 +10,13 @@ import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
 import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.badge.domain.vo.BadgeImage;
 import com.hnc.mogak.badge.domain.vo.BadgeInfo;
+import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,20 +29,21 @@ public class BadgeService implements BadgeUseCase {
     private final BadgeQueryPort badgeQueryPort;
     private final BadgeCommandPort badgeCommandPort;
 
+    private final S3Service s3Service;
+
     @Override
-    public void acquireBadge(Long memberId, Long challengeId, BadgeType badgeType) {
+    public void acquireBadge(Long memberId, Long challengeId, Badge badge) {
+        if (badgeQueryPort.hasBadge(memberId, badge.getBadgeId().value(), badge.getBadgeType())) return;
+
         Member member = memberPort.loadMemberByMemberId(memberId);
-        Badge badge = badgeQueryPort.findByBadgeType(badgeType);
-
-        if (badgeQueryPort.hasBadge(memberId, badgeType)) return;
-
         badgeCommandPort.acquireBadge(member, challengeId, badge);
     }
 
     @Override
-    public CreateBadgeResponse createBadge(CreateBadgeRequest request) {
+    public CreateBadgeResponse createBadge(CreateBadgeRequest request, MultipartFile imageFile) {
+        String iconUrl = s3Service.uploadImage(imageFile, "badge");
         return new CreateBadgeResponse(
-                badgeCommandPort.createBadge(getBadgeDomain(request)));
+                badgeCommandPort.createBadge(getBadgeDomain(request, iconUrl)));
     }
 
     @Override
@@ -57,9 +60,21 @@ public class BadgeService implements BadgeUseCase {
                 .toList();
     }
 
-    private Badge getBadgeDomain(CreateBadgeRequest request) {
-        BadgeInfo badgeInfo = new BadgeInfo(request.getName(), request.getDescription());
-        BadgeImage badgeImage = new BadgeImage(request.getIconUrl());
+    @Override
+    public List<GetBadgeResponse> getAllBadge() {
+        return badgeQueryPort.findAll().stream()
+                .map(badge -> new GetBadgeResponse(
+                        badge.getBadgeId().value(),
+                        badge.getBadgeType().name(),
+                        badge.getBadgeInfo().description(),
+                        badge.getBadgeImage().iconUrl(),
+                        badge.getBadgeType()
+                )).toList();
+    }
+
+    private Badge getBadgeDomain(CreateBadgeRequest request, String iconUrl) {
+        BadgeInfo badgeInfo = new BadgeInfo(request.getName(), request.getDescription(), request.getConditionValue());
+        BadgeImage badgeImage = new BadgeImage(iconUrl);
         BadgeType badgeType = request.getBadgeType();
         return Badge.withoutId(badgeInfo, badgeImage, badgeType);
     }

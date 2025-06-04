@@ -18,10 +18,9 @@ public class CreateBadgeRequest {
     @Size(max = 200, message = "뱃지 설명은 200자를 초과할 수 없습니다")
     private String description;
 
-    @NotBlank(message = "아이콘 URL은 필수입니다")
-    private String iconUrl;
-
     @NotNull(message = "뱃지 타입은 필수입니다")
     private BadgeType badgeType;
+
+    private int conditionValue;
 
 }

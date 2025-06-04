@@ -12,9 +12,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,27 +29,34 @@ public class BadgeController {
     private final JwtUtil jwtUtil;
 
     @Operation(summary = "뱃지 생성", description = "새로운 뱃지를 생성합니다.")
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize(AuthConstant.ACCESS_ONLY_ADMIN)
     public ResponseEntity<CreateBadgeResponse> createBadge(
             @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
-            @Valid @RequestBody CreateBadgeRequest request
+            @Valid @RequestPart("request") CreateBadgeRequest request,
+            @RequestPart("imageFile") MultipartFile imageFile
     ) {
         String role = jwtUtil.getRole(token);
         if (!role.equals(AuthConstant.ROLE_ADMIN)) {
             throw new BadgeException(ErrorCode.ONLY_ACCESS_ADMIN);
         }
 
-        return ResponseEntity.ok(badgeUseCase.createBadge(request));
+        return ResponseEntity.ok(badgeUseCase.createBadge(request, imageFile));
     }
 
-    @Operation(summary = "뱃지 조회", description = "뱃지를 조회합니다.")
+    @Operation(summary = "뱃지 개인 조회", description = "현재 소유중인 뱃지를 조회합니다.")
     @GetMapping
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     public ResponseEntity<List<GetBadgeResponse>> getBadge(
             @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token) {
         Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
         return ResponseEntity.ok(badgeUseCase.getBadge(memberId));
+    }
+
+    @Operation(summary = "뱃지 전체 조회", description = "모든 뱃지를 조회합니다.")
+    @GetMapping("/all")
+    public ResponseEntity<List<GetBadgeResponse>> getAllBadge() {
+        return ResponseEntity.ok(badgeUseCase.getAllBadge());
     }
 
 }

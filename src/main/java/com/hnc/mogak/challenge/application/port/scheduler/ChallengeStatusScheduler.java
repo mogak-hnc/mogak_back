@@ -1,6 +1,8 @@
 package com.hnc.mogak.challenge.application.port.scheduler;
 
 import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeEntity;
+import com.hnc.mogak.badge.domain.Badge;
+import com.hnc.mogak.badge.event.ChallengeCompletionCountEvent;
 import com.hnc.mogak.badge.event.ChallengeCompletionDurationEvent;
 import com.hnc.mogak.badge.event.ChallengeCompletionOfficialEvent;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
@@ -10,6 +12,7 @@ import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeMembe
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.BadgeException;
+import com.hnc.mogak.global.util.mapper.BadgeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,24 +56,33 @@ public class ChallengeStatusScheduler {
 
             List<Long> survivorMemberIds = challengeMemberRepository.findSurvivorMemberIds(challengeEntity.getId());
 
-            int duration = calculateDuration(challengeEntity.getStartDate(), challengeEntity.getEndDate());
-            eventPublisher.publishEvent(new ChallengeCompletionDurationEvent(
-                    challengeEntity.getId(),
-                    survivorMemberIds,
-                    duration
-            ));
+            executeDurationEvent(challengeEntity, survivorMemberIds);
+            executeCountEvent(challengeEntity, survivorMemberIds);
 
             if (challengeEntity.isOfficial()) {
-                BadgeEntity badgeEntity = challengeBadgeRepository.findBadgeEntityByChallengeId(challengeEntity.getId())
-                        .orElseThrow(() -> new BadgeException(ErrorCode.NOT_EXISTS_BADGE));
+                Badge badge = BadgeMapper.mapToDomainEntity(challengeBadgeRepository.findBadgeEntityByChallengeId(challengeEntity.getId())
+                        .orElseThrow(() -> new BadgeException(ErrorCode.NOT_EXISTS_BADGE)));
 
                 eventPublisher.publishEvent(new ChallengeCompletionOfficialEvent(
                         challengeEntity.getId(),
                         survivorMemberIds,
-                        badgeEntity.getBadgeType()
+                        badge
                 ));
             }
         });
+    }
+
+    private void executeCountEvent(ChallengeEntity challengeEntity, List<Long> survivorMemberIds) {
+        eventPublisher.publishEvent(new ChallengeCompletionCountEvent(challengeEntity.getId(), survivorMemberIds));
+    }
+
+    private void executeDurationEvent(ChallengeEntity challengeEntity, List<Long> survivorMemberIds) {
+        int duration = calculateDuration(challengeEntity.getStartDate(), challengeEntity.getEndDate());
+        eventPublisher.publishEvent(new ChallengeCompletionDurationEvent(
+                challengeEntity.getId(),
+                survivorMemberIds,
+                duration
+        ));
     }
 
     private void updateStartChallenge(LocalDate today) {
