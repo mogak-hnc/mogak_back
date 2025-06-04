@@ -33,7 +33,9 @@ public class BadgeService implements BadgeUseCase {
 
     @Override
     public void acquireBadge(Long memberId, Long challengeId, Badge badge) {
-        if (badgeQueryPort.hasBadge(memberId, badge.getBadgeId().value(), badge.getBadgeType())) return;
+        if (badgeQueryPort.hasBadge(memberId, badge.getBadgeId().value(), badge.getBadgeType())) {
+            return;
+        }
 
         Member member = memberPort.loadMemberByMemberId(memberId);
         badgeCommandPort.acquireBadge(member, challengeId, badge);

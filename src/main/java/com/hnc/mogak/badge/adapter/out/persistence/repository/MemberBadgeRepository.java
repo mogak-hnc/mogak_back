@@ -25,7 +25,7 @@ public interface MemberBadgeRepository extends JpaRepository<MemberBadgeEntity, 
     @Query("SELECT mb.badgeEntity FROM MemberBadgeEntity mb WHERE mb.memberEntity.id = :memberId")
     List<BadgeEntity> findBadgesByMemberId(@Param("memberId") Long memberId);
 
-    @Query("SELECT mb " +
+    @Query("SELECT CASE WHEN COUNT(mb) > 0 THEN true ELSE false END " +
             "FROM MemberBadgeEntity mb " +
             "WHERE mb.memberEntity.id = :memberId " +
             "AND mb.badgeEntity.id = :badgeId " +

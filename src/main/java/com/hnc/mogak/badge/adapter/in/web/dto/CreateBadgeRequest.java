@@ -4,10 +4,11 @@ import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class CreateBadgeRequest {
 

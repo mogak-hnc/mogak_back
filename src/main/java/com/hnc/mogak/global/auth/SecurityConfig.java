@@ -70,6 +70,7 @@ public class SecurityConfig {
                                         "/api/mogak/challenge/*",
                                         "/api/mogak/challenge/*/verification",
                                         "/api/mogak/challenge/list",
+                                        "/api/mogak/badge/all",
                                         "/api/mogak/worry",
                                         "/api/mogak/worry/*",
                                         "/api/mogak/worry/*/comments",
