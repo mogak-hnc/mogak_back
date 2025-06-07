@@ -49,6 +49,11 @@ public class BadgeService implements BadgeUseCase {
     }
 
     @Override
+    public Long deleteBadge(Long badgeId) {
+        return badgeQueryPort.deleteBadge(badgeId);
+    }
+
+    @Override
     public List<GetBadgeResponse> getBadge(Long memberId) {
         List<Badge> badgeList = badgeQueryPort.findByBadgeByMemberId(memberId);
 

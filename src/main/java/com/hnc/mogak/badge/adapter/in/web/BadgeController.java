@@ -10,6 +10,7 @@ import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.BadgeException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mogak/badge")
 @RequiredArgsConstructor
+@Tag(name = "8. Badge", description = "뱃지 관련 API")
 public class BadgeController {
 
     private final BadgeUseCase badgeUseCase;
@@ -42,6 +44,21 @@ public class BadgeController {
         }
 
         return ResponseEntity.ok(badgeUseCase.createBadge(request, imageFile));
+    }
+
+    @Operation(summary = "뱃지 삭제", description = "뱃지를 삭제합니다.")
+    @DeleteMapping("/{badgeId}")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_ADMIN)
+    public ResponseEntity<Long> deleteBadge(
+            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @PathVariable(value = "badgeId") Long badgeId
+    ) {
+        String role = jwtUtil.getRole(token);
+        if (!role.equals(AuthConstant.ROLE_ADMIN)) {
+            throw new BadgeException(ErrorCode.ONLY_ACCESS_ADMIN);
+        }
+
+        return ResponseEntity.ok(badgeUseCase.deleteBadge(badgeId));
     }
 
     @Operation(summary = "뱃지 개인 조회", description = "현재 소유중인 뱃지를 조회합니다.")

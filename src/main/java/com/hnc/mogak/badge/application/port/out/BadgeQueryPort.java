@@ -25,4 +25,7 @@ public interface BadgeQueryPort {
     Map<Long, Integer> findBadgeCountByMemberIds(List<Long> memberIds);
 
     Optional<BadgeEntity> findBadgeByCountNumber(BadgeType badgeType, int badgeCount);
+
+    Long deleteBadge(Long badgeId);
+
 }

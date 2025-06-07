@@ -47,6 +47,12 @@ public class BadgeQueryAdapter implements BadgeQueryPort {
     }
 
     @Override
+    public Long deleteBadge(Long badgeId) {
+        badgeRepository.deleteById(badgeId);
+        return badgeId;
+    }
+
+    @Override
     public List<Badge> findByBadgeByMemberId(Long memberId) {
         List<BadgeEntity> badgeEntityList = memberBadgeRepository.findBadgesByMemberId(memberId);
         return badgeEntityList.stream()

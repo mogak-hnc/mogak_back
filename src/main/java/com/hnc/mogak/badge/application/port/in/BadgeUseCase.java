@@ -19,4 +19,6 @@ public interface BadgeUseCase {
 
     List<GetBadgeResponse> getAllBadge();
 
+    Long deleteBadge(Long badgeId);
+
 }
