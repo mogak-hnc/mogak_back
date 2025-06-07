@@ -55,6 +55,10 @@ public class Challenge {
         return this.status.equals(ChallengeStatus.ONGOING) || this.status.equals(ChallengeStatus.COMPLETED);
     }
 
+    public boolean isONGOING() {
+        return this.status.equals(ChallengeStatus.ONGOING);
+    }
+
     public boolean isCreator(Long memberId, Long memberOwnerId) {
         return Objects.equals(memberId, memberOwnerId);
     }

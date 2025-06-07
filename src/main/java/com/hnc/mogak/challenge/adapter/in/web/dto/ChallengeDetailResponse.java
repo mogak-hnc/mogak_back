@@ -23,7 +23,6 @@ public class ChallengeDetailResponse {
     private int totalParticipants;
     private int survivorCount;
     private List<String> memberImageList;
-    private List<String> challengeArticlesThumbnail;
     private boolean isJoined;
     private Long challengeOwnerId;
     private ChallengeStatus status;
@@ -31,7 +30,6 @@ public class ChallengeDetailResponse {
     public static ChallengeDetailResponse build(
             List<String> memberImageList,
             Challenge challenge,
-            List<String> imageThumbnailList,
             int survivorCount,
             boolean isJoined,
             Long challengeOwnerId) {
@@ -44,7 +42,6 @@ public class ChallengeDetailResponse {
                 challenge.getExtraDetails().totalParticipants(),
                 survivorCount,
                 memberImageList,
-                imageThumbnailList,
                 isJoined,
                 challengeOwnerId,
                 challenge.getStatus()

@@ -17,6 +17,7 @@ public class ChallengeImageEntity extends BaseEntity {
     @Column(name = "challenge_image_id")
     private Long id;
 
+    @Column(length = 1000)
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)

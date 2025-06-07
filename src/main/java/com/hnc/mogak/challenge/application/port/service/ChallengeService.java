@@ -1,12 +1,10 @@
 package com.hnc.mogak.challenge.application.port.service;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
-import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeArticleEntity;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
-import com.hnc.mogak.challenge.application.port.out.ChallengeArticlePort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeCommandPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeMemberPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeQueryPort;
@@ -22,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,7 +31,6 @@ public class ChallengeService implements ChallengeUseCase {
     private final ChallengeCommandPort challengeCommandPort;
     private final ChallengeQueryPort challengeQueryPort;
     private final ChallengeMemberPort challengeMemberPort;
-    private final ChallengeArticlePort challengeArticlePort;
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
@@ -66,14 +62,9 @@ public class ChallengeService implements ChallengeUseCase {
         List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
         int survivorCount = challengeMemberPort.getSurvivorCount(challengeId);
 
-        List<ChallengeArticleEntity> challengeArticleEntityList = challengeArticlePort.findImagesByChallengeId(challengeId);
-        List<String> imageThumbnailList = challengeArticleEntityList.stream()
-                .map(entity -> entity.getChallengeImageEntityList().get(0).getImageUrl())
-                .toList();
-
         boolean isJoined = challengeMemberPort.isMember(challengeId, memberId);
         Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
-        return ChallengeDetailResponse.build(memberImageList, challenge, imageThumbnailList, survivorCount, isJoined, challengeOwnerId);
+        return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId);
     }
 
     @Override

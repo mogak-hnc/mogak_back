@@ -1,6 +1,7 @@
 package com.hnc.mogak.challenge.adapter.out.persistence.entity;
 
 import com.hnc.mogak.global.BaseEntity;
+import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,10 @@ public class ChallengeArticleEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id")
     private ChallengeEntity challengeEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity memberEntity;
 
     @OneToMany(mappedBy = "challengeArticleEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Builder.Default

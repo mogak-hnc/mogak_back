@@ -2,7 +2,6 @@ package com.hnc.mogak.challenge.adapter.out.persistence;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeSearchResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
-import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeOwnerEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeOwnerRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeQueryDslRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -57,4 +55,5 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
         return challengeOwnerRepository.findChallengeOwnerMemberIdByChallengeEntityId(challengeId)
                 .orElseThrow(() -> new ChallengeException(ErrorCode.NOT_EXISTS_CHALLENGE));
     }
+
 }

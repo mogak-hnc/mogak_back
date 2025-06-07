@@ -2,16 +2,17 @@ package com.hnc.mogak.challenge.adapter.in.web;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeArticleRequest;
 import com.hnc.mogak.challenge.adapter.in.web.dto.CreateChallengeArticleResponse;
+import com.hnc.mogak.challenge.adapter.in.web.dto.GetChallengeArticleDetail;
+import com.hnc.mogak.challenge.adapter.in.web.dto.GetChallengeArticleThumbNail;
 import com.hnc.mogak.challenge.application.port.in.ChallengeArticleUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateArticleCommand;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class ChallengeArticleController {
     @Operation(summary = "챌린지 게시글 생성", description = "챌린지 게시글을 생성합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PostMapping(
-            value = "/{challengeId}/verification",
+            value = "/{challengeId}/article/verification",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE} // multipart/form-data로 설정
     )
     public ResponseEntity<CreateChallengeArticleResponse> create(
@@ -66,6 +67,31 @@ public class ChallengeArticleController {
 
         Long articleId = challengeArticleUseCase.create(command);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CreateChallengeArticleResponse(articleId));
+    }
+
+    @Operation(summary = "챌린지 썸네일 게시글 조회", description = "챌린지 썸네일 게시글을 조회합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
+    @GetMapping("/{challengeId}/article")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<Page<GetChallengeArticleThumbNail>> getChallengeArticlesThumbnail(
+            @PathVariable(value = "challengeId") Long challengeId,
+            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @Parameter(description = "페이지 크기", example = "10")
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(challengeArticleUseCase.getChallengeArticlesThumbnail(challengeId, page, size));
+    }
+
+    @Operation(summary = "챌린지 게시글 조회", description = "챌린지 썸네일 게시글을 조회합니다. (*우측 상단 Authorize 버튼에 Bearer를 제외한 토큰을 넣어주세요.)")
+    @GetMapping("/{challengeId}/article/{articleId}")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<GetChallengeArticleDetail> getChallengeArticleDetail(
+            @PathVariable(value = "challengeId") Long challengeId,
+            @PathVariable(value = "articleId") Long articleId
+    ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(challengeArticleUseCase.getChallengeArticleDetail(challengeId, articleId));
     }
 
 }

@@ -29,9 +29,14 @@ public enum ErrorCode {
     ALREADY_STARTED("이미 시작된 챌린지는 참여가 불가능합니다.", HttpStatus.BAD_REQUEST),
     INVALID_CHALLENGE_DATE("시작일은 현재시간보다 이전이여야 합니다.", HttpStatus.BAD_REQUEST),
     NOT_CREATOR("삭제 권한이 없습니다.", HttpStatus.BAD_REQUEST),
+    NOT_JOINED_CHALLENGE("챌린지에 참가한 회원이 아닙니다.", HttpStatus.BAD_REQUEST),
 
     // CHALLENGE_ARTICLE Exception
     UPLOAD_FAILED("파일 업로드에 실패하였습니다.", HttpStatus.BAD_REQUEST),
+    TOO_MANY_IMAGES("10장 이하의 이미지만 등록가능합니다.", HttpStatus.BAD_REQUEST),
+    INVALID_ACCESS("잘못된 접근입니다.", HttpStatus.BAD_REQUEST),
+    ONLY_ONE_POST_PER_DAY("하루에 하나만 업로드 가능합니다.", HttpStatus.BAD_REQUEST),
+    ONLY_CAN_UPLOAD_WHEN_ONGOING("챌린지 진행 중에만 업로드 할 수 있습니다.", HttpStatus.BAD_REQUEST),
 
     // Member Exception
     NOT_EXISTS_MEMBER("해당 회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),

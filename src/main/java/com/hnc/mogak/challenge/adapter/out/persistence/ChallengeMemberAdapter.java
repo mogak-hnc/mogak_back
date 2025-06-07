@@ -7,7 +7,6 @@ import com.hnc.mogak.challenge.application.port.out.ChallengeMemberPort;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
-import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
