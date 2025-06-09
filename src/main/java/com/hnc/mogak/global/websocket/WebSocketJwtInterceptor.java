@@ -22,10 +22,10 @@ public class WebSocketJwtInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         String token = request.getHeaders().getFirst(AuthConstant.AUTHORIZATION);
 
-        if (token == null || jwtUtil.isTokenExpired(token)) {
-            response.setStatusCode(HttpStatus.FORBIDDEN);
-            return false;
-        }
+//        if (token == null || jwtUtil.isTokenExpired(token)) {
+//            response.setStatusCode(HttpStatus.FORBIDDEN);
+//            return false;
+//        }
 
         return true;
     }

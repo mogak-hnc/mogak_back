@@ -80,6 +80,7 @@ public class SecurityConfig {
                                         "/api/mogak/worry/*/empathy",
                                         "/api/mogak/profile",
                                         "/ws",
+                                        "/ws/**",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
                                         "/swagger-resources/**",
