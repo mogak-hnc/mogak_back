@@ -33,7 +33,7 @@ public class MogakZoneWebSocketController {
     }
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}/message")
-    @SendTo("/topic/api/mogak/zone/{mogakZoneId}")
+    @SendTo("/topic/api/mogak/zone/{mogakZoneId}/message")
     public ChatMessageResponse sendMessage(
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId,
             @Payload ChatMessageRequest chatMessageRequest
@@ -48,7 +48,7 @@ public class MogakZoneWebSocketController {
     }
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}/status")
-    @SendTo("/topic/api/mogak/zone/{mogakZoneId}")
+    @SendTo("/topic/api/mogak/zone/{mogakZoneId}/status")
     public MogakZoneStatusResponse changeStatus(
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId,
             @Payload MogakZoneStatusRequest statusRequest
