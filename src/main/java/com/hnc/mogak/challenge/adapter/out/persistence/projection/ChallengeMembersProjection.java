@@ -5,5 +5,6 @@ public interface ChallengeMembersProjection {
     Long getMemberId();
     String getNickname();
     String getMemberImageUrl();
+    Boolean getSurvivor();
 
 }

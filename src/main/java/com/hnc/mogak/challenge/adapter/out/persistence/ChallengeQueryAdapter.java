@@ -2,6 +2,8 @@ package com.hnc.mogak.challenge.adapter.out.persistence;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeSearchResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeInfoProjection;
+import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeMemberRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeOwnerRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeQueryDslRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
@@ -11,6 +13,7 @@ import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.ChallengeException;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
+import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
     private final ChallengeRepository challengeRepository;
     private final ChallengeOwnerRepository challengeOwnerRepository;
     private final ChallengeQueryDslRepository challengeQueryDslRepository;
+    private final ChallengeMemberRepository challengeMemberRepository;
 
     @Override
     public Challenge findByChallengeId(Long challengeId) {
@@ -54,6 +59,17 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
     public Long findChallengeOwnerMemberIdByChallengeId(Long challengeId) {
         return challengeOwnerRepository.findChallengeOwnerMemberIdByChallengeEntityId(challengeId)
                 .orElseThrow(() -> new ChallengeException(ErrorCode.NOT_EXISTS_CHALLENGE));
+    }
+
+    @Override
+    public List<ChallengeInfoResponse> findJoinedChallenges(Long memberId) {
+        return challengeMemberRepository.findJoinedChallenges(memberId).stream()
+                .map(projection ->
+                        ChallengeInfoResponse.builder()
+                        .challengeId(projection.getChallengeId())
+                        .title(projection.getTitle())
+                        .build())
+                .toList();
     }
 
 }

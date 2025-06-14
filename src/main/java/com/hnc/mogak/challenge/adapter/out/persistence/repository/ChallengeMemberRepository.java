@@ -2,11 +2,14 @@ package com.hnc.mogak.challenge.adapter.out.persistence.repository;
 
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeInfoProjection;
 import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeMembersProjection;
+import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -27,9 +30,12 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
     @Query("SELECT " +
             "cm.memberEntity.id as memberId, " +
             "cm.memberEntity.nickname as nickname, " +
-            "cm.memberEntity.imagePath as memberImageUrl " +
+            "cm.memberEntity.imagePath as memberImageUrl, " +
+            "cm.survivor as survivor " +
             "FROM ChallengeMemberEntity cm " +
-            "WHERE cm.challengeEntity.id = :challengeId")
+            "WHERE cm.challengeEntity.id = :challengeId " +
+            "ORDER BY cm.survivor DESC"
+    )
     Page<ChallengeMembersProjection> findMembersByChallengeId(@Param("challengeId") Long challengeId, Pageable pageable);
 
     @Query(value = """
@@ -65,5 +71,21 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
 
     @Query("SELECT COUNT(cm) FROM ChallengeMemberEntity cm WHERE cm.challengeEntity.id = :challengeId")
     Optional<Integer> getTotalParticipants(Long challengeId);
+
+    @Modifying
+    @Query("UPDATE ChallengeMemberEntity cm SET cm.survivor = false WHERE cm.challengeEntity.id = :challengeId AND cm.memberEntity.id = :memberId")
+    void updateSurvivorStatusForMember(@Param(value = "challengeId") Long challengeId, @Param(value = "memberId") Long memberId);
+
+    @Query("SELECT cm.survivor FROM ChallengeMemberEntity cm WHERE cm.challengeEntity.id = :challengeId AND cm.memberEntity.id = :memberId")
+    Boolean isSurvivor(
+            @Param(value = "challengeId") Long challengeId,
+            @Param(value = "memberId") Long memberId);
+
+    @Query("SELECT " +
+            "cm.challengeEntity.id AS challengeId, " +
+            "cm.challengeEntity.title AS title " +
+            "FROM ChallengeMemberEntity cm " +
+            "WHERE cm.memberEntity.id = :memberId AND cm.survivor = true")
+    List<ChallengeInfoProjection> findJoinedChallenges(@Param(value = "memberId") Long memberId);
 
 }

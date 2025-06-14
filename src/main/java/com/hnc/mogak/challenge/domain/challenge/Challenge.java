@@ -67,4 +67,8 @@ public class Challenge {
         this.extraDetails = new ExtraDetails(extraDetails.official(), extraDetails.totalParticipants() + 1);
     }
 
+    public boolean isHost(Long memberId, Long ownerMemberId) {
+        return Objects.equals(memberId, ownerMemberId);
+    }
+
 }

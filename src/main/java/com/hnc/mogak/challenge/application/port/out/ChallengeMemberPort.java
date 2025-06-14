@@ -26,4 +26,8 @@ public interface ChallengeMemberPort {
 
     Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query);
 
+    void deactivateSurvivorMember(Long targetMemberId, Long challengeId);
+
+    boolean isSurvivor(Long challengeId, Long memberId);
+
 }

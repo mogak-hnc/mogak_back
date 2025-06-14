@@ -85,7 +85,19 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
                         .memberId(projection.getMemberId())
                         .nickname(projection.getNickname())
                         .memberImageUrl(projection.getMemberImageUrl())
+                        .isSurvivor(Boolean.TRUE.equals(projection.getSurvivor()))
                         .build());
+    }
+
+    @Override
+    public void deactivateSurvivorMember(Long tagetMemberId, Long challengeId) {
+        challengeMemberRepository.updateSurvivorStatusForMember(challengeId, tagetMemberId);
+    }
+
+    @Override
+    public boolean isSurvivor(Long challengeId, Long memberId) {
+        Boolean result = challengeMemberRepository.isSurvivor(challengeId, memberId);
+        return Boolean.TRUE.equals(result);
     }
 
 }

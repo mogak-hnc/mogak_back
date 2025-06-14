@@ -1,6 +1,7 @@
 package com.hnc.mogak.challenge.application.port.in;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
+import com.hnc.mogak.challenge.application.port.in.command.ChallengeDeactivateCommand;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
@@ -17,12 +18,14 @@ public interface ChallengeUseCase {
 
     ChallengeDetailResponse getDetail(Long memberId, Long challengeId);
 
-    List<MogakChallengeMainResponse> getMainPage();
+    List<ChallengeMainResponse> getMainPage();
 
     Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query);
 
     Long deleteChallenge(Long challengeId, Long memberId, String role);
 
     Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query);
+
+    ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command);
 
 }

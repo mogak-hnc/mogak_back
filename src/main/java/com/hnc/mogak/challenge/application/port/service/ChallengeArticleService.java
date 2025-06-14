@@ -71,6 +71,10 @@ public class ChallengeArticleService implements ChallengeArticleUseCase {
             throw new ChallengeArticleException(ErrorCode.NOT_JOINED_CHALLENGE);
         }
 
+        if (!challengeMemberPort.isSurvivor(command.getChallengeId(), command.getMemberId())) {
+            throw new ChallengeArticleException(ErrorCode.NOT_SURVIVOR);
+        }
+
         if (challengeArticlePort.isAlreadyPostToday(command.getChallengeId(), command.getMemberId())) {
             throw new ChallengeArticleException(ErrorCode.ONLY_ONE_POST_PER_DAY);
         }

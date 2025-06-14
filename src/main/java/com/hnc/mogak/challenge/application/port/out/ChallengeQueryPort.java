@@ -3,6 +3,7 @@ package com.hnc.mogak.challenge.application.port.out;
 import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeSearchResponse;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
+import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -16,5 +17,7 @@ public interface ChallengeQueryPort {
     Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query);
 
     Long findChallengeOwnerMemberIdByChallengeId(Long challengeId);
+
+    List<ChallengeInfoResponse> findJoinedChallenges(Long memberId);
 
 }

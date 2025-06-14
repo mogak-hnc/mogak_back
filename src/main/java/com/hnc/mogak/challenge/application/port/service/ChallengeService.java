@@ -2,6 +2,7 @@ package com.hnc.mogak.challenge.application.port.service;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
+import com.hnc.mogak.challenge.application.port.in.command.ChallengeDeactivateCommand;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -69,7 +71,7 @@ public class ChallengeService implements ChallengeUseCase {
     }
 
     @Override
-    public List<MogakChallengeMainResponse> getMainPage() {
+    public List<ChallengeMainResponse> getMainPage() {
         int mainChallengeLimit = 4;
         List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
 
@@ -77,7 +79,7 @@ public class ChallengeService implements ChallengeUseCase {
         return topChallenges.stream()
                 .map(challenge -> {
                     List<String> memberUrlList = challengeMemberPort.getMemberImageByChallengeId(challenge.getChallengeId().value(), memberUrlLimit);
-                    return MogakChallengeMainResponse.builder()
+                    return ChallengeMainResponse.builder()
                             .challengeId(challenge.getChallengeId().value())
                             .official(challenge.getExtraDetails().official())
                             .title(challenge.getContent().title())
@@ -111,6 +113,39 @@ public class ChallengeService implements ChallengeUseCase {
     @Override
     public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query) {
         return challengeMemberPort.getChallengeMembers(query);
+    }
+
+    @Override
+    public ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command) {
+        Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());
+        Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challenge.getChallengeId().value());
+        Member kickedMember = memberPort.loadMemberByMemberId(command.getTargetMemberId());
+
+        validateHostAuthority(command, challenge, challengeOwnerId);
+        challengeMemberPort.deactivateSurvivorMember(command.getTargetMemberId(), command.getChallengeId());
+        return buildDeactivateMemberResponse(challenge, kickedMember);
+    }
+
+    private ChallengeMemberDeactivateResponse buildDeactivateMemberResponse(Challenge challenge, Member kickedMember) {
+        return ChallengeMemberDeactivateResponse.builder()
+                .challengeId(challenge.getChallengeId().value())
+                .kickedMemberId(kickedMember.getMemberId().value())
+                .build();
+    }
+
+    private void validateHostAuthority(ChallengeDeactivateCommand command, Challenge challenge, Long challengeOwnerId) {
+        if (!command.getRole().equals(AuthConstant.ROLE_ADMIN) && !challenge.isHost(command.getRequestMemberId(), challengeOwnerId)) {
+            throw new ChallengeException(ErrorCode.NOT_CREATOR);
+        }
+
+        if (Objects.equals(command.getTargetMemberId(), challengeOwnerId)) {
+            throw new ChallengeException(ErrorCode.CANNOT_KICK_HOST);
+        }
+
+        if (!challengeMemberPort.isMember(command.getChallengeId(), command.getTargetMemberId())) {
+            throw new ChallengeException(ErrorCode.NOT_JOINED_CHALLENGE);
+        }
+
     }
 
     private Challenge saveChallenge(CreateChallengeCommand command, Challenge challenge, Member challengeCreator) {

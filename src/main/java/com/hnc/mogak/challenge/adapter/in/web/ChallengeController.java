@@ -3,6 +3,7 @@ package com.hnc.mogak.challenge.adapter.in.web;
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
+import com.hnc.mogak.challenge.application.port.in.command.ChallengeDeactivateCommand;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
@@ -112,7 +113,7 @@ public class ChallengeController {
 
     @Operation(summary = "챌린지 메인 페이지", description = "메인 화면에 표시될 챌린지 목록을 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<MogakChallengeMainResponse>> getMogakChallengeMainPage() {
+    public ResponseEntity<List<ChallengeMainResponse>> getMogakChallengeMainPage() {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getMainPage());
     }
 
@@ -183,6 +184,31 @@ public class ChallengeController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getChallengeMembers(query));
+    }
+
+    @Operation(summary = "챌린지 멤버 생존자 내보내기", description = "챌린지 멤버 생존자를 내보내는 기능입니다.")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @PutMapping("/{challengeId}/members/{targetMemberId}/survivor")
+    public ResponseEntity<ChallengeMemberDeactivateResponse> deactivateSurvivor(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "챌린지 ID")
+            @PathVariable(value = "challengeId") Long challengeId,
+            @Parameter(description = "내보 낼 멤버 ID")
+            @PathVariable(value = "targetMemberId") Long targetMemberId
+
+    ) {
+        Long requestMemberId = Long.parseLong(jwtUtil.getMemberId(token));
+        String role = jwtUtil.getRole(token);
+
+        ChallengeDeactivateCommand command = ChallengeDeactivateCommand.builder()
+                .challengeId(challengeId)
+                .requestMemberId(requestMemberId)
+                .targetMemberId(targetMemberId)
+                .role(role)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.deactivateSurvivorMember(command));
     }
 
     private void dateValidCheck(LocalDate startDate, LocalDate endDate) {

@@ -10,5 +10,6 @@ public class ChallengeMembersResponse {
     private Long memberId;
     private String nickname;
     private String memberImageUrl;
+    private boolean isSurvivor;
 
 }
