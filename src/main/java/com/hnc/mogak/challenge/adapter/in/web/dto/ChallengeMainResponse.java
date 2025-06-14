@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class MogakChallengeMainResponse {
+public class ChallengeMainResponse {
 
     private Long challengeId;
     private boolean official;

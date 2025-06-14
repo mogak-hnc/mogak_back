@@ -20,7 +20,6 @@ import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.out.*;
-import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
@@ -132,8 +131,8 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         MogakZone mogakZone = mogakZoneQueryPort.findById(mogakZoneId);
         Long ownerMemberId = mogakZoneQueryPort.findZoneOwnerIdByMogakZoneId(mogakZoneId);
 
-        if (!role.equals(AuthConstant.ROLE_ADMIN) && !mogakZone.isCreator(memberId, ownerMemberId)) {
-            throw new ChallengeException(ErrorCode.NOT_CREATOR);
+        if (!role.equals(AuthConstant.ROLE_ADMIN) && !mogakZone.isHost(memberId, ownerMemberId)) {
+            throw new MogakZoneException(ErrorCode.NOT_CREATOR);
         }
 
         mogakZoneCommandPort.deleteMogakZone(mogakZone);

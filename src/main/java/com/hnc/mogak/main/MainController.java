@@ -1,6 +1,6 @@
 package com.hnc.mogak.main;
 
-import com.hnc.mogak.challenge.adapter.in.web.dto.MogakChallengeMainResponse;
+import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeMainResponse;
 import com.hnc.mogak.challenge.application.port.service.ChallengeService;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
 import com.hnc.mogak.zone.application.port.service.MogakZoneQueryService;
@@ -26,7 +26,7 @@ public class MainController {
     @GetMapping("/api/mogak")
     public ResponseEntity<MainPage> getMainPage() {
         List<MogakZoneMainResponse> mogakZoneMainResponses = mogakZoneQueryService.getMainPage();
-        List<MogakChallengeMainResponse> mogakChallengeResponses = challengeService.getMainPage();
+        List<ChallengeMainResponse> mogakChallengeResponses = challengeService.getMainPage();
         return ResponseEntity.status(HttpStatus.OK).body(new MainPage(mogakZoneMainResponses, mogakChallengeResponses));
     }
 
