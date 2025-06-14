@@ -1,9 +1,11 @@
 package com.hnc.mogak.member.application.port.service;
 
+import com.hnc.mogak.challenge.application.port.out.ChallengeQueryPort;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MemberException;
 import com.hnc.mogak.global.redis.RedisConstant;
+import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
 import com.hnc.mogak.member.application.port.in.ProfileUseCase;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,6 +27,7 @@ import java.time.Duration;
 public class ProfileService implements ProfileUseCase {
 
     private final MemberPort memberPort;
+    private final ChallengeQueryPort challengeQueryPort;
     private final S3Service s3Service;
     private final RedisTemplate<Object, Object> redisTemplate;
 
@@ -75,6 +79,11 @@ public class ProfileService implements ProfileUseCase {
         member.updateMemberInfo(updateImageUrl, updateNickname, updateShowBadge);
         Long savedMemberId = memberPort.persist(member);
         return new UpdateMemberInfoResponse(savedMemberId);
+    }
+
+    @Override
+    public List<ChallengeInfoResponse> getJoinedChallenges(Long memberId) {
+        return challengeQueryPort.findJoinedChallenges(memberId);
     }
 
     private MemberInfoResponse buildMemberInfoResponse(Member member) {
