@@ -6,6 +6,7 @@ import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
+import com.hnc.mogak.challenge.application.port.in.query.GetChallengeMembersQuery;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.exception.ErrorCode;
@@ -161,6 +162,27 @@ public class ChallengeController {
         Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
         String role = jwtUtil.getRole(token);
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.deleteChallenge(challengeId, memberId, role));
+    }
+
+    @Operation(summary = "챌린지별 멤버 조회", description = "챌린지에 참여한 멤버들을 조회합니다.")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @GetMapping("/{challengeId}/members")
+    public ResponseEntity<Page<ChallengeMembersResponse>> getChallengeMembers(
+            @Parameter(description = "멤버 조회 할 챌린지 ID")
+            @PathVariable(value = "challengeId") Long challengeId,
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @Parameter(description = "페이지 사이즈")
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+
+        GetChallengeMembersQuery query = GetChallengeMembersQuery.builder()
+                .challengeId(challengeId)
+                .page(page)
+                .size(size)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getChallengeMembers(query));
     }
 
     private void dateValidCheck(LocalDate startDate, LocalDate endDate) {

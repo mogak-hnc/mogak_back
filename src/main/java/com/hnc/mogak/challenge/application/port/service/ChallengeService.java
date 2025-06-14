@@ -5,6 +5,7 @@ import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
+import com.hnc.mogak.challenge.application.port.in.query.GetChallengeMembersQuery;
 import com.hnc.mogak.challenge.application.port.out.ChallengeCommandPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeMemberPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeQueryPort;
@@ -105,6 +106,11 @@ public class ChallengeService implements ChallengeUseCase {
 
         challengeCommandPort.deleteChallenge(challenge);
         return challengeId;
+    }
+
+    @Override
+    public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query) {
+        return challengeMemberPort.getChallengeMembers(query);
     }
 
     private Challenge saveChallenge(CreateChallengeCommand command, Challenge challenge, Member challengeCreator) {

@@ -4,6 +4,7 @@ import com.hnc.mogak.challenge.adapter.in.web.dto.*;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.command.JoinChallengeCommand;
 import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
+import com.hnc.mogak.challenge.application.port.in.query.GetChallengeMembersQuery;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -21,5 +22,7 @@ public interface ChallengeUseCase {
     Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query);
 
     Long deleteChallenge(Long challengeId, Long memberId, String role);
+
+    Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query);
 
 }

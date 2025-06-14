@@ -2,7 +2,9 @@ package com.hnc.mogak.challenge.adapter.out.persistence.repository;
 
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeMembersProjection;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +23,14 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
 
     @Query("SELECT cm.memberEntity FROM ChallengeMemberEntity cm WHERE cm.challengeEntity.id = :challengeId")
     List<MemberEntity> findMembersByChallengeId(@Param("challengeId") Long challengeId);
+
+    @Query("SELECT " +
+            "cm.memberEntity.id as memberId, " +
+            "cm.memberEntity.nickname as nickname, " +
+            "cm.memberEntity.imagePath as memberImageUrl " +
+            "FROM ChallengeMemberEntity cm " +
+            "WHERE cm.challengeEntity.id = :challengeId")
+    Page<ChallengeMembersProjection> findMembersByChallengeId(@Param("challengeId") Long challengeId, Pageable pageable);
 
     @Query(value = """
     SELECT sub.challenge_id, m.image_path

@@ -1,14 +1,17 @@
 package com.hnc.mogak.challenge.adapter.out.persistence;
 
+import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeMembersResponse;
 import com.hnc.mogak.challenge.adapter.in.web.dto.JoinChallengeResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeMemberRepository;
+import com.hnc.mogak.challenge.application.port.in.query.GetChallengeMembersQuery;
 import com.hnc.mogak.challenge.application.port.out.ChallengeMemberPort;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -69,6 +72,20 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
     @Override
     public boolean isMember(Long challengeId, Long memberId) {
         return challengeMemberRepository.existsByChallengeIdAndMemberId(challengeId, memberId);
+    }
+
+    @Override
+    public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query) {
+        int page = query.getPage();
+        int size = query.getSize();
+        Pageable pageable = PageRequest.of(page, size);
+
+        return challengeMemberRepository.findMembersByChallengeId(query.getChallengeId(), pageable)
+                .map(projection -> ChallengeMembersResponse.builder()
+                        .memberId(projection.getMemberId())
+                        .nickname(projection.getNickname())
+                        .memberImageUrl(projection.getMemberImageUrl())
+                        .build());
     }
 
 }
