@@ -1,7 +1,6 @@
-package com.hnc.mogak.global.websocket;
+package com.hnc.mogak.zone.websocket;
 
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
-import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

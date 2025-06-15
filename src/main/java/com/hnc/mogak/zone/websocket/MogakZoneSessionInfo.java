@@ -1,4 +1,4 @@
-package com.hnc.mogak.global.websocket;
+package com.hnc.mogak.zone.websocket;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,17 +1,11 @@
-package com.hnc.mogak.global.websocket;
+package com.hnc.mogak.zone.websocket;
 
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WebSocketException;
-import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
-import com.hnc.mogak.zone.application.port.out.MogakZoneCommandPort;
-import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
-import com.hnc.mogak.zone.application.port.service.event.model.OutMogakZoneEvent;
-import com.hnc.mogak.zone.domain.zone.MogakZone;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;

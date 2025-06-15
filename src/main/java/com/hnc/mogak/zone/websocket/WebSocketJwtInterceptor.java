@@ -1,4 +1,4 @@
-package com.hnc.mogak.global.websocket;
+package com.hnc.mogak.zone.websocket;
 
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;

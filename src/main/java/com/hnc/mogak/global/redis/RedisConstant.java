@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RedisConstant {
 
-    public static final String ZONE_PARTICIPANT_COUNT = "zoneParticipantCount:";
-
     public static final String WORRY_EMPATHY_RANKING_KEY = "worry:empathy:ranking";
     public static final String WORRY_RECENT_SORT_KEY = "worry:recent:sort";
 
