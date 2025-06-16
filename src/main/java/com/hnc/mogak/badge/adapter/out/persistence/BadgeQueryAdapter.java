@@ -84,6 +84,13 @@ public class BadgeQueryAdapter implements BadgeQueryPort {
     }
 
     @Override
+    public Badge findByBadgeId(Long badgeId) {
+        return BadgeMapper.mapToDomainEntity(
+                badgeRepository.findById(badgeId)
+                .orElseThrow(() -> new BadgeException(ErrorCode.NOT_EXISTS_BADGE)));
+    }
+
+    @Override
     public Optional<BadgeEntity> findBadgeByCountNumber(BadgeType badgeType, int badgeCount) {
         return badgeRepository.findByBadgeTypeAndConditionValue(badgeType, badgeCount);
     }

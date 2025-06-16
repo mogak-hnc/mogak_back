@@ -1,5 +1,7 @@
 package com.hnc.mogak.member.adapter.in.web;
 
+import com.hnc.mogak.badge.adapter.in.web.dto.GetBadgeResponse;
+import com.hnc.mogak.badge.application.port.in.BadgeUseCase;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
@@ -26,6 +28,7 @@ import java.util.List;
 public class ProfileController {
 
     private final ProfileUseCase profileUseCase;
+    private final BadgeUseCase badgeUseCase;
     private final JwtUtil jwtUtil;
 
     @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 반환합니다.")
@@ -71,6 +74,16 @@ public class ProfileController {
             @PathVariable(value = "memberId") Long memberId
     ) {
         return ResponseEntity.ok(profileUseCase.getJoinedChallenges(memberId));
+    }
+
+    @Operation(summary = "뱃지 개인 조회", description = "현재 소유중인 뱃지를 조회합니다.")
+    @GetMapping("/{targetMemberId}/badge")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<List<GetBadgeResponse>> getMemberBadge(
+            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @PathVariable(value = "targetMemberId") Long targetMemberId) {
+        Long requestMemberId = Long.parseLong(jwtUtil.getMemberId(token));
+        return ResponseEntity.ok(badgeUseCase.getMemberBadge(requestMemberId, targetMemberId));
     }
 
 }

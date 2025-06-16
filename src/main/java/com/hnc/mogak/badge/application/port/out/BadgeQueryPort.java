@@ -28,4 +28,6 @@ public interface BadgeQueryPort {
 
     Long deleteBadge(Long badgeId);
 
+    Badge findByBadgeId(Long badgeId);
+
 }

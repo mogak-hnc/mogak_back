@@ -74,6 +74,7 @@ public class SecurityConfig {
                                         "/api/mogak/challenge/*/members/*/survivor",
                                         "/api/mogak/challenge/list",
                                         "/api/mogak/badge/all",
+                                        "/api/mogak/badge/*",
                                         "/api/mogak/worry",
                                         "/api/mogak/worry/*",
                                         "/api/mogak/worry/*/comments",

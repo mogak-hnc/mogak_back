@@ -61,19 +61,16 @@ public class BadgeController {
         return ResponseEntity.ok(badgeUseCase.deleteBadge(badgeId));
     }
 
-    @Operation(summary = "뱃지 개인 조회", description = "현재 소유중인 뱃지를 조회합니다.")
-    @GetMapping
-    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
-    public ResponseEntity<List<GetBadgeResponse>> getBadge(
-            @Parameter(hidden = true) @RequestHeader(AuthConstant.AUTHORIZATION) String token) {
-        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
-        return ResponseEntity.ok(badgeUseCase.getBadge(memberId));
-    }
-
     @Operation(summary = "뱃지 전체 조회", description = "모든 뱃지를 조회합니다.")
     @GetMapping("/all")
     public ResponseEntity<List<GetBadgeResponse>> getAllBadge() {
         return ResponseEntity.ok(badgeUseCase.getAllBadge());
+    }
+
+    @Operation(summary = "뱃지 디테일 조회", description = "뱃지를 조회합니다.")
+    @GetMapping("/{badgeId}")
+    public ResponseEntity<GetBadgeResponse> getBadgeDetail(@PathVariable(value = "badgeId") Long badgeId) {
+        return ResponseEntity.ok(badgeUseCase.getBadgeDetail(badgeId));
     }
 
 }

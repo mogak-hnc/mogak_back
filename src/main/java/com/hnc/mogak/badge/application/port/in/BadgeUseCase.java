@@ -3,7 +3,6 @@ package com.hnc.mogak.badge.application.port.in;
 import com.hnc.mogak.badge.adapter.in.web.dto.CreateBadgeRequest;
 import com.hnc.mogak.badge.adapter.in.web.dto.CreateBadgeResponse;
 import com.hnc.mogak.badge.adapter.in.web.dto.GetBadgeResponse;
-import com.hnc.mogak.badge.adapter.out.persistence.entity.BadgeType;
 import com.hnc.mogak.badge.domain.Badge;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,10 +14,12 @@ public interface BadgeUseCase {
 
     CreateBadgeResponse createBadge(CreateBadgeRequest request, MultipartFile imageFile);
 
-    List<GetBadgeResponse> getBadge(Long memberId);
+    List<GetBadgeResponse> getMemberBadge(Long requestMemberId, Long targetMemberId);
 
     List<GetBadgeResponse> getAllBadge();
 
     Long deleteBadge(Long badgeId);
+
+    GetBadgeResponse getBadgeDetail(Long badgeId);
 
 }

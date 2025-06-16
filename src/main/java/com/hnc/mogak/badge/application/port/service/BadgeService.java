@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -54,9 +55,14 @@ public class BadgeService implements BadgeUseCase {
     }
 
     @Override
-    public List<GetBadgeResponse> getBadge(Long memberId) {
-        List<Badge> badgeList = badgeQueryPort.findByBadgeByMemberId(memberId);
+    public List<GetBadgeResponse> getMemberBadge(Long requestMemberId, Long targetMemberId) {
+        Member targetMember = memberPort.loadMemberByMemberId(targetMemberId);
 
+        if (!targetMember.isShowBadge() && !Objects.equals(requestMemberId, targetMemberId)) {
+            return List.of();
+        }
+
+        List<Badge> badgeList = badgeQueryPort.findByBadgeByMemberId(targetMemberId);
         return badgeList.stream().map(badge -> new GetBadgeResponse(
                         badge.getBadgeId().value(),
                         badge.getBadgeType().name(),
@@ -77,6 +83,18 @@ public class BadgeService implements BadgeUseCase {
                         badge.getBadgeImage().iconUrl(),
                         badge.getBadgeType()
                 )).toList();
+    }
+
+    @Override
+    public GetBadgeResponse getBadgeDetail(Long badgeId) {
+        Badge badge = badgeQueryPort.findByBadgeId(badgeId);
+        return new GetBadgeResponse(
+                badge.getBadgeId().value(),
+                badge.getBadgeType().name(),
+                badge.getBadgeInfo().description(),
+                badge.getBadgeImage().iconUrl(),
+                badge.getBadgeType()
+        );
     }
 
     private Badge getBadgeDomain(CreateBadgeRequest request, String iconUrl) {
