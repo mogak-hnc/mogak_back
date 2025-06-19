@@ -51,11 +51,103 @@ SELECT
     '봇',
     'local',
     'local_bot',
-    'ROLE_USER',
+    'ROLE_MEMBER',
     false,
     true,
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
     WHERE NOT EXISTS (
     SELECT 1 FROM member WHERE provider_id = 'local_bot'
+);
+INSERT INTO member (
+    nickname,
+    email,
+    password,
+    image_path,
+    name,
+    provider,
+    provider_id,
+    role,
+    withdrawn,
+    show_badge,
+    created_at,
+    modified_at
+)
+SELECT
+    '테스트유저1',
+    null,
+    'testUser1',
+    'Default',
+    '테스트유저1',
+    'test',
+    'testUser1',
+    'ROLE_MEMBER',
+    false,
+    true,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+    WHERE NOT EXISTS (
+    SELECT 1 FROM member WHERE provider_id = 'testUser1'
+);
+
+INSERT INTO member (
+    nickname,
+    email,
+    password,
+    image_path,
+    name,
+    provider,
+    provider_id,
+    role,
+    withdrawn,
+    show_badge,
+    created_at,
+    modified_at
+)
+SELECT
+    '테스트유저2',
+    null,
+    'testUser2',
+    'Default',
+    '테스트유저2',
+    'test',
+    'testUser2',
+    'ROLE_MEMBER',
+    false,
+    true,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+    WHERE NOT EXISTS (
+    SELECT 1 FROM member WHERE provider_id = 'testUser2'
+);
+
+INSERT INTO member (
+    nickname,
+    email,
+    password,
+    image_path,
+    name,
+    provider,
+    provider_id,
+    role,
+    withdrawn,
+    show_badge,
+    created_at,
+    modified_at
+)
+SELECT
+    '테스트유저3',
+    null,
+    'testUser3',
+    'Default',
+    '테스트유저3',
+    'test',
+    'testUser3',
+    'ROLE_MEMBER',
+    false,
+    true,
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
+    WHERE NOT EXISTS (
+    SELECT 1 FROM member WHERE provider_id = 'testUser3'
 );
