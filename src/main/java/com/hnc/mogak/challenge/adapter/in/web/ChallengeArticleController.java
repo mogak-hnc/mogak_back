@@ -56,7 +56,7 @@ public class ChallengeArticleController {
             @PathVariable(name = "challengeId") Long challengeId
     ) {
 
-        long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
 
         CreateArticleCommand command = CreateArticleCommand.builder()
                 .memberId(memberId)

@@ -3,26 +3,27 @@ package com.hnc.mogak.zone.application.port.service;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
-import com.hnc.mogak.global.exception.exceptions.ChallengeException;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
-import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
-import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
-import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
+import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
+import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
+import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
+import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
+import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
 import com.hnc.mogak.zone.application.port.out.*;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public CreateMogakZoneResponse create(CreateMogakZoneCommand command) {
+        log.info("[{}] [모각존 생성 로직 실행]", RequestContextHolder.getContext().getUuid());
         Member hostMember = memberPort.loadMemberByMemberId(command.getMemberId());
         Set<TagEntity> tagEntitySet = tagPort.findOrCreateTags(command.getTagNames());
 
@@ -66,6 +69,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public JoinMogakZoneResponse join(JoinMogakZoneCommand command) {
+        log.info("[{}] [모각존 참가 로직 실행]", RequestContextHolder.getContext().getUuid());
         MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
         ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZone.getZoneId().value());
         Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
@@ -83,6 +87,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public void leave(Long mogakZoneId, Long memberId) {
+        log.info("[{}] [모각존 나가기 로직 실행]", RequestContextHolder.getContext().getUuid());
         ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZoneId);
         zoneSummary.decreaseJoinCount();
         mogakZoneCommandPort.deleteZoneSummaryMemberImage(mogakZoneId, memberId);
@@ -91,6 +96,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public ChatMessageResponse sendMessage(SendChatMessageCommand command) {
+        log.info("[{}] [모각존 메세지 보내기 로직 실행]", RequestContextHolder.getContext().getUuid());
         Member member = memberPort.loadMemberByMemberId(command.getMemberId());
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
@@ -118,6 +124,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public MogakZoneStatusResponse changeStatus(ChangeStatusCommand command) {
+        log.info("[{}] [모각존 상태 변경 로직 실행]", RequestContextHolder.getContext().getUuid());
         zoneMemberPort.changeStatus(command.getMemberId(), command.getMogakZoneId(), command.getStatus());
         return MogakZoneStatusResponse.builder()
                 .status(command.getStatus())

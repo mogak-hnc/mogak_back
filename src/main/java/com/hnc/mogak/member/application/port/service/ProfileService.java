@@ -32,6 +32,7 @@ public class ProfileService implements ProfileUseCase {
     private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
+    @Transactional(readOnly = true)
     public MemberInfoResponse getProfile(Long requestMemberId, Long targetMemberId) {
         Member member = memberPort.loadMemberByMemberId(targetMemberId);
         return buildMemberInfoResponse(member);
@@ -82,8 +83,9 @@ public class ProfileService implements ProfileUseCase {
     }
 
     @Override
-    public List<ChallengeInfoResponse> getJoinedChallenges(Long memberId) {
-        return challengeQueryPort.findJoinedChallenges(memberId);
+    @Transactional(readOnly = true)
+    public List<ChallengeInfoResponse> findJoinedOngoingChallenges(Long memberId) {
+        return challengeQueryPort.findJoinedOngoingChallenges(memberId);
     }
 
     private MemberInfoResponse buildMemberInfoResponse(Member member) {

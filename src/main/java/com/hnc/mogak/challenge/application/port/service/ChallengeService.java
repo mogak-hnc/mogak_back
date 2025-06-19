@@ -14,10 +14,12 @@ import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.ChallengeException;
+import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -37,6 +40,7 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
+        log.info("[{}] [챌린지 생성 로직 실행]", RequestContextHolder.getContext().getUuid());
         Member challengeCreator = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = ChallengeMapper.mapToDomain(command);
 
@@ -48,6 +52,7 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public JoinChallengeResponse join(JoinChallengeCommand command) {
+        log.info("[{}] [챌린지 참가 로직 실행]", RequestContextHolder.getContext().getUuid());
         Member member = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());
         List<Member> members = challengeMemberPort.findMembersByChallengeId(challenge.getChallengeId().value());
@@ -60,6 +65,7 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public ChallengeDetailResponse getDetail(Long memberId, Long challengeId) {
+        log.info("[{}] [챌린지 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
         int limit = 6;
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
@@ -72,6 +78,7 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public List<ChallengeMainResponse> getMainPage() {
+        log.info("[{}] [챌린지 메인페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
         int mainChallengeLimit = 4;
         List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
 
@@ -94,11 +101,13 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query) {
+        log.info("[{}] [챌린지 검색 로직 실행]", RequestContextHolder.getContext().getUuid());
         return challengeQueryPort.searchChallenge(query);
     }
 
     @Override
     public Long deleteChallenge(Long challengeId, Long memberId, String role) {
+        log.info("[{}] [챌린지 삭제 로직 실행]", RequestContextHolder.getContext().getUuid());
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         Long memberOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
 
@@ -112,11 +121,13 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query) {
+        log.info("[{}] [챌린지 멤버 조회 로직 실행]", RequestContextHolder.getContext().getUuid());
         return challengeMemberPort.getChallengeMembers(query);
     }
 
     @Override
     public ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command) {
+        log.info("[{}] [챌린지 내보내기 로직 실행]", RequestContextHolder.getContext().getUuid());
         Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());
         Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challenge.getChallengeId().value());
         Member kickedMember = memberPort.loadMemberByMemberId(command.getTargetMemberId());

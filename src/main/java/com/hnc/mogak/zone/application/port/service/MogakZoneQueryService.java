@@ -1,5 +1,6 @@
 package com.hnc.mogak.zone.application.port.service;
 
+import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
 import com.hnc.mogak.zone.adapter.in.web.dto.*;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
@@ -11,6 +12,7 @@ import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import java.util.*;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     private final MogakZoneQueryPort mogakZoneQueryPort;
@@ -28,6 +31,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
+        log.info("[{}] [모각존 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
         List<String> tagNames = mogakZoneQueryPort.getTags(detailQuery.getMogakZoneId());
         MogakZone mogakZone = mogakZoneQueryPort.findById(detailQuery.getMogakZoneId());
         ZoneOwner zoneOwner = mogakZoneQueryPort.findZoneOwnerByMogakZoneId(detailQuery.getMogakZoneId());
@@ -45,6 +49,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public List<MogakZoneMainResponse> getMainPage() {
+        log.info("[{}] [모각존 메인 페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
         int size = 4;
 
         List<ZoneSummary> summaryList = mogakZoneQueryPort.findTopZoneSummariesByJoinCount(size);

@@ -11,9 +11,11 @@ import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.badge.domain.vo.BadgeImage;
 import com.hnc.mogak.badge.domain.vo.BadgeInfo;
 import com.hnc.mogak.global.cloud.S3Service;
+import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class BadgeService implements BadgeUseCase {
 
     @Override
     public void acquireBadge(Long memberId, Long challengeId, Badge badge) {
+        log.info("[{}] [뱃지 획득 로직 실행]", RequestContextHolder.getContext().getUuid());
         if (badgeQueryPort.hasBadge(memberId, badge.getBadgeId().value(), badge.getBadgeType())) {
             return;
         }
@@ -45,8 +49,7 @@ public class BadgeService implements BadgeUseCase {
     @Override
     public CreateBadgeResponse createBadge(CreateBadgeRequest request, MultipartFile imageFile) {
         String iconUrl = s3Service.uploadImage(imageFile, "badge");
-        return new CreateBadgeResponse(
-                badgeCommandPort.createBadge(getBadgeDomain(request, iconUrl)));
+        return new CreateBadgeResponse(badgeCommandPort.createBadge(getBadgeDomain(request, iconUrl)));
     }
 
     @Override
@@ -55,6 +58,7 @@ public class BadgeService implements BadgeUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GetBadgeResponse> getMemberBadge(Long requestMemberId, Long targetMemberId) {
         Member targetMember = memberPort.loadMemberByMemberId(targetMemberId);
 
@@ -63,38 +67,31 @@ public class BadgeService implements BadgeUseCase {
         }
 
         List<Badge> badgeList = badgeQueryPort.findByBadgeByMemberId(targetMemberId);
-        return badgeList.stream().map(badge -> new GetBadgeResponse(
-                        badge.getBadgeId().value(),
-                        badge.getBadgeType().name(),
-                        badge.getBadgeInfo().description(),
-                        badge.getBadgeImage().iconUrl(),
-                        badge.getBadgeType()
-                ))
+        return badgeList.stream().map(this::toGetBadgeResponse).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GetBadgeResponse> getAllBadge() {
+        return badgeQueryPort.findAll().stream()
+                .map(this::toGetBadgeResponse)
                 .toList();
     }
 
     @Override
-    public List<GetBadgeResponse> getAllBadge() {
-        return badgeQueryPort.findAll().stream()
-                .map(badge -> new GetBadgeResponse(
-                        badge.getBadgeId().value(),
-                        badge.getBadgeType().name(),
-                        badge.getBadgeInfo().description(),
-                        badge.getBadgeImage().iconUrl(),
-                        badge.getBadgeType()
-                )).toList();
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public GetBadgeResponse getBadgeDetail(Long badgeId) {
         Badge badge = badgeQueryPort.findByBadgeId(badgeId);
+        return toGetBadgeResponse(badge);
+    }
+
+    private GetBadgeResponse toGetBadgeResponse(Badge badge) {
         return new GetBadgeResponse(
                 badge.getBadgeId().value(),
                 badge.getBadgeType().name(),
                 badge.getBadgeInfo().description(),
                 badge.getBadgeImage().iconUrl(),
-                badge.getBadgeType()
-        );
+                badge.getBadgeType());
     }
 
     private Badge getBadgeDomain(CreateBadgeRequest request, String iconUrl) {
