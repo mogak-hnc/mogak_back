@@ -70,10 +70,10 @@ public class ProfileController {
     @Operation(summary = "참여중인 있는 챌린지 정보 조회", description = "참여 중인 챌린지 정보를 조회합니다.")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @GetMapping("/{memberId}/challenges")
-    public ResponseEntity<List<ChallengeInfoResponse>> getJoinedChallenges(
+    public ResponseEntity<List<ChallengeInfoResponse>> findJoinedOngoingChallenges(
             @PathVariable(value = "memberId") Long memberId
     ) {
-        return ResponseEntity.ok(profileUseCase.getJoinedChallenges(memberId));
+        return ResponseEntity.ok(profileUseCase.findJoinedOngoingChallenges(memberId));
     }
 
     @Operation(summary = "뱃지 개인 조회", description = "현재 소유중인 뱃지를 조회합니다.")

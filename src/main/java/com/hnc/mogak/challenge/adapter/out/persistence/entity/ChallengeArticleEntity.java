@@ -31,6 +31,9 @@ public class ChallengeArticleEntity extends BaseEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity memberEntity;
 
+    @Column(length = 1000)
+    private String thumbnailUrl;
+
     @OneToMany(mappedBy = "challengeArticleEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Builder.Default
     private List<ChallengeImageEntity> challengeImageEntityList = new ArrayList<>();

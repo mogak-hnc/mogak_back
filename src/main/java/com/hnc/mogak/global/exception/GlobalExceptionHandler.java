@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -61,6 +62,11 @@ public class GlobalExceptionHandler {
                 .toList();
         log.error("MethodArgumentNotValidException 발생: {}", errors);
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public void handleNoFavicon() {
+        // favicon 같은 요청은 그냥 무시
     }
 
     @ExceptionHandler(RuntimeException.class)

@@ -87,6 +87,7 @@ public class WorryServiceImpl implements WorryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageResponse<WorryCommentResponse> getWorryComments(Integer worryId, int page, int size) {
         validateWorryId(worryId);
         List<WorryCommentResponse> commentList = getCommentListByWorryId(worryId);
