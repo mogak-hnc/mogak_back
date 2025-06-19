@@ -15,6 +15,6 @@ public interface ProfileUseCase {
 
     UpdateMemberInfoResponse updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage, boolean showBadge);
 
-    List<ChallengeInfoResponse> getJoinedChallenges(Long memberId);
+    List<ChallengeInfoResponse> findJoinedOngoingChallenges(Long memberId);
 
 }

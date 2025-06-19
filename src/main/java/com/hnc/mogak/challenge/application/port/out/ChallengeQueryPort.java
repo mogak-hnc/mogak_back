@@ -18,6 +18,6 @@ public interface ChallengeQueryPort {
 
     Long findChallengeOwnerMemberIdByChallengeId(Long challengeId);
 
-    List<ChallengeInfoResponse> findJoinedChallenges(Long memberId);
+    List<ChallengeInfoResponse> findJoinedOngoingChallenges(Long memberId);
 
 }
