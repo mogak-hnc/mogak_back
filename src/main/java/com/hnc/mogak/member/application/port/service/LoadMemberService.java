@@ -15,6 +15,7 @@ public class LoadMemberService implements LoadMemberUseCase {
     private final MemberPort memberPort;
 
     @Override
+    @Transactional(readOnly = true)
     public Member loadMemberByProviderId(String providerId) {
         return memberPort.loadMemberByProviderId(providerId);
     }

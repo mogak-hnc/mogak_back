@@ -35,6 +35,7 @@ public class AuthService implements AuthUseCase {
     private final JwtUtil jwtUtil;
 
     @Override
+    @Transactional(readOnly = true)
     public LoginResponse loginAdmin(String id, String pw) {
         Member adminMember = memberPort.getAdminAccount(id, pw);
         String token = getToken(adminMember);

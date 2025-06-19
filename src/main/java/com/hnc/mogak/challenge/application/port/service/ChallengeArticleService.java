@@ -50,12 +50,14 @@ public class ChallengeArticleService implements ChallengeArticleUseCase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<GetChallengeArticleThumbNail> getChallengeArticlesThumbnail(Long challengeId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return challengeArticlePort.getChallengeArticlesThumbnail(challengeId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GetChallengeArticleDetail getChallengeArticleDetail(Long challengeId, Long articleId) {
         return challengeArticlePort.findChallengeArticle(challengeId, articleId);
     }
