@@ -2,7 +2,6 @@ package com.hnc.mogak.challenge.adapter.out.persistence;
 
 import com.hnc.mogak.challenge.adapter.in.web.dto.ChallengeSearchResponse;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
-import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeInfoProjection;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeMemberRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeOwnerRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeQueryDslRepository;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -62,8 +60,8 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
     }
 
     @Override
-    public List<ChallengeInfoResponse> findJoinedChallenges(Long memberId) {
-        return challengeMemberRepository.findJoinedChallenges(memberId).stream()
+    public List<ChallengeInfoResponse> findJoinedOngoingChallenges(Long memberId) {
+        return challengeMemberRepository.findJoinedOngoingChallenges(memberId).stream()
                 .map(projection ->
                         ChallengeInfoResponse.builder()
                         .challengeId(projection.getChallengeId())

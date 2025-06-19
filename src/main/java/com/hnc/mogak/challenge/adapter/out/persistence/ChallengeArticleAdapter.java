@@ -5,6 +5,7 @@ import com.hnc.mogak.challenge.adapter.in.web.dto.GetChallengeArticleThumbNail;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeArticleEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeImageEntity;
+import com.hnc.mogak.challenge.adapter.out.persistence.projection.GetChallengeArticleThumbNailProjection;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeArticleRepository;
 import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeImageRepository;
 import com.hnc.mogak.challenge.application.port.out.ChallengeArticlePort;
@@ -43,6 +44,7 @@ public class ChallengeArticleAdapter implements ChallengeArticlePort {
                 .description(description)
                 .challengeEntity(challengeEntity)
                 .memberEntity(memberEntity)
+                .thumbnailUrl(imageUrls.get(0))
                 .build());
 
         imageUrls.forEach(imageUrl -> {
@@ -56,26 +58,20 @@ public class ChallengeArticleAdapter implements ChallengeArticlePort {
 
     @Override
     public Page<GetChallengeArticleThumbNail> getChallengeArticlesThumbnail(Long challengeId, Pageable pageable) {
-        Page<ChallengeArticleEntity> challengeArticleEntities =
+        Page<GetChallengeArticleThumbNailProjection> articleProjections =
                 challengeArticleRepository.getChallengeArticlesByChallengeId(challengeId, pageable);
 
-        if (challengeArticleEntities.isEmpty()) return Page.empty();
+        if (articleProjections.isEmpty()) return Page.empty(pageable);
 
-        List<GetChallengeArticleThumbNail> articleThumbnails = challengeArticleEntities.stream()
-                .map(entity -> {
-                    String thumbnailUrl = entity.getChallengeImageEntityList().isEmpty()
-                            ? null
-                            : entity.getChallengeImageEntityList().get(0).getImageUrl();
-
-                    return GetChallengeArticleThumbNail.builder()
-                            .challengeArticleId(entity.getId())
-                            .thumbnailUrl(thumbnailUrl)
-                            .memberId(entity.getMemberEntity().getId())
-                            .build();
-                })
+        List<GetChallengeArticleThumbNail> challengeArticleThumbNails = articleProjections.stream()
+                .map(projection -> GetChallengeArticleThumbNail.builder()
+                        .memberId(projection.getMemberId())
+                        .challengeArticleId(projection.getChallengeArticleId())
+                        .thumbnailUrl(projection.getThumbnailUrl())
+                        .build())
                 .toList();
 
-        return new PageImpl<>(articleThumbnails, pageable, challengeArticleEntities.getTotalElements());
+        return new PageImpl<>(challengeArticleThumbNails, pageable, articleProjections.getTotalElements());
     }
 
     @Override

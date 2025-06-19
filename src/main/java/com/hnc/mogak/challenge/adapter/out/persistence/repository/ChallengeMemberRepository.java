@@ -4,7 +4,6 @@ import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeMemberEntity;
 import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeInfoProjection;
 import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeMembersProjection;
-import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -85,7 +84,9 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
             "cm.challengeEntity.id AS challengeId, " +
             "cm.challengeEntity.title AS title " +
             "FROM ChallengeMemberEntity cm " +
-            "WHERE cm.memberEntity.id = :memberId AND cm.survivor = true")
-    List<ChallengeInfoProjection> findJoinedChallenges(@Param(value = "memberId") Long memberId);
+            "WHERE cm.memberEntity.id = :memberId " +
+            "AND cm.survivor = true " +
+            "AND cm.challengeEntity.status = com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus.ONGOING")
+    List<ChallengeInfoProjection> findJoinedOngoingChallenges(@Param("memberId") Long memberId);
 
 }
