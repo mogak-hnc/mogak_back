@@ -23,7 +23,7 @@ public class MainController {
     private final ChallengeService challengeService;
 
     @Operation(summary = "모각존 & 챌린지 메인 조회", description = "모각존과 챌린지의 메인 화면 정보를 조회합니다.")
-    @GetMapping("/api/mogak")
+    @GetMapping
     public ResponseEntity<MainPage> getMainPage() {
         List<MogakZoneMainResponse> mogakZoneMainResponses = mogakZoneQueryService.getMainPage();
         List<ChallengeMainResponse> mogakChallengeResponses = challengeService.getMainPage();

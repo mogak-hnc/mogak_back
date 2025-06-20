@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mogak/zone")
+@RequestMapping("/zone")
 @Tag(name = "3. MogakZone", description = "모각존 생성 및 조회 API")
 public class MogakZoneCommandController {
 

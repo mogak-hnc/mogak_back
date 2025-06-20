@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/mogak/badge")
+@RequestMapping("/badge")
 @RequiredArgsConstructor
 @Tag(name = "8. Badge", description = "뱃지 관련 API")
 public class BadgeController {

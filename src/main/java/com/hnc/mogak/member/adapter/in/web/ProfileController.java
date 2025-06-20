@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mogak/profile")
+@RequestMapping("/profile")
 @Tag(name = "7. Profile", description = "프로필 관련 api")
 public class ProfileController {
 

@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/mogak/challenge")
+@RequestMapping("/challenge")
 @RequiredArgsConstructor
 @Tag(name = "5. Challenge Article", description = "챌린지 인증 게시글 관련 API")
 public class ChallengeArticleController {

@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mogak/auth")
+@RequestMapping("/auth")
 @Tag(name = "2. Auth", description = "소셜 로그인 관련 API")
 public class AuthController {
 

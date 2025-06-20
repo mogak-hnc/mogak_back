@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/mogak/worry")
+@RequestMapping("/worry")
 @Tag(name = "6. Worry", description = "고민 생성 및 조회 API")
 public class WorryController {
 

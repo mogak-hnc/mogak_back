@@ -32,7 +32,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/mogak/challenge")
+@RequestMapping("/challenge")
 @RequiredArgsConstructor
 @Tag(name = "4. Challenge", description = "모각챌 관련 API")
 public class ChallengeController {
