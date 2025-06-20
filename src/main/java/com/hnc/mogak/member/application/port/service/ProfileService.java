@@ -66,11 +66,13 @@ public class ProfileService implements ProfileUseCase {
         }
 
         if (nickname != null && !nickname.trim().isEmpty()) {
-            if (memberPort.existsByNickname(nickname)) {
-                throw new MemberException(ErrorCode.NICKNAME_ALREADY_EXISTS);
-            }
+            if (!nickname.equals(member.getMemberInfo().nickname())) {
+                if (memberPort.existsByNickname(nickname)) {
+                    throw new MemberException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+                }
 
-            updateNickname = nickname;
+                updateNickname = nickname;
+            }
         }
 
         if (updateShowBadge != showBadge) {

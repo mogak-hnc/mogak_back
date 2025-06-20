@@ -88,7 +88,7 @@ public class BadgeService implements BadgeUseCase {
     private GetBadgeResponse toGetBadgeResponse(Badge badge) {
         return new GetBadgeResponse(
                 badge.getBadgeId().value(),
-                badge.getBadgeType().name(),
+                badge.getBadgeInfo().name(),
                 badge.getBadgeInfo().description(),
                 badge.getBadgeImage().iconUrl(),
                 badge.getBadgeType());

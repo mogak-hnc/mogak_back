@@ -50,8 +50,12 @@ public class QueryCountInterceptor implements HandlerInterceptor {
             queryCountByType.forEach((queryType, count) -> increment(ctx, queryType, count));
         }
 
+        try {
+            log.info("[{}] Response Status=[{}]", ctx.getUuid(), response.getStatus());
+        } catch (NullPointerException e) {
+            log.warn("UUID에 NULL 들어감");
+        }
         RequestContextHolder.clear();
-        log.info("[{}] Response Status=[{}]", ctx.getUuid(), response.getStatus());
     }
     
     private void increment(RequestContext ctx, QueryType queryType, Integer count) {
