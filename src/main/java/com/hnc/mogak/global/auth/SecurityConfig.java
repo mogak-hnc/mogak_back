@@ -60,7 +60,6 @@ public class SecurityConfig {
                                         "/login",
                                         "/auth/social-login",
                                         "/auth/admin-login",
-                                        "",
                                         "/zone",
                                         "/zone/join/*",
                                         "/zone/list",
