@@ -1,5 +1,6 @@
 package com.hnc.mogak.zone.application.port.service;
 
+import com.hnc.mogak.global.monitoring.RequestContext;
 import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
 import com.hnc.mogak.zone.adapter.in.web.dto.*;
@@ -31,8 +32,9 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
-        if (RequestContextHolder.getContext().getUuid() != null) {
-            log.info("[{}] [모각존 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
+        RequestContext ctx = RequestContextHolder.getContext();
+        if (ctx != null && ctx.getUuid() != null) {
+            log.info("[{}] [모각존 디테일 로직 실행]", ctx.getUuid());
         } else {
             log.info("[모각존 디테일 로직 실행] mogakZoneId={}, memberId={}", detailQuery.getMogakZoneId(), detailQuery.getMemberId());
         }

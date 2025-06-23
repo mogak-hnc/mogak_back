@@ -63,7 +63,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         saveZoneOwner(hostMember, mogakZone);
 
         mogakZoneCommandPort.saveZoneSummary(mogakZone, tagEntitySet);
-        join(getJoinCommand(command, hostMember, mogakZone));
+//        join(getJoinCommand(command, hostMember, mogakZone));
         return MogakZoneMapper.mapToMogakZoneResponse(mogakZone, command.getTagNames());
     }
 
