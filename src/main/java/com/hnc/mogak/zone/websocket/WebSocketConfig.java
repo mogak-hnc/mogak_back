@@ -21,10 +21,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.enableSimpleBroker("/topic");
     }
 
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("https://www.mogak.kr")
+                .setAllowedOrigins("https://www.mogak.kr")
                 .withSockJS();
     }
 
