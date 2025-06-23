@@ -24,9 +24,12 @@ public class WebsocketEventHandler {
         Principal principal = event.getUser();
 
         if (principal instanceof StompPrincipal user) {
+            log.info("웹소켓 principal 조건문 성공");
             Long memberId = user.getMemberId();
             Long mogakZoneId = user.getMogakZoneId();
             String sessionId = user.getSessionId();
+
+            log.info("[웹소켓 해제 정보]memberId: {}, mogakZoneId: {}, sessionId: {}", memberId, mogakZoneId, sessionId);
 
             mogakZoneCommandUseCase.leave(mogakZoneId, memberId);
             messagingTemplate.convertAndSend(

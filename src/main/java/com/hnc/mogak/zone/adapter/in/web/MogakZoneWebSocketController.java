@@ -7,12 +7,14 @@ import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
 import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MogakZoneWebSocketController {
@@ -25,6 +27,7 @@ public class MogakZoneWebSocketController {
     public MogakZoneDetailResponse getMogakZoneDetail(
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId
     ) {
+        log.info("[웹소켓] getMogakZoneDetail 시작");
         MogakZoneDetailQuery detailQuery = MogakZoneDetailQuery.builder()
                 .mogakZoneId(mogakZoneId)
                 .build();
@@ -38,6 +41,7 @@ public class MogakZoneWebSocketController {
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId,
             @Payload ChatMessageRequest chatMessageRequest
     ) {
+        log.info("[웹소켓] sendMessage 시작");
         SendChatMessageCommand command = SendChatMessageCommand.builder()
                 .memberId(chatMessageRequest.getMemberId())
                 .message(chatMessageRequest.getMessage())
@@ -53,7 +57,7 @@ public class MogakZoneWebSocketController {
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId,
             @Payload MogakZoneStatusRequest statusRequest
     ) {
-
+        log.info("[웹소켓] changeStatus 시작");
         ChangeStatusCommand command = ChangeStatusCommand.builder()
                 .status(statusRequest.getStatus())
                 .memberId(statusRequest.getMemberId())
