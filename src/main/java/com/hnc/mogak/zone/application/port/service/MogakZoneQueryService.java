@@ -31,7 +31,11 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
-        log.info("[{}] [모각존 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
+        if (RequestContextHolder.getContext().getUuid() != null) {
+            log.info("[{}] [모각존 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
+        } else {
+            log.info("[모각존 디테일 로직 실행] mogakZoneId={}, memberId={}", detailQuery.getMogakZoneId(), detailQuery.getMemberId());
+        }
         List<String> tagNames = mogakZoneQueryPort.getTags(detailQuery.getMogakZoneId());
         MogakZone mogakZone = mogakZoneQueryPort.findById(detailQuery.getMogakZoneId());
         ZoneOwner zoneOwner = mogakZoneQueryPort.findZoneOwnerByMogakZoneId(detailQuery.getMogakZoneId());

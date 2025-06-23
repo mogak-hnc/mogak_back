@@ -87,7 +87,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public void leave(Long mogakZoneId, Long memberId) {
-        log.info("[{}] [모각존 나가기 로직 실행]", RequestContextHolder.getContext().getUuid());
+        log.info("[모각존 나가기 로직 실행] mogakZoneId={}, memberId={}", mogakZoneId, memberId);
         ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZoneId);
         zoneSummary.decreaseJoinCount();
         mogakZoneCommandPort.deleteZoneSummaryMemberImage(mogakZoneId, memberId);
@@ -96,7 +96,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public ChatMessageResponse sendMessage(SendChatMessageCommand command) {
-        log.info("[{}] [모각존 메세지 보내기 로직 실행]", RequestContextHolder.getContext().getUuid());
+        log.info("[모각존 메세지 보내기 로직 실행] mogakZoneId={}, memberId={}", command.getMogakZoneId(), command.getMemberId());
         Member member = memberPort.loadMemberByMemberId(command.getMemberId());
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
@@ -124,7 +124,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
     @Override
     public MogakZoneStatusResponse changeStatus(ChangeStatusCommand command) {
-        log.info("[{}] [모각존 상태 변경 로직 실행]", RequestContextHolder.getContext().getUuid());
+        log.info("[모각존 변경 로직 실행] mogakZoneId={}, memberId={}", command.getMogakZoneId(), command.getMemberId());
         zoneMemberPort.changeStatus(command.getMemberId(), command.getMogakZoneId(), command.getStatus());
         return MogakZoneStatusResponse.builder()
                 .status(command.getStatus())

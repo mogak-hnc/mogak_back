@@ -44,17 +44,20 @@ public class QueryCountInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        log.info("1");
         RequestContext ctx = RequestContextHolder.getContext();
+        log.info("2");
         if (ctx != null) {
             Map<QueryType, Integer> queryCountByType = ctx.getQueryCountByType();
             queryCountByType.forEach((queryType, count) -> increment(ctx, queryType, count));
         }
-
+        log.info("3");
         try {
             log.info("[{}] Response Status=[{}]", ctx.getUuid(), response.getStatus());
         } catch (NullPointerException e) {
             log.warn("UUID에 NULL 들어감");
         }
+        log.info("4");
         RequestContextHolder.clear();
     }
     
