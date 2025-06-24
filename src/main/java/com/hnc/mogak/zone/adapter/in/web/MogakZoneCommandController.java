@@ -4,14 +4,12 @@ import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
-import com.hnc.mogak.global.util.mapper.DateParser;
-import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneRequest;
-import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneRequest;
-import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.*;
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
+import com.hnc.mogak.zone.application.port.in.command.DelegateHostCommand;
 import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
+import com.hnc.mogak.zone.application.port.in.command.UpdateMogakZoneCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,12 +20,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -128,5 +124,60 @@ public class MogakZoneCommandController {
         String role = jwtUtil.getRole(token);
         return ResponseEntity.status(HttpStatus.OK).body(mogakZoneCommandUseCase.deleteMogakZone(mogakZoneId, memberId, role));
     }
+
+    @DeleteMapping("/leave")
+    public ResponseEntity<ExitMogakZoneRequest> exitMogakZone(@Valid @RequestBody ExitMogakZoneRequest request) {
+        mogakZoneCommandUseCase.leave(request.getMogakZoneId(), request.getMemberId());
+        return ResponseEntity.status(HttpStatus.OK).body(request);
+    }
+
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @PostMapping("/{mogakZoneId}/kick")
+    public ResponseEntity<Long> kickMember(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "참여자를 제거할 모각존 ID")
+            @PathVariable(name = "mogakZoneId") Long mogakZoneId,
+            @Parameter(description = "참여자 ID")
+            @RequestParam(name = "targetMemberId") Long targetMemberId
+    ) {
+        Long ownerMemberId = Long.parseLong(jwtUtil.getMemberId(token));
+        String role = jwtUtil.getRole(token);
+        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneCommandUseCase.kickMember(mogakZoneId, ownerMemberId, targetMemberId, role));
+    }
+
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @PutMapping("/{mogakZoneId}")
+    public ResponseEntity<Void> updateMogakZone(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "모각존 업데이트 정보")
+            @PathVariable(name = "mogakZoneId") Long mogakZoneId,
+            @Parameter(description = "모각존 업데이트 정보")
+            @RequestParam(value = "image") MultipartFile imageUrl
+    ) {
+        Long requestMemberId = Long.parseLong(jwtUtil.getMemberId(token));
+
+        UpdateMogakZoneCommand command = UpdateMogakZoneCommand.builder()
+                .imageUrl(imageUrl)
+                .mogakZoneId(mogakZoneId)
+                .requestMemberId(requestMemberId)
+                .build();
+
+        mogakZoneCommandUseCase.updateMogakZone(command);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/{mogakZoneId}/delegate-host")
+    public ResponseEntity<Void> delegateHost(@RequestHeader("Authorization") String token,
+                                             @PathVariable Long mogakZoneId,
+                                             @RequestBody DelegateHostRequest request) {
+        Long currentHostId = Long.parseLong(jwtUtil.getMemberId(token));
+
+        DelegateHostCommand command = new DelegateHostCommand(mogakZoneId, currentHostId, request.getNewHostId());
+        mogakZoneCommandUseCase.delegateHost(command);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

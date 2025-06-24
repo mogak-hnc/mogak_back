@@ -1,5 +1,7 @@
 package com.hnc.mogak.zone.adapter.out.persistence;
 
+import com.hnc.mogak.global.exception.ErrorCode;
+import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
@@ -110,4 +112,17 @@ public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
         zoneSummaryMemberImageRepository.deleteByMogakZoneId(mogakZoneEntity.getId());
         zoneOwnerRepository.deleteByMogakZoneEntity(mogakZoneEntity);
     }
+
+    @Override
+    public void updateHost(Long mogakZoneId, Member newOwnerMember) {
+        zoneOwnerRepository.updateHost(mogakZoneId, MemberMapper.mapToJpaEntity(newOwnerMember));
+    }
+
+    @Override
+    public void updateMogakZone(MogakZone findMogakZone, String imageUrl) {
+        MogakZoneEntity entity = mogakZoneRepository.findById(findMogakZone.getZoneId().value())
+                .orElseThrow(() -> new MogakZoneException(ErrorCode.NOT_EXISTS_MOGAKZONE));
+        entity.changeImageUrl(imageUrl);
+    }
+
 }

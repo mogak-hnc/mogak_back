@@ -21,4 +21,7 @@ public interface MogakZoneCommandPort {
 
     void deleteMogakZone(MogakZone mogakZone);
 
+    void updateHost(Long mogakZoneId, Member newOwnerMember);
+
+    void updateMogakZone(MogakZone findMogakZone, String imageUrl);
 }

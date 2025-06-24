@@ -10,6 +10,7 @@ import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
 import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.badge.domain.vo.BadgeImage;
 import com.hnc.mogak.badge.domain.vo.BadgeInfo;
+import com.hnc.mogak.global.cloud.S3PathConstants;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.member.application.port.out.MemberPort;
@@ -48,7 +49,7 @@ public class BadgeService implements BadgeUseCase {
 
     @Override
     public CreateBadgeResponse createBadge(CreateBadgeRequest request, MultipartFile imageFile) {
-        String iconUrl = s3Service.uploadImage(imageFile, "badge");
+        String iconUrl = s3Service.uploadImage(imageFile, S3PathConstants.BADGE);
         return new CreateBadgeResponse(badgeCommandPort.createBadge(getBadgeDomain(request, iconUrl)));
     }
 

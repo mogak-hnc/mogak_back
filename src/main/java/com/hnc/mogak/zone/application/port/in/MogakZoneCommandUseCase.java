@@ -1,13 +1,7 @@
 package com.hnc.mogak.zone.application.port.in;
 
-import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
-import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
-import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
-import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
-import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
+import com.hnc.mogak.zone.adapter.in.web.dto.*;
+import com.hnc.mogak.zone.application.port.in.command.*;
 
 public interface MogakZoneCommandUseCase {
 
@@ -22,5 +16,12 @@ public interface MogakZoneCommandUseCase {
     void leave(Long mogakZoneId, Long memberId);
 
     Long deleteMogakZone(Long mogakZoneId, Long memberId, String role);
+
+    Long kickMember(Long mogakZoneId, Long ownerMemberId, Long targetMemberId, String role);
+
+    void delegateHost(DelegateHostCommand command);
+
+    void updateMogakZone(UpdateMogakZoneCommand command);
+
 
 }

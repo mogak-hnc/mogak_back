@@ -1,6 +1,7 @@
 package com.hnc.mogak.member.application.port.service;
 
 import com.hnc.mogak.challenge.application.port.out.ChallengeQueryPort;
+import com.hnc.mogak.global.cloud.S3PathConstants;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MemberException;
@@ -62,7 +63,7 @@ public class ProfileService implements ProfileUseCase {
         if (deleteImage) {
             updateImageUrl = "Default";
         } else if (file != null && !file.isEmpty()) {
-            updateImageUrl = s3Service.uploadImage(file, "member");
+            updateImageUrl = s3Service.uploadImage(file, S3PathConstants.MEMBER);
         }
 
         if (nickname != null && !nickname.trim().isEmpty()) {

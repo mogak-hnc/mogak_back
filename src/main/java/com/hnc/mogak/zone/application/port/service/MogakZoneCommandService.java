@@ -1,6 +1,7 @@
 package com.hnc.mogak.zone.application.port.service;
 
 import com.hnc.mogak.global.auth.AuthConstant;
+import com.hnc.mogak.global.cloud.S3PathConstants;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
@@ -15,11 +16,9 @@ import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneStatusResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
-import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
-import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
-import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
-import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
+import com.hnc.mogak.zone.application.port.in.command.*;
 import com.hnc.mogak.zone.application.port.out.*;
+import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +55,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
         String imageUrl = "Default";
         if (command.getImageUrl() != null) {
-            imageUrl = s3Service.uploadImage(command.getImageUrl(), "mogakzone");
+            imageUrl = s3Service.uploadImage(command.getImageUrl(), S3PathConstants.MOGAKZONE);
         }
 
         MogakZone mogakZone = createMogakZone(command, tagEntitySet, imageUrl);
@@ -138,12 +137,56 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         MogakZone mogakZone = mogakZoneQueryPort.findById(mogakZoneId);
         Long ownerMemberId = mogakZoneQueryPort.findZoneOwnerIdByMogakZoneId(mogakZoneId);
 
-        if (!role.equals(AuthConstant.ROLE_ADMIN) && !mogakZone.isHost(memberId, ownerMemberId)) {
+        if (!role.equals(AuthConstant.ROLE_ADMIN) && mogakZone.isNotHost(memberId, ownerMemberId)) {
             throw new MogakZoneException(ErrorCode.NOT_CREATOR);
         }
 
         mogakZoneCommandPort.deleteMogakZone(mogakZone);
         return mogakZoneId;
+    }
+
+    @Override
+    public Long kickMember(Long mogakZoneId, Long requestMemberId, Long targetMemberId, String role) {
+        MogakZone mogakZone = mogakZoneQueryPort.findById(mogakZoneId);
+        Long ownerMemberId = mogakZoneQueryPort.findZoneOwnerIdByMogakZoneId(mogakZoneId);
+
+        if (!role.equals(AuthConstant.ROLE_ADMIN) && mogakZone.isNotHost(requestMemberId, ownerMemberId)) {
+            throw new MogakZoneException(ErrorCode.NOT_CREATOR);
+        }
+
+        zoneMemberPort.deleteMemberByMogakZoneId(mogakZoneId, targetMemberId);
+        return mogakZoneId;
+    }
+
+    @Override
+    public void delegateHost(DelegateHostCommand command) {
+        MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
+        Long ownerMemberId = mogakZoneQueryPort.findZoneOwnerIdByMogakZoneId(command.getMogakZoneId());
+
+        if (mogakZone.isNotHost(command.getCurrentHostId(), ownerMemberId)) {
+            throw new MogakZoneException(ErrorCode.NOT_CREATOR);
+        }
+
+        boolean isMember = zoneMemberPort.isMemberInMogakZone(command.getMogakZoneId(), command.getNewHostId());
+        if (!isMember) {
+            throw new MogakZoneException(ErrorCode.NOT_MEMBER);
+        }
+
+        Member newOwnerMember = memberPort.loadMemberByMemberId(command.getNewHostId());
+
+        mogakZoneCommandPort.updateHost(mogakZone.getZoneId().value(), newOwnerMember);
+    }
+
+    @Override
+    public void updateMogakZone(UpdateMogakZoneCommand command) {
+        Long ownerMemberId = mogakZoneQueryPort.findZoneOwnerIdByMogakZoneId(command.getMogakZoneId());
+        MogakZone findMogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
+        if (findMogakZone.isNotHost(command.getRequestMemberId(), ownerMemberId)) {
+            throw new MogakZoneException(ErrorCode.NOT_CREATOR);
+        }
+
+        String imageUrl = s3Service.uploadImage(command.getImageUrl(), S3PathConstants.MOGAKZONE);
+        mogakZoneCommandPort.updateMogakZone(findMogakZone, imageUrl);
     }
 
     private JoinMogakZoneCommand getJoinCommand(CreateMogakZoneCommand command, Member hostMember, MogakZone mogakZone) {

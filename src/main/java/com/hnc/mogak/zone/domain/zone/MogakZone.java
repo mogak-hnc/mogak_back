@@ -62,7 +62,8 @@ public class MogakZone {
         return actualPassword.equals(inputPassword);
     }
 
-    public boolean isHost(Long memberId, Long ownerMemberId) {
-        return Objects.equals(memberId, ownerMemberId);
+    public boolean isNotHost(Long memberId, Long ownerMemberId) {
+        return !Objects.equals(memberId, ownerMemberId);
     }
+
 }

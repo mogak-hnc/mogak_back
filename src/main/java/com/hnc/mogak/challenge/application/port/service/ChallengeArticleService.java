@@ -8,6 +8,7 @@ import com.hnc.mogak.challenge.application.port.out.ChallengeArticlePort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeMemberPort;
 import com.hnc.mogak.challenge.application.port.out.ChallengeQueryPort;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
+import com.hnc.mogak.global.cloud.S3PathConstants;
 import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.ChallengeArticleException;
@@ -65,7 +66,7 @@ public class ChallengeArticleService implements ChallengeArticleUseCase {
     private List<String> saveImages(CreateArticleCommand command) {
         List<MultipartFile> images = command.getImages();
         if (images.size() > 10) throw new ChallengeArticleException(ErrorCode.TOO_MANY_IMAGES);
-        return images.stream().map(image -> s3Service.uploadImage(image, "challenge/article")).toList();
+        return images.stream().map(image -> s3Service.uploadImage(image, S3PathConstants.CHALLENGE_ARTICLE)).toList();
     }
 
     private void validCreateArticle(CreateArticleCommand command) {

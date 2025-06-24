@@ -64,10 +64,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NoResourceFoundException.class)
-    public void handleNoFavicon() {
-        // favicon 같은 요청은 그냥 무시
-    }
+//    @ExceptionHandler(NoResourceFoundException.class)
+//    public void handleNoFavicon() {
+//        // favicon 같은 요청은 그냥 무시
+//    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleException(RuntimeException ex) {

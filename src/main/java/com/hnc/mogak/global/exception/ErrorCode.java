@@ -23,6 +23,7 @@ public enum ErrorCode {
     LOGIN_REQUIRED_FOR_JOIN("로그인이 필요합니다.", HttpStatus.BAD_REQUEST),
     ALREADY_JOINED("이미 가입되었습니다.", HttpStatus.BAD_REQUEST),
     NEED_PASSWORD("패스워드를 기입해야합니다.", HttpStatus.BAD_REQUEST),
+    NOT_MEMBER("모각존 멤버가 아닙니다.", HttpStatus.BAD_REQUEST),
 
     // CHALLENGE Exception
     NOT_EXISTS_CHALLENGE("챌린지가 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
