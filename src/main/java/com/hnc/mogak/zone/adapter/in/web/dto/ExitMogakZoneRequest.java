@@ -1,15 +1,15 @@
 package com.hnc.mogak.zone.adapter.in.web.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
 public class ExitMogakZoneRequest {
 
-    @NotBlank
+    @NotNull
     private Long mogakZoneId;
 
-    @NotBlank
+    @NotNull
     private Long memberId;
 
 }

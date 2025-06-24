@@ -126,7 +126,7 @@ public class MogakZoneCommandController {
     }
 
     @DeleteMapping("/leave")
-    public ResponseEntity<ExitMogakZoneRequest> exitMogakZone(@Valid @RequestBody ExitMogakZoneRequest request) {
+    public ResponseEntity<ExitMogakZoneRequest> leaveMogakZone(@Valid @RequestBody ExitMogakZoneRequest request) {
         mogakZoneCommandUseCase.leave(request.getMogakZoneId(), request.getMemberId());
         return ResponseEntity.status(HttpStatus.OK).body(request);
     }
