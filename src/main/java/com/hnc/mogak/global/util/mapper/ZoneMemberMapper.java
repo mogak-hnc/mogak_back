@@ -35,6 +35,7 @@ public class ZoneMemberMapper {
                 .chatHistoryResponses(chatHistoryResponses)
                 .isJoined(isJoined)
                 .passwordRequired(passwordRequired)
+                .maxCapacity(mogakZone.getZoneConfig().maxCapacity())
                 .build();
     }
 

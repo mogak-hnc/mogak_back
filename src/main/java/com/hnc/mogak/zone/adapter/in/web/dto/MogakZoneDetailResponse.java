@@ -20,6 +20,7 @@ public class MogakZoneDetailResponse {
     private List<ChatMessageResponse> chatHistoryResponses;
     private boolean isJoined;
     private boolean passwordRequired;
+    private int maxCapacity;
 
     @Builder
     @Getter
