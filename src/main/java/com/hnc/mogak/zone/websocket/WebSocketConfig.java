@@ -25,7 +25,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/api/mogak/ws")
-                .setAllowedOrigins("https://www.mogak.kr")
+                .setAllowedOrigins(
+                        "https://www.mogak.kr",
+                        "http://localhost:3000"
+                )
                 .withSockJS();
     }
 
