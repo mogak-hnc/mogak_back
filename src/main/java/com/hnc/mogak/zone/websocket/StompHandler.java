@@ -25,7 +25,7 @@ public class StompHandler implements ChannelInterceptor {
 
     private final JwtUtil jwtUtil;
     private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
-    private final SimpMessagingTemplate messagingTemplate;
+//    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -49,10 +49,10 @@ public class StompHandler implements ChannelInterceptor {
                     log.info("[웹소켓 해제 정보]memberId: {}, mogakZoneId: {}, sessionId: {}", memberId, mogakZoneId, sessionId);
 
                     mogakZoneCommandUseCase.leave(mogakZoneId, memberId);
-                    messagingTemplate.convertAndSend(
-                            "/topic/api/mogak/zone/" + mogakZoneId,
-                            new StompPrincipal(sessionId, mogakZoneId, memberId)
-                    );
+//                    messagingTemplate.convertAndSend(
+//                            "/topic/api/mogak/zone/" + mogakZoneId,
+//                            new StompPrincipal(sessionId, mogakZoneId, memberId)
+//                    );
                 } else {
                     log.warn("DISCONNECT: 사용자 정보 없음 (principal is null or not StompPrincipal)");
                 }
