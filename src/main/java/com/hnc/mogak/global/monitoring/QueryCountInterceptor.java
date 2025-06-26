@@ -44,9 +44,16 @@ public class QueryCountInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        log.info("afterCompletion 로직 시작");
         RequestContext ctx = RequestContextHolder.getContext();
+        log.info(">>>>> RequestContext uuid={}, method={}, path={}, queryCountMap={}",
+                ctx.getUuid(),
+                ctx.getHttpMethod(),
+                ctx.getBestMatchPath(),
+                ctx.getQueryCountByType());
         if (ctx != null) {
             Map<QueryType, Integer> queryCountByType = ctx.getQueryCountByType();
+            queryCountByType.forEach((type, count) -> log.info(">>>>> QueryType={}, Count={}", type, count));
             queryCountByType.forEach((queryType, count) -> increment(ctx, queryType, count));
         }
         try {
@@ -55,9 +62,11 @@ public class QueryCountInterceptor implements HandlerInterceptor {
             log.warn("UUID에 NULL 들어감");
         }
         RequestContextHolder.clear();
+        log.info("increment 로직 끝");
     }
     
     private void increment(RequestContext ctx, QueryType queryType, Integer count) {
+        log.info("increment 로직 시작");
         DistributionSummary summary = DistributionSummary.builder("mogak.query.per_request")
                 .description("Number of SQL queries per request")
                 .tag("path", ctx.getBestMatchPath())
@@ -68,4 +77,5 @@ public class QueryCountInterceptor implements HandlerInterceptor {
 
         summary.record(count);
     }
+
 }
