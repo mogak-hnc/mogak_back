@@ -24,15 +24,11 @@ public class MogakZoneWebSocketController {
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}") // 인식하는 url /app prefix로 붙혀야 됨.
     @SendTo("/topic/api/mogak/zone/{mogakZoneId}") // 여기 경로 구독하고 있는 회원에게 쏨
-    public MogakZoneDetailResponse getMogakZoneDetail(
+    public SendJoinMogakZoneResponse sendJoinMogakZone(
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId
     ) {
-        log.info("[웹소켓] getMogakZoneDetail 시작");
-        MogakZoneDetailQuery detailQuery = MogakZoneDetailQuery.builder()
-                .mogakZoneId(mogakZoneId)
-                .build();
-
-        return mogakZoneQueryUseCase.getDetail(detailQuery);
+        log.info("[웹소켓] sendJoinMogakZone 시작");
+        return mogakZoneQueryUseCase.sendJoinMogakZone(mogakZoneId);
     }
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}/message")

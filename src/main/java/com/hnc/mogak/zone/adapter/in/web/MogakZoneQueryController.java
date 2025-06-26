@@ -3,11 +3,9 @@ package com.hnc.mogak.zone.adapter.in.web;
 
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneMainResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
-import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.*;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
+import com.hnc.mogak.zone.application.port.in.command.GetMessageQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,6 +86,22 @@ public class MogakZoneQueryController {
                 .build();
 
         return mogakZoneQueryUseCase.getDetail(detailQuery);
+    }
+
+    @GetMapping("/{mogakZoneId}/message")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    public ResponseEntity<Page<ChatMessageResponse>> getMogakZoneMessage(
+            @PathVariable(value = "mogakZoneId") Long mogakZoneId,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "15") int size
+    ) {
+        GetMessageQuery query = GetMessageQuery.builder()
+                .mogakZoneId(mogakZoneId)
+                .page(page)
+                .size(size)
+                .build();
+
+        return ResponseEntity.ok(mogakZoneQueryUseCase.getMessage(query));
     }
 
 }

@@ -1,14 +1,16 @@
 package com.hnc.mogak.zone.application.port.service;
 
-import com.hnc.mogak.global.monitoring.RequestContext;
 import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
 import com.hnc.mogak.zone.adapter.in.web.dto.*;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
+import com.hnc.mogak.zone.application.port.in.command.GetMessageQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
-import com.hnc.mogak.zone.application.port.out.*;
+import com.hnc.mogak.zone.application.port.out.ChatPort;
+import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
+import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
@@ -18,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,25 +36,24 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
-        RequestContext ctx = RequestContextHolder.getContext();
-        if (ctx != null && ctx.getUuid() != null) {
-            log.info("[{}] [모각존 디테일 로직 실행]", ctx.getUuid());
-        } else {
-            log.info("[모각존 디테일 로직 실행] mogakZoneId={}, memberId={}", detailQuery.getMogakZoneId(), detailQuery.getMemberId());
-        }
+        log.info("[모각존 디테일 로직 실행] mogakZoneId={}, memberId={}", detailQuery.getMogakZoneId(), detailQuery.getMemberId());
         List<String> tagNames = mogakZoneQueryPort.getTags(detailQuery.getMogakZoneId());
         MogakZone mogakZone = mogakZoneQueryPort.findById(detailQuery.getMogakZoneId());
         ZoneOwner zoneOwner = mogakZoneQueryPort.findZoneOwnerByMogakZoneId(detailQuery.getMogakZoneId());
         List<ZoneMember> zoneMemberList =  zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(detailQuery.getMogakZoneId());
 
-        List<ChatMessageResponse> chatHistoryResponses = chatPort.loadMessagesByMogakZoneId(mogakZone.getZoneId().value());
-
         boolean isJoined = zoneMemberPort.isMemberInMogakZone(detailQuery.getMogakZoneId(), detailQuery.getMemberId());
         boolean passwordEnabled = mogakZone.getZoneConfig().passwordEnabled();
 
         return ZoneMemberMapper.mapToMogakZoneDetailResponse(
-                tagNames, mogakZone, zoneOwner, zoneMemberList, chatHistoryResponses, isJoined, passwordEnabled
+                tagNames, mogakZone, zoneOwner, zoneMemberList, isJoined, passwordEnabled
         );
+    }
+
+    @Override
+    public SendJoinMogakZoneResponse sendJoinMogakZone(Long mogakZoneId) {
+        List<ZoneMember> zoneMemberList =  zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZoneId);
+        return ZoneMemberMapper.mapToSendJoinMogakZoneResponse(zoneMemberList);
     }
 
     @Override
@@ -118,4 +121,10 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
         return mogakZoneQueryPort.getPopularTags();
     }
 
+    @Override
+    public Page<ChatMessageResponse> getMessage(GetMessageQuery getMessageQuery) {
+        log.info("[{}] [모각존 메세지 로직 실행]", RequestContextHolder.getContext().getUuid());
+        MogakZone mogakZone = mogakZoneQueryPort.findById(getMessageQuery.getMogakZoneId());
+        return chatPort.loadMessagesByMogakZoneId(mogakZone.getZoneId().value(), getMessageQuery.getPage(), getMessageQuery.getSize());
+    }
 }

@@ -5,11 +5,13 @@ import com.hnc.mogak.zone.adapter.out.persistence.entity.ChatEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.repository.ChatRepository;
 import com.hnc.mogak.zone.application.port.out.ChatPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -30,17 +32,17 @@ public class ChatAdapter implements ChatPort {
     }
 
     @Override
-    public List<ChatMessageResponse> loadMessagesByMogakZoneId(Long mogakZoneId) {
-        List<ChatEntity> chatEntityList = chatRepository.findAllByMogakZoneIdOrderBySaveTimeAsc(mogakZoneId);
-        return chatEntityList.stream()
-                .map(chat -> ChatMessageResponse.builder()
-                        .memberId(chat.getMemberId())
-                        .nickname(chat.getNickname())
-                        .imageUrl(chat.getImageUrl())
-                        .message(chat.getMessage())
-                        .now(formatLocalTime(chat.getSaveTime()))
-                        .build())
-                .toList();
+    public Page<ChatMessageResponse> loadMessagesByMogakZoneId(Long mogakZoneId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChatEntity> chatEntities = chatRepository.findByMogakZoneIdOrderBySaveTimeAsc(mogakZoneId, pageable);
+
+        return chatEntities.map(chat -> ChatMessageResponse.builder()
+                .memberId(chat.getMemberId())
+                .nickname(chat.getNickname())
+                .imageUrl(chat.getImageUrl())
+                .message(chat.getMessage())
+                .now(formatLocalTime(chat.getSaveTime()))
+                .build());
     }
 
     private String formatLocalTime(LocalDateTime time) {

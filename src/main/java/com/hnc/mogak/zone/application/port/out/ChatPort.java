@@ -1,9 +1,9 @@
 package com.hnc.mogak.zone.application.port.out;
 
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface ChatPort {
 
@@ -15,6 +15,6 @@ public interface ChatPort {
               LocalDateTime localDate
     );
 
-    List<ChatMessageResponse> loadMessagesByMogakZoneId(Long mogakZoneId);
+    Page<ChatMessageResponse> loadMessagesByMogakZoneId(Long mogakZoneId, int page, int size);
 
 }

@@ -12,12 +12,11 @@ import java.util.List;
 public class MogakZoneDetailResponse {
 
     private List<String> tagNames;
-    private long hostMemberId;
+    private Long hostMemberId;
     private String name;
     private int joinedUserCount;
     private String imageUrl;
     private List<ZoneMemberInfo> zoneMemberInfoList;
-    private List<ChatMessageResponse> chatHistoryResponses;
     private boolean isJoined;
     private boolean passwordRequired;
     private int maxCapacity;

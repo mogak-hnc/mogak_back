@@ -3,6 +3,7 @@ package com.hnc.mogak.global.util.mapper;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.SendJoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
@@ -20,7 +21,6 @@ public class ZoneMemberMapper {
             MogakZone mogakZone,
             ZoneOwner zoneOwner,
             List<ZoneMember> zoneMemberList,
-            List<ChatMessageResponse> chatHistoryResponses,
             boolean isJoined,
             boolean passwordRequired
     ) {
@@ -32,7 +32,6 @@ public class ZoneMemberMapper {
                 .joinedUserCount(zoneMemberList.size())
                 .imageUrl(mogakZone.getZoneInfo().imageUrl())
                 .zoneMemberInfoList(getZoneMemberInfos(zoneMemberList))
-                .chatHistoryResponses(chatHistoryResponses)
                 .isJoined(isJoined)
                 .passwordRequired(passwordRequired)
                 .maxCapacity(mogakZone.getZoneConfig().maxCapacity())
@@ -58,4 +57,11 @@ public class ZoneMemberMapper {
         return ZoneMember.withId(zoneMemberId, zoneMemberEntity.getStatus(), member, mogakZone);
     }
 
+    public static SendJoinMogakZoneResponse mapToSendJoinMogakZoneResponse(List<ZoneMember> zoneMemberList) {
+        List<MogakZoneDetailResponse.ZoneMemberInfo> zoneMemberInfos = getZoneMemberInfos(zoneMemberList);
+        return SendJoinMogakZoneResponse.builder()
+                .zoneMemberInfoList(zoneMemberInfos)
+                .joinedUserCount(zoneMemberList.size())
+                .build();
+    }
 }
