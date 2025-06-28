@@ -44,13 +44,8 @@ public class QueryCountInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info("afterCompletion 로직 시작");
         RequestContext ctx = RequestContextHolder.getContext();
-        log.info(">>>>> RequestContext uuid={}, method={}, path={}, queryCountMap={}",
-                ctx.getUuid(),
-                ctx.getHttpMethod(),
-                ctx.getBestMatchPath(),
-                ctx.getQueryCountByType());
+
         if (ctx != null) {
             Map<QueryType, Integer> queryCountByType = ctx.getQueryCountByType();
             queryCountByType.forEach((type, count) -> log.info(">>>>> QueryType={}, Count={}", type, count));

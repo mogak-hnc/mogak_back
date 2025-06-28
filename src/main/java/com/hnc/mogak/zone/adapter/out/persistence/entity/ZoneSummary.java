@@ -6,19 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(
-        name = "zone_summary",
-        indexes = {
-                @Index(name = "idx_mogak_zone_id", columnList = "mogakZoneId"),
-                @Index(name = "idx_join_count_desc", columnList = "joinCount DESC")
-        }
-)
+@Table(name = "zone_summary")
 @Getter
 public class ZoneSummary extends BaseEntity {
 
@@ -27,23 +18,18 @@ public class ZoneSummary extends BaseEntity {
     private Long id;
 
     private Long mogakZoneId;
-
-    @Column(length = 500)
-    private String tagNames;
-
     private String name;
-
-    private Long joinCount;
-
     private boolean passwordRequired;
 
+    private Long participantNum;
+
     public void increaseJoinCount() {
-        this.joinCount++;
+        this.participantNum++;
     }
 
     public void decreaseJoinCount() {
-        if (this.joinCount > 0) {
-            this.joinCount--;
+        if (this.participantNum > 0) {
+            this.participantNum--;
         }
     }
 

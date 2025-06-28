@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "zone_summary_member_image", indexes = @Index(name = "idx_member_id", columnList = "memberId"))
+@Table(name = "zone_summary_member_image")
 public class ZoneSummaryMemberImage {
 
     @Id
