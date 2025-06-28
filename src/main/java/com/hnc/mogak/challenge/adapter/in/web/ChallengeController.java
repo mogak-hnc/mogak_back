@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.List;
 
 @RestController
 @RequestMapping("/challenge")
@@ -111,14 +110,14 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getDetail(memberId, challengeId));
     }
 
-    @Operation(summary = "챌린지 메인 페이지", description = "메인 화면에 표시될 챌린지 목록을 조회합니다.")
-    @GetMapping
-    public ResponseEntity<List<ChallengeMainResponse>> getMogakChallengeMainPage() {
-        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getMainPage());
-    }
+//    @Operation(summary = "챌린지 메인 페이지", description = "메인 화면에 표시될 챌린지 목록을 조회합니다.")
+//    @GetMapping
+//    public ResponseEntity<List<ChallengeMainResponse>> getMogakChallengeMainPage() {
+//        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getMainPage());
+//    }
 
-    @Operation(summary = "챌린지 목록 조회", description = "챌린지 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
-    @GetMapping("/list")
+    @Operation(summary = "챌린지 페이징 조회", description = "챌린지 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
+    @GetMapping
     public ResponseEntity<Page<ChallengeSearchResponse>> searchChallenge(
             @Parameter(description = "검색 키워드 (모각존 이름 등)")
             @RequestParam(value = "search", required = false) String search,

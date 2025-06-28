@@ -18,7 +18,7 @@ public interface ChallengeUseCase {
 
     ChallengeDetailResponse getDetail(Long memberId, Long challengeId);
 
-    List<ChallengeMainResponse> getMainPage();
+//    List<ChallengeMainResponse> getMainPage();
 
     Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query);
 

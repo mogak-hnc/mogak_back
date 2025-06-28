@@ -76,28 +76,28 @@ public class ChallengeService implements ChallengeUseCase {
         return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId);
     }
 
-    @Override
-    public List<ChallengeMainResponse> getMainPage() {
-        log.info("[{}] [챌린지 메인페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
-        int mainChallengeLimit = 4;
-        List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
-
-        int memberUrlLimit = 4;
-        return topChallenges.stream()
-                .map(challenge -> {
-                    List<String> memberUrlList = challengeMemberPort.getMemberImageByChallengeId(challenge.getChallengeId().value(), memberUrlLimit);
-                    return ChallengeMainResponse.builder()
-                            .challengeId(challenge.getChallengeId().value())
-                            .official(challenge.getExtraDetails().official())
-                            .title(challenge.getContent().title())
-                            .startDate(challenge.getChallengeDuration().startDate())
-                            .endDate(challenge.getChallengeDuration().endDate())
-                            .memberImageUrls(memberUrlList)
-                            .status(challenge.getStatus())
-                            .build();
-                }
-        ).toList();
-    }
+//    @Override
+//    public List<ChallengeMainResponse> getMainPage() {
+//        log.info("[{}] [챌린지 메인페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
+//        int mainChallengeLimit = 4;
+//        List<Challenge> topChallenges = challengeQueryPort.findTopChallengesByParticipants(mainChallengeLimit);
+//
+//        int memberUrlLimit = 4;
+//        return topChallenges.stream()
+//                .map(challenge -> {
+//                    List<String> memberUrlList = challengeMemberPort.getMemberImageByChallengeId(challenge.getChallengeId().value(), memberUrlLimit);
+//                    return ChallengeMainResponse.builder()
+//                            .challengeId(challenge.getChallengeId().value())
+//                            .official(challenge.getExtraDetails().official())
+//                            .title(challenge.getContent().title())
+//                            .startDate(challenge.getChallengeDuration().startDate())
+//                            .endDate(challenge.getChallengeDuration().endDate())
+//                            .memberImageUrls(memberUrlList)
+//                            .status(challenge.getStatus())
+//                            .build();
+//                }
+//        ).toList();
+//    }
 
     @Override
     public Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query) {
