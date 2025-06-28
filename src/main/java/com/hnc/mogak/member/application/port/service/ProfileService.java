@@ -9,10 +9,12 @@ import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.ZoneInfoResponse;
 import com.hnc.mogak.member.application.port.in.ProfileUseCase;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.member.domain.vo.MemberInfo;
+import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class ProfileService implements ProfileUseCase {
 
     private final MemberPort memberPort;
     private final ChallengeQueryPort challengeQueryPort;
+    private final ZoneMemberPort zoneMemberPort;
     private final S3Service s3Service;
     private final RedisTemplate<Object, Object> redisTemplate;
 
@@ -91,6 +94,11 @@ public class ProfileService implements ProfileUseCase {
         return challengeQueryPort.findJoinedOngoingChallenges(memberId);
     }
 
+    @Override
+    public List<ZoneInfoResponse> findJoinedZones(Long memberId) {
+        return zoneMemberPort.findJoinedZones(memberId);
+    }
+
     private MemberInfoResponse buildMemberInfoResponse(Member member) {
         MemberInfo memberInfo = member.getMemberInfo();
 
@@ -101,5 +109,6 @@ public class ProfileService implements ProfileUseCase {
                 memberInfo.showBadge()
         );
     }
+
 
 }

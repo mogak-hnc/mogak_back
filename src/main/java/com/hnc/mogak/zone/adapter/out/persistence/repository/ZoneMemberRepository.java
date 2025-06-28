@@ -1,5 +1,7 @@
 package com.hnc.mogak.zone.adapter.out.persistence.repository;
 
+import com.hnc.mogak.challenge.adapter.out.persistence.projection.ChallengeInfoProjection;
+import com.hnc.mogak.zone.adapter.out.persistence.ZoneInfoProjection;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
 import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Long> {
@@ -42,5 +45,12 @@ public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Lo
                                 @Param("memberId") Long memberId);
 
     void deleteAllByMogakZoneEntity(MogakZoneEntity mogakZoneEntity);
+
+    @Query("SELECT " +
+            "zm.mogakZoneEntity.id AS mogakZoneId, " +
+            "zm.mogakZoneEntity.name AS name " +
+            "FROM ZoneMemberEntity zm " +
+            "WHERE zm.memberEntity.id = :memberId")
+    List<ZoneInfoProjection> findJoinedZones(Long memberId);
 
 }

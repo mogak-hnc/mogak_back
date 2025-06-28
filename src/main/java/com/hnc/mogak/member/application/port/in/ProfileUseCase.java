@@ -3,6 +3,7 @@ package com.hnc.mogak.member.application.port.in;
 import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.ZoneInfoResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -16,5 +17,7 @@ public interface ProfileUseCase {
     UpdateMemberInfoResponse updateMemberInfo(Long memberId, String nickname, MultipartFile file, boolean deleteImage, boolean showBadge);
 
     List<ChallengeInfoResponse> findJoinedOngoingChallenges(Long memberId);
+
+    List<ZoneInfoResponse> findJoinedZones(Long memberId);
 
 }

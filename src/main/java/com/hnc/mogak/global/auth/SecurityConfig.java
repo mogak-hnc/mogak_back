@@ -81,6 +81,7 @@ public class SecurityConfig {
                                         "/worry/*/empathy",
                                         "/profile",
                                         "/profile/*/challenges",
+                                        "/profile/*/zones",
                                         "/api/mogak/ws",
                                         "/api/mogak/ws/**",
                                         "/swagger-ui/**",

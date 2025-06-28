@@ -3,6 +3,8 @@ package com.hnc.mogak.zone.adapter.out.persistence;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
+import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.ZoneInfoResponse;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
@@ -71,4 +73,14 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
         zoneMemberRepository.changeStatus(memberId, mogakZoneId, status);
     }
 
+    @Override
+    public List<ZoneInfoResponse> findJoinedZones(Long memberId) {
+        return zoneMemberRepository.findJoinedZones(memberId).stream()
+                .map(projection ->
+                        ZoneInfoResponse.builder()
+                                .zoneId(projection.getMogakZoneId())
+                                .name(projection.getName())
+                                .build())
+                .toList();
+    }
 }

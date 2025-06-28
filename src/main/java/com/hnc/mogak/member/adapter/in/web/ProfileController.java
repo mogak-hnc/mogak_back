@@ -7,6 +7,7 @@ import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.member.adapter.in.web.dto.ChallengeInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.MemberInfoResponse;
 import com.hnc.mogak.member.adapter.in.web.dto.UpdateMemberInfoResponse;
+import com.hnc.mogak.member.adapter.in.web.dto.ZoneInfoResponse;
 import com.hnc.mogak.member.application.port.in.ProfileUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,13 +68,22 @@ public class ProfileController {
         return ResponseEntity.ok(profileUseCase.updateMemberInfo(memberId, nickname, file, deleteImage, showBadge));
     }
 
-    @Operation(summary = "참여중인 있는 챌린지 정보 조회", description = "참여 중인 챌린지 정보를 조회합니다.")
+    @Operation(summary = "참여중인 챌린지 정보 조회", description = "참여 중인 챌린지 정보를 조회합니다.")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @GetMapping("/{memberId}/challenges")
     public ResponseEntity<List<ChallengeInfoResponse>> findJoinedOngoingChallenges(
             @PathVariable(value = "memberId") Long memberId
     ) {
         return ResponseEntity.ok(profileUseCase.findJoinedOngoingChallenges(memberId));
+    }
+
+    @Operation(summary = "참여중인 모각존 정보 조회", description = "참여 중인 모각존 정보를 조회합니다.")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @GetMapping("/{memberId}/zones")
+    public ResponseEntity<List<ZoneInfoResponse>> findJoinedZones(
+            @PathVariable(value = "memberId") Long memberId
+    ) {
+        return ResponseEntity.ok(profileUseCase.findJoinedZones(memberId));
     }
 
     @Operation(summary = "뱃지 개인 조회", description = "현재 소유중인 뱃지를 조회합니다.")
