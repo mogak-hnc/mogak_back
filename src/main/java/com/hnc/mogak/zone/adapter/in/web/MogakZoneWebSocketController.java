@@ -1,11 +1,9 @@
 package com.hnc.mogak.zone.adapter.in.web;
 
 import com.hnc.mogak.zone.adapter.in.web.dto.*;
-import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
-import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
+import com.hnc.mogak.zone.application.port.in.WebSocketUseCase;
 import com.hnc.mogak.zone.application.port.in.command.ChangeStatusCommand;
 import com.hnc.mogak.zone.application.port.in.command.SendChatMessageCommand;
-import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -19,8 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MogakZoneWebSocketController {
 
-    private final MogakZoneQueryUseCase mogakZoneQueryUseCase;
-    private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
+    private final WebSocketUseCase webSocketUseCase;
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}") // 인식하는 url /app prefix로 붙혀야 됨.
     @SendTo("/topic/api/mogak/zone/{mogakZoneId}") // 여기 경로 구독하고 있는 회원에게 쏨
@@ -28,7 +25,7 @@ public class MogakZoneWebSocketController {
             @DestinationVariable(value = "mogakZoneId") Long mogakZoneId
     ) {
         log.info("[웹소켓] sendJoinMogakZone 시작");
-        return mogakZoneQueryUseCase.sendJoinMogakZone(mogakZoneId);
+        return webSocketUseCase.sendJoinMogakZone(mogakZoneId);
     }
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}/message")
@@ -44,7 +41,7 @@ public class MogakZoneWebSocketController {
                 .mogakZoneId(mogakZoneId)
                 .build();
 
-        return mogakZoneCommandUseCase.sendMessage(command);
+        return webSocketUseCase.sendMessage(command);
     }
 
     @MessageMapping("/api/mogak/zone/{mogakZoneId}/status")
@@ -60,7 +57,7 @@ public class MogakZoneWebSocketController {
                 .mogakZoneId(mogakZoneId)
                 .build();
 
-        return mogakZoneCommandUseCase.changeStatus(command);
+        return webSocketUseCase.changeStatus(command);
     }
 
 }
