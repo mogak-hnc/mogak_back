@@ -37,6 +37,9 @@ public class MogakZoneEntity extends BaseEntity {
     @Column(name = "chat_enabled")
     private boolean chatEnabled;
 
+    @Column(name = "participant_num")
+    private int participantNum;
+
     public void changeImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }

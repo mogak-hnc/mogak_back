@@ -2,8 +2,10 @@ package com.hnc.mogak.zone.application.port.service;
 
 import com.hnc.mogak.global.monitoring.RequestContextHolder;
 import com.hnc.mogak.global.util.mapper.ZoneMemberMapper;
-import com.hnc.mogak.zone.adapter.in.web.dto.*;
-import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
+import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.TagNameResponse;
 import com.hnc.mogak.zone.application.port.in.MogakZoneQueryUseCase;
 import com.hnc.mogak.zone.application.port.in.command.GetMessageQuery;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneDetailQuery;
@@ -20,9 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,65 +50,51 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
         );
     }
 
-    @Override
-    public SendJoinMogakZoneResponse sendJoinMogakZone(Long mogakZoneId) {
-        List<ZoneMember> zoneMemberList =  zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZoneId);
-        return ZoneMemberMapper.mapToSendJoinMogakZoneResponse(zoneMemberList);
-    }
-
-    @Override
-    public List<MogakZoneMainResponse> getMainPage() {
-        log.info("[{}] [모각존 메인 페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
-        int size = 4;
-
-        List<ZoneSummary> summaryList = mogakZoneQueryPort.findTopZoneSummariesByJoinCount(size);
-        List<Long> zoneIds = summaryList.stream()
-                .map(ZoneSummary::getMogakZoneId)
-                .toList();
-
-        Map<Long, List<String>> imageMap = mogakZoneQueryPort.getZoneMemberImagesByZoneIds(zoneIds, size);
-
-        List<MogakZoneMainResponse> responses = new ArrayList<>();
-        for (ZoneSummary zoneSummary : summaryList) {
-            List<String> tagNameList = List.of(zoneSummary.getTagNames().split(" "));
-            Long zoneId = zoneSummary.getMogakZoneId();
-            List<String> memberImageUrlList = imageMap.getOrDefault(zoneId, List.of());
-
-            responses.add(new MogakZoneMainResponse(
-                    zoneId,
-                    tagNameList,
-                    zoneSummary.getName(),
-                    memberImageUrlList,
-                    zoneSummary.isPasswordRequired()
-            ));
-        }
-
-        return responses;
-    }
-
 //    @Override
 //    public List<MogakZoneMainResponse> getMainPage() {
-//        int size = 3;
+//        log.info("[{}] [모각존 메인 페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
+//        int size = 4;
+//
 //        List<ZoneSummary> summaryList = mogakZoneQueryPort.findTopZoneSummariesByJoinCount(size);
+//        List<Long> zoneIds = summaryList.stream()
+//                .map(ZoneSummary::getMogakZoneId)
+//                .toList();
+//
+//        Map<Long, List<String>> imageMap = mogakZoneQueryPort.getZoneMemberImagesByZoneIds(zoneIds, size);
+//
 //        List<MogakZoneMainResponse> responses = new ArrayList<>();
-//
 //        for (ZoneSummary zoneSummary : summaryList) {
-//            List<String> tagNameList = List.of(zoneSummary.getTagNames().split(" "));
-//            Long mogakZoneId = zoneSummary.getMogakZoneId();
-//            List<String> memberImageUrlList = mogakZoneQueryPort.getZoneMemberImagesBySize(mogakZoneId, size);
+////            List<String> tagNameList = List.of(zoneSummary.getTagNames().split(" "));
+//            Long zoneId = zoneSummary.getMogakZoneId();
+//            List<String> memberImageUrlList = imageMap.getOrDefault(zoneId, List.of());
 //
-//            MogakZoneMainResponse response = new MogakZoneMainResponse(
-//                    zoneSummary.getMogakZoneId(),
-//                    tagNameList,
-//                    zoneSummary.getName(),
-//                    memberImageUrlList,
-//                    zoneSummary.isPasswordRequired()
-//            );
-//
-//            responses.add(response);
+////            responses.add(new MogakZoneMainResponse(
+////                    zoneId,
+////                    tagNameList,
+////                    zoneSummary.getName(),
+////                    memberImageUrlList,
+////                    zoneSummary.isPasswordRequired()
+////            ));
 //        }
 //
 //        return responses;
+//    }
+
+//    @Override
+//    public List<MogakZoneSearchResponse> getMainPage() {
+//        MogakZoneSearchQuery query = MogakZoneSearchQuery.builder()
+//                .sort(MogakZoneSearchQuery.Sort.participant)
+//                .page(0)
+//                .size(4)
+//                .build();
+//
+//        return new ArrayList<>();
+//    }
+
+    //=====================================//
+//    @Override
+//    public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery) {
+//        return mogakZoneQueryPort.searchMogakZone(mogakZoneSearchQuery);
 //    }
 
     @Override

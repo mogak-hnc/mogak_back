@@ -49,7 +49,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     @Override
     public List<ZoneSummary> findTopZoneSummariesByJoinCount(int size) {
         Pageable pageable = PageRequest.of(0, size);
-        return zoneSummaryRepository.findAllByOrderByJoinCountDesc(pageable);
+        return zoneSummaryRepository.findAllByOrderByParticipantNumDesc(pageable);
     }
 
     @Override
@@ -72,11 +72,20 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
         return ZoneOwner.withId(zoneOwnerEntity.getId(), member, mogakZone);
     }
 
+    //=====================================//
+//    @Override
+//    public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery query) {
+//        Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
+//        return mogakZoneQueryDslRepository.findMogakZone(query, pageable);
+//    }
+//
     @Override
     public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery query) {
         Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
         return mogakZoneQueryDslRepository.findMogakZone(query, pageable);
     }
+
+
 
     @Override
     public List<TagNameResponse> getPopularTags() {

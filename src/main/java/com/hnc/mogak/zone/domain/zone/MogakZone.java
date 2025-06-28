@@ -66,4 +66,13 @@ public class MogakZone {
         return !Objects.equals(memberId, ownerMemberId);
     }
 
+    public void increaseJoinCount() {
+        this.zoneInfo = new ZoneInfo(zoneInfo.name(), zoneInfo.imageUrl(), zoneInfo.password(), zoneInfo.participantNum() + 1);
+    }
+
+    public void decreaseJoinCount() {
+        if (this.zoneInfo.participantNum() > 0) {
+            this.zoneInfo = new ZoneInfo(zoneInfo.name(), zoneInfo.imageUrl(), zoneInfo.password(), zoneInfo.participantNum() - 1);
+        }
+    }
 }

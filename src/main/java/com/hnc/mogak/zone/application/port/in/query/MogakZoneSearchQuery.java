@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 public class MogakZoneSearchQuery {
 
-    private String search;
     private String tag;
     private Sort sort;
     private int page;

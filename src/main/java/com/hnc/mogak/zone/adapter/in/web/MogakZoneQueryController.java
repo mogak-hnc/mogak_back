@@ -29,19 +29,16 @@ public class MogakZoneQueryController {
     private final MogakZoneQueryUseCase mogakZoneQueryUseCase;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "모각존 메인 페이지 조회", description = "메인 화면에서 표시할 모각존 정보를 조회합니다.")
+//    @Operation(summary = "모각존 메인 페이지 조회", description = "메인 화면에서 표시할 모각존 정보를 조회합니다.")
+//    @GetMapping
+//    public ResponseEntity<List<MogakZoneMainResponse>> getMogakZoneMainPage() {
+//        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getMainPage());
+//    }
+
+    @Operation(summary = "모각존 페이징 조회", description = "모각존 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
     @GetMapping
-    public ResponseEntity<List<MogakZoneMainResponse>> getMogakZoneMainPage() {
-        return ResponseEntity.status(HttpStatus.OK).body(mogakZoneQueryUseCase.getMainPage());
-    }
-
-    @Operation(summary = "모각존 목록 조회", description = "모각존 목록을 조회하며 필터링, 검색, 정렬 및 페이지네이션을 지원합니다.")
-    @GetMapping("/list")
     public ResponseEntity<Page<MogakZoneSearchResponse>> searchMogakZone(
-            @Parameter(description = "검색 키워드 (모각존 이름 등)")
-            @RequestParam(value = "search", required = false) String search,
-
-            @Parameter(description = "필터링할 태그 목록")
+            @Parameter(description = "검색 태그 키워드")
             @RequestParam(value = "tag", required = false) String tag,
 
             @Parameter(description = "정렬 기준 (recent 또는 participant)")
@@ -55,7 +52,6 @@ public class MogakZoneQueryController {
 
         MogakZoneSearchQuery.Sort sortType = MogakZoneSearchQuery.Sort.valueOf(sort);
         MogakZoneSearchQuery mogakZoneSearchQuery = MogakZoneSearchQuery.builder()
-                .search(search)
                 .tag(tag)
                 .sort(sortType)
                 .page(page)

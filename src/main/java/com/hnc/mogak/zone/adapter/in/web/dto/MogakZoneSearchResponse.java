@@ -11,8 +11,9 @@ public class MogakZoneSearchResponse {
 
     private Long mogakZoneId;
     private String name;
+    private boolean passwordRequired;
+
     private List<String> tagNames;
     private List<String> memberImageUrls;
-    private boolean passwordRequired;
 
 }

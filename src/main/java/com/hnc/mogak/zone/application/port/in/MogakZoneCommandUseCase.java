@@ -9,10 +9,6 @@ public interface MogakZoneCommandUseCase {
 
     JoinMogakZoneResponse join(JoinMogakZoneCommand command);
 
-    ChatMessageResponse sendMessage(SendChatMessageCommand command);
-
-    MogakZoneStatusResponse changeStatus(ChangeStatusCommand command);
-
     void leave(Long mogakZoneId, Long memberId);
 
     Long deleteMogakZone(Long mogakZoneId, Long memberId, String role);

@@ -20,7 +20,8 @@ public class MogakZoneMapper {
         ZoneInfo zoneInfo = new ZoneInfo(
                 command.getName(),
                 imageUrl,
-                command.getPassword()
+                command.getPassword(),
+                0
         );
 
         ZoneConfig zoneConfig = new ZoneConfig(
@@ -38,7 +39,8 @@ public class MogakZoneMapper {
         ZoneInfo zoneInfo = new ZoneInfo(
                 mogakZoneEntity.getName(),
                 mogakZoneEntity.getImageUrl(),
-                mogakZoneEntity.getPassword()
+                mogakZoneEntity.getPassword(),
+                mogakZoneEntity.getParticipantNum()
         );
 
         ZoneConfig zoneConfig = new ZoneConfig(

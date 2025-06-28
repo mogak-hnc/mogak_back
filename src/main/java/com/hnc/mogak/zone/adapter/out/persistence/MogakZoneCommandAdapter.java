@@ -46,16 +46,14 @@ public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
             sb.append(tagEntity.getName()).append(" ");
         }
 
-        String tagNames = sb.toString().trim();
 
         zoneSummaryRepository.save(
                 new ZoneSummary(
                         null,
                         mogakZone.getZoneId().value(),
-                        tagNames,
                         mogakZone.getZoneInfo().name(),
-                        0L,
-                        mogakZone.getZoneConfig().passwordEnabled()
+                        mogakZone.getZoneConfig().passwordEnabled(),
+                        0L
                 )
         );
     }

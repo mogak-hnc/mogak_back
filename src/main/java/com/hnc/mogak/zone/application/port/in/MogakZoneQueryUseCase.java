@@ -12,14 +12,12 @@ public interface MogakZoneQueryUseCase {
 
     MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery);
 
-    List<MogakZoneMainResponse> getMainPage();
+//    List<MogakZoneSearchResponse> getMainPage();
 
     Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery);
 
     List<TagNameResponse> getTagNames();
 
     Page<ChatMessageResponse> getMessage(GetMessageQuery getMessageQuery);
-
-    SendJoinMogakZoneResponse sendJoinMogakZone(Long mogakZoneId);
 
 }
