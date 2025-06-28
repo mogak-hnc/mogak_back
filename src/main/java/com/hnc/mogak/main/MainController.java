@@ -30,7 +30,7 @@ public class MainController {
         MogakZoneSearchQuery mogakZoneSearchQuery = MogakZoneSearchQuery.builder()
                 .sort(MogakZoneSearchQuery.Sort.participant)
                 .page(0)
-                .size(3)
+                .size(4)
                 .build();
 
         Page<MogakZoneSearchResponse> mogakZoneMainResponses = mogakZoneQueryService.searchMogakZone(mogakZoneSearchQuery);
@@ -39,7 +39,7 @@ public class MainController {
                 .sort(ChallengeSearchQuery.Sort.participant)
                 .status(ChallengeStatus.BEFORE)
                 .page(0)
-                .size(3)
+                .size(4)
                 .build();
 
         Page<ChallengeSearchResponse> mogakChallengeResponses = challengeService.searchChallenge(challengeSearchQuery);
