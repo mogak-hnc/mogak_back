@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
 
-    @GetMapping("/test")
+    @GetMapping("/ci-cd")
     public String test() {
-        return "test12345678";
+        return "success";
     }
 
 }

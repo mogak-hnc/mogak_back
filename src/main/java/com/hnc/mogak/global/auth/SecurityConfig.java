@@ -91,7 +91,7 @@ public class SecurityConfig {
                                         "/dashboard/**",
                                         "/webjars/**",
                                         "/error",
-                                        "/test",
+                                        "/ci-cd",
                                         "/actuator/**"
                                 ).permitAll()
                                 .anyRequest().authenticated())
