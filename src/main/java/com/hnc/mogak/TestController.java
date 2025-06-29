@@ -9,7 +9,7 @@ public class TestController {
 
     @GetMapping("/ci-cd")
     public String test() {
-        return "success";
+        return "ci-cd success";
     }
 
 }
