@@ -36,11 +36,14 @@ out/
 ### VS Code ###
 .vscode/
 
+# 로컬 전용 파일들
 src/main/generated/**/Q*.java
 application.yml
-# 로컬 전용 파일들
 logs/
 loki/data/
 promtail/positions/
 src/main/resources/bootsecurity.p12
 src/main/resources/static/uploads/
+docker-compose.yml
+k6/
+mock/
