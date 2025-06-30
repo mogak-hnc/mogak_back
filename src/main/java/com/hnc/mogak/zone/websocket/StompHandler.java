@@ -34,6 +34,16 @@ public class StompHandler implements ChannelInterceptor {
             if (Objects.requireNonNull(command) == StompCommand.CONNECT) {
                 handleConnect(accessor);
             }
+            if (Objects.requireNonNull(command) == StompCommand.SUBSCRIBE) {
+                log.info("구독 시작");
+            }
+            if (Objects.requireNonNull(command) == StompCommand.UNSUBSCRIBE) {
+                log.info("구독 종료");
+            }
+            if (Objects.requireNonNull(command) == StompCommand.ERROR) {
+                log.info("에러 발생");
+            }
+
         }
 
         log.info("preSend 로직 끝");
