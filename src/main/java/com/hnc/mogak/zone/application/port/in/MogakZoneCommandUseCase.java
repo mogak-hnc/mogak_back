@@ -1,7 +1,11 @@
 package com.hnc.mogak.zone.application.port.in;
 
-import com.hnc.mogak.zone.adapter.in.web.dto.*;
-import com.hnc.mogak.zone.application.port.in.command.*;
+import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
+import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
+import com.hnc.mogak.zone.application.port.in.command.DelegateHostCommand;
+import com.hnc.mogak.zone.application.port.in.command.JoinMogakZoneCommand;
+import com.hnc.mogak.zone.application.port.in.command.UpdateMogakZoneCommand;
 
 public interface MogakZoneCommandUseCase {
 
@@ -19,5 +23,7 @@ public interface MogakZoneCommandUseCase {
 
     void updateMogakZone(UpdateMogakZoneCommand command);
 
+
+    void offline(Long mogakZoneId, Long memberId);
 
 }

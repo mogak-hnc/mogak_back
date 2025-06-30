@@ -31,7 +31,7 @@ public class WebsocketEventHandler {
 
             log.info("[웹소켓 해제 정보]memberId: {}, mogakZoneId: {}, sessionId: {}", memberId, mogakZoneId, sessionId);
 
-            mogakZoneCommandUseCase.leave(mogakZoneId, memberId);
+            mogakZoneCommandUseCase.offline(mogakZoneId, memberId);
             messagingTemplate.convertAndSend(
                     "/topic/api/mogak/zone/" + mogakZoneId,
                     new StompPrincipal(sessionId, mogakZoneId, memberId)

@@ -24,6 +24,7 @@ import com.hnc.mogak.zone.application.port.out.TagPort;
 import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
+import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,8 +69,14 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     public JoinMogakZoneResponse join(JoinMogakZoneCommand command) {
         log.info("[{}] [모각존 참가 로직 실행]", RequestContextHolder.getContext().getUuid());
         MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
-        ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZone.getZoneId().value());
+        List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
         Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
+        if (mogakZone.isAlreadyJoined(command.getMemberId(), zoneMemberList)) {
+            return zoneMemberPort.join(mogakZone, findMember);
+        }
+        ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZone.getZoneId().value());
+
+
         mogakZoneQueryPort.saveZoneSummaryMemberImage(
                 mogakZone.getZoneId().value(),
                 findMember.getMemberId().value(),
@@ -77,7 +84,6 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         );
         zoneSummary.increaseJoinCount();
         mogakZone.increaseJoinCount();
-        List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
         validateMogakZoneJoin(command, mogakZone, zoneMemberList);
 
         return zoneMemberPort.join(mogakZone, findMember);
@@ -154,6 +160,11 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         mogakZoneCommandPort.updateMogakZone(findMogakZone, imageUrl);
     }
 
+    @Override
+    public void offline(Long mogakZoneId, Long memberId) {
+        zoneMemberPort.changeStatus(memberId, mogakZoneId, ZoneMemberStatus.OFFLINE);
+    }
+
     private JoinMogakZoneCommand getJoinCommand(CreateMogakZoneCommand command, Member hostMember, MogakZone mogakZone) {
         return JoinMogakZoneCommand.builder()
                 .memberId(hostMember.getMemberId().value())
@@ -172,10 +183,6 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     }
 
     private void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, List<ZoneMember> zoneMemberList) {
-        if (mogakZone.isAlreadyJoined(command.getMemberId(), zoneMemberList)) {
-            throw new MogakZoneException(ErrorCode.ALREADY_JOINED);
-        }
-
         if (!mogakZone.isMatchPassword(mogakZone.getZoneInfo().password(), command.getPassword())) {
             throw new MogakZoneException(ErrorCode.INVALID_ZONE_PASSWORD);
         }

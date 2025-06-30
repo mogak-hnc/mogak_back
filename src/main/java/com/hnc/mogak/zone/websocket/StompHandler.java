@@ -22,7 +22,6 @@ import java.util.Objects;
 public class StompHandler implements ChannelInterceptor {
 
     private final JwtUtil jwtUtil;
-    private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -44,6 +43,8 @@ public class StompHandler implements ChannelInterceptor {
                 log.info("에러 발생");
             }
 
+        } else {
+            log.info("accessor가 null");
         }
 
         log.info("preSend 로직 끝");
