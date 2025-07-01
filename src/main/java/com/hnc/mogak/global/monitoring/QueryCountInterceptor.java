@@ -31,6 +31,8 @@ public class QueryCountInterceptor implements HandlerInterceptor {
             bestMatchPath = UNKNOWN_PATH;
         }
 
+        String clientIp = getClientIp(request);
+
         RequestContext ctx = RequestContext.builder()
                 .httpMethod(httpMethod)
                 .bestMatchPath(bestMatchPath)
@@ -38,7 +40,9 @@ public class QueryCountInterceptor implements HandlerInterceptor {
 
         RequestContextHolder.initContext(ctx);
 
-        log.info("[{}] Request Method=[{}] URL=[{}]", ctx.getUuid(), request.getMethod(), request.getRequestURI());
+        log.info("[{}] Request Method=[{}] URL=[{}] IP=[{}]",
+                ctx.getUuid(), request.getMethod(), request.getRequestURI(), clientIp);
+
         return true;
     }
 
@@ -68,6 +72,21 @@ public class QueryCountInterceptor implements HandlerInterceptor {
                 .register(meterRegistry);
 
         summary.record(count);
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr(); // 최후의 수단
+        }
+        // X-Forwarded-For 헤더에 여러 IP가 포함될 수 있음 (가장 앞이 원래 클라이언트)
+        return ip.contains(",") ? ip.split(",")[0].trim() : ip;
     }
 
 }
