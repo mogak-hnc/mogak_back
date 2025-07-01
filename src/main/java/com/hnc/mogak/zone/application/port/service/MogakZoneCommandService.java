@@ -23,14 +23,12 @@ import com.hnc.mogak.zone.application.port.out.MogakZoneQueryPort;
 import com.hnc.mogak.zone.application.port.out.TagPort;
 import com.hnc.mogak.zone.application.port.out.ZoneMemberPort;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
-import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -68,24 +66,21 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     @Override
     public JoinMogakZoneResponse join(JoinMogakZoneCommand command) {
         log.info("[{}] [모각존 참가 로직 실행]", RequestContextHolder.getContext().getUuid());
-        MogakZone mogakZone = mogakZoneQueryPort.findById(command.getMogakZoneId());
-        List<ZoneMember> zoneMemberList = zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZone.getZoneId().value());
-        Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
-        if (mogakZone.isAlreadyJoined(command.getMemberId(), zoneMemberList)) {
-            return zoneMemberPort.join(mogakZone, findMember);
-        }
-        ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZone.getZoneId().value());
 
+        MogakZone mogakZone = mogakZoneQueryPort.findWithLock(command.getMogakZoneId());
+        Member findMember = memberPort.loadMemberByMemberId(command.getMemberId());
+
+        ZoneSummary zoneSummary = mogakZoneQueryPort.findSummaryWithLock(mogakZone.getZoneId().value());
 
         mogakZoneQueryPort.saveZoneSummaryMemberImage(
                 mogakZone.getZoneId().value(),
                 findMember.getMemberId().value(),
                 findMember.getMemberInfo().imagePath()
         );
+
+        validateMogakZoneJoin(command, mogakZone, zoneSummary.getParticipantNum());
         zoneSummary.increaseJoinCount();
         mogakZone.increaseJoinCount();
-        validateMogakZoneJoin(command, mogakZone, zoneMemberList);
-
         return zoneMemberPort.join(mogakZone, findMember);
     }
 
@@ -182,12 +177,16 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         return mogakZoneCommandPort.createMogakZone(mogakZone, tagEntitySet);
     }
 
-    private void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, List<ZoneMember> zoneMemberList) {
+    private void validateMogakZoneJoin(JoinMogakZoneCommand command, MogakZone mogakZone, int joinCount) {
+        if (zoneMemberPort.isMemberInMogakZone(command.getMogakZoneId(), command.getMemberId())) {
+            throw new MogakZoneException(ErrorCode.ALREADY_JOINED);
+        }
+
         if (!mogakZone.isMatchPassword(mogakZone.getZoneInfo().password(), command.getPassword())) {
             throw new MogakZoneException(ErrorCode.INVALID_ZONE_PASSWORD);
         }
 
-        if (mogakZone.isCapacityAvailableForJoin(mogakZone.getZoneConfig().maxCapacity(), zoneMemberList.size())) {
+        if (mogakZone.isFullCapacity(mogakZone.getZoneConfig().maxCapacity(), joinCount)) {
             throw new MogakZoneException(ErrorCode.FULL_CAPACITY);
         }
     }
