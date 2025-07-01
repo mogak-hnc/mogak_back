@@ -37,11 +37,12 @@ public class QueryCountInterceptor implements HandlerInterceptor {
                 .build();
 
         RequestContextHolder.initContext(ctx);
+        log.info("[{}] Request Path=[{}]", ctx.getUuid(), request.getRequestURI());
         log.info("[{}] Request Method=[{}]", ctx.getUuid(), request.getMethod());
 
         return true;
     }
-    
+
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         RequestContext ctx = RequestContextHolder.getContext();
