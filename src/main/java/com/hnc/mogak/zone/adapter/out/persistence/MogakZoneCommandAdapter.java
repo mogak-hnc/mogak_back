@@ -53,8 +53,7 @@ public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
                         mogakZone.getZoneId().value(),
                         mogakZone.getZoneInfo().name(),
                         mogakZone.getZoneConfig().passwordEnabled(),
-                        0L
-                )
+                        0)
         );
     }
 
