@@ -38,7 +38,11 @@ public class QueryCountInterceptor implements HandlerInterceptor {
 
         RequestContextHolder.initContext(ctx);
 
-        log.info("XFF={}, RemoteAddr={}", request.getHeader("X-Forwarded-For"), request.getRemoteAddr());
+        String xff = request.getHeader("X-Forwarded-For");
+        String remoteAddr = request.getRemoteAddr();
+
+        log.info("XFF: {}", xff);
+        log.info("RemoteAddr: {}", remoteAddr);
         log.info("[{}] Request Method=[{}]", ctx.getUuid(), request.getMethod());
 
         return true;
