@@ -37,26 +37,11 @@ public class QueryCountInterceptor implements HandlerInterceptor {
                 .build();
 
         RequestContextHolder.initContext(ctx);
-        String clientIp = getClientIp(request);
-        log.info("Client IP: {}", clientIp);
         log.info("[{}] Request Method=[{}]", ctx.getUuid(), request.getMethod());
 
         return true;
     }
-    public String getClientIp(HttpServletRequest request) {
-        String xff = request.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isEmpty()) {
-            return xff.split(",")[0].trim();  // 여러 IP 중 첫 번째가 클라이언트 IP
-        }
-
-        String realIp = request.getHeader("X-Real-IP");
-        if (realIp != null && !realIp.isEmpty()) {
-            return realIp;
-        }
-
-        return request.getRemoteAddr();  // 프록시 없으면 직접 IP
-    }
-
+    
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         RequestContext ctx = RequestContextHolder.getContext();
