@@ -21,7 +21,7 @@ public class ZoneSummary extends BaseEntity {
     private String name;
     private boolean passwordRequired;
 
-    private Long participantNum;
+    private int participantNum;
 
     public void increaseJoinCount() {
         this.participantNum++;

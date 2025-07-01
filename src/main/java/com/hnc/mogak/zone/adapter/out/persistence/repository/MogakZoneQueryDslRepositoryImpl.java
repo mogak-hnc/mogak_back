@@ -535,7 +535,7 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
 
                 redisTemplate.opsForValue().set("zone_summary_total_count", totalCount, Duration.ofMinutes(10));
             } else {
-                totalCount = ((Number) cached).longValue(); // 안전한 캐스팅
+                totalCount = ((Number) cached).longValue();
             }
                 end = System.currentTimeMillis();
                 System.out.println("count 쿼리 시간: " + (end - start) + "ms");

@@ -59,7 +59,7 @@ public class ZoneMemberAdapter implements ZoneMemberPort {
     }
 
     @Override
-    public int getZoneMemberCount(Long mogakZoneId) {
+    public int getLockedZoneMemberCount(Long mogakZoneId) {
         return zoneMemberRepository.countByMogakZoneId(mogakZoneId);
     }
 

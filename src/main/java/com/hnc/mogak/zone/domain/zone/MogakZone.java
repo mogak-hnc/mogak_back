@@ -44,7 +44,7 @@ public class MogakZone {
                 .build();
     }
 
-    public boolean isCapacityAvailableForJoin(int maxCapacity, int currentMemberCount) {
+    public boolean isFullCapacity(int maxCapacity, int currentMemberCount) {
         return maxCapacity <= currentMemberCount;
     }
 

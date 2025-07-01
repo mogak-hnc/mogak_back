@@ -15,7 +15,7 @@ public interface ZoneMemberPort {
 
     JoinMogakZoneResponse join(MogakZone mogakZone, Member findMember);
 
-    int getZoneMemberCount(Long mogakZoneId);
+    int getLockedZoneMemberCount(Long mogakZoneId);
 
     void deleteMemberByMogakZoneId(Long mogakZoneId, Long memberId);
 

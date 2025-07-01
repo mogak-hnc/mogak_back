@@ -5,7 +5,9 @@ import com.hnc.mogak.zone.adapter.out.persistence.ZoneInfoProjection;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.MogakZoneEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
 import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,7 @@ public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Lo
     @Query("SELECT zm FROM ZoneMemberEntity zm JOIN FETCH zm.memberEntity WHERE zm.mogakZoneEntity.id = :mogakZoneId")
     List<ZoneMemberEntity> findAllZoneMembersWithMembersByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 
+    @Lock(LockModeType.PESSIMISTIC_READ)
     @Query("SELECT COUNT(zm) FROM ZoneMemberEntity zm WHERE zm.mogakZoneEntity.id = :mogakZoneId")
     int countByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 

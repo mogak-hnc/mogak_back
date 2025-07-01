@@ -117,4 +117,17 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
     public Long findZoneOwnerIdByMogakZoneId(Long mogakZoneId) {
         return zoneOwnerRepository.findZoneOwnerIdByMogakZoneId(mogakZoneId);
     }
+
+    @Override
+    public MogakZone findWithLock(Long mogakZoneId) {
+        MogakZoneEntity mogakZoneEntity = mogakZoneRepository.findByIdWithLock(mogakZoneId)
+                .orElseThrow(() -> new MogakZoneException(ErrorCode.NOT_EXISTS_MOGAKZONE));
+        return MogakZoneMapper.mapToDomainWithId(mogakZoneEntity);
+    }
+
+    @Override
+    public ZoneSummary findSummaryWithLock(Long value) {
+        return zoneSummaryRepository.findByIdWithLock(value)
+                .orElseThrow(() -> new MogakZoneException(ErrorCode.NOT_EXISTS_MOGAKZONE));
+    }
 }

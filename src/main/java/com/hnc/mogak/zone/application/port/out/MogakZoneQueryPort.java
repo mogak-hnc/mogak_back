@@ -33,4 +33,8 @@ public interface MogakZoneQueryPort {
 
     Long findZoneOwnerIdByMogakZoneId(Long mogakZoneId);
 
+    MogakZone findWithLock(Long mogakZoneId);
+
+    ZoneSummary findSummaryWithLock(Long value);
+
 }
