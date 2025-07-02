@@ -3,7 +3,6 @@ package com.hnc.mogak.zone.websocket;
 import com.hnc.mogak.global.auth.jwt.JwtUtil;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WebSocketException;
-import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -34,12 +33,15 @@ public class StompHandler implements ChannelInterceptor {
                 handleConnect(accessor);
             }
             if (Objects.requireNonNull(command) == StompCommand.SUBSCRIBE) {
+                log.info("세션 ID: {}", accessor.getSessionId());
                 log.info("구독 시작");
             }
             if (Objects.requireNonNull(command) == StompCommand.UNSUBSCRIBE) {
+                log.info("세션 ID: {}", accessor.getSessionId());
                 log.info("구독 종료");
             }
             if (Objects.requireNonNull(command) == StompCommand.ERROR) {
+                log.info("세션 ID: {}", accessor.getSessionId());
                 log.info("에러 발생");
             }
 
@@ -64,6 +66,7 @@ public class StompHandler implements ChannelInterceptor {
         Long mogakZoneId = Long.parseLong(Objects.requireNonNull(accessor.getFirstNativeHeader("mogakZoneId")));
 
         accessor.setUser(new StompPrincipal(sessionId, memberId, mogakZoneId));
+        log.info("CONNECT 요청 - sessionId={}, mogakZoneId={}", sessionId, mogakZoneId);
         log.info("handleConnect 로직 끝");
     }
 

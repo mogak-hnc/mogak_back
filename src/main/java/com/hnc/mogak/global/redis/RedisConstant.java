@@ -17,4 +17,7 @@ public final class RedisConstant {
     public static final String WORRY_ID_SEQ_KEY = "worry:id:seq";
     public static final String WORRY_COMMENT_ID_SEQ_KEY = "worry:comment:id:seq";
 
+    public static final String MAIN_PAGE_CACHE = "mainPageCache::main";
+    public static final String ZONE_SUMMARY_TOTAL_COUNT = "zone:summary:total:count:";
+
 }

@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @Repository
@@ -47,6 +46,7 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
             builder.and(challenge.status.eq(query.getStatus()));
         }
 
+        long startTime = System.currentTimeMillis();
         List<Tuple> challengeInfos = queryFactory
                 .select(challenge.id, challenge.official, challenge.title, challenge.startDate, challenge.endDate, challenge.status)
                 .from(challenge)
@@ -57,7 +57,10 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Time taken to fetch challenge infos: " + (endTime - startTime) + "ms");
 
+        startTime = System.currentTimeMillis();
         List<Long> ids = challengeInfos.stream().map(tuple -> tuple.get(challenge.id)).toList();
 
         List<Tuple> memberTuples = queryFactory
@@ -66,7 +69,10 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                 .join(member).on(challengeMember.memberEntity.eq(member))
                 .where(challengeMember.challengeEntity.id.in(ids))
                 .fetch();
+        endTime = System.currentTimeMillis();
+        System.out.println("Time taken to fetch member infos: " + (endTime - startTime) + "ms");
 
+        startTime = System.currentTimeMillis();
         Map<Long, List<String>> challengeIdToImages = new HashMap<>();
         for (Tuple tuple : memberTuples) {
             Long challengeId = tuple.get(challengeMember.challengeEntity.id);
@@ -81,7 +87,10 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                 imageList.add(imagePath);
             }
         }
+        endTime = System.currentTimeMillis();
+        System.out.println("Time taken to fetch member image paths: " + (endTime - startTime) + "ms");
 
+        startTime = System.currentTimeMillis();
         List<ChallengeSearchResponse> result = challengeInfos.stream()
                 .map(tuple -> {
                     Long challengeId = tuple.get(challenge.id);
@@ -102,12 +111,17 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
                             .build();
                 })
                 .toList();
+        endTime = System.currentTimeMillis();
+        System.out.println("Time taken to build ChallengeSearchResponse: " + (endTime - startTime) + "ms");
 
+        startTime = System.currentTimeMillis();
         Long total = queryFactory
                 .select(challenge.countDistinct())
                 .from(challenge)
                 .where(builder)
                 .fetchOne();
+        endTime = System.currentTimeMillis();
+        System.out.println("Time taken to fetch total: " + (endTime - startTime) + "ms");
 
         long safeTotal = Optional.ofNullable(total).orElse(0L);
         return new PageImpl<>(result, pageable, safeTotal);

@@ -1,14 +1,13 @@
 package com.hnc.mogak.zone.adapter.out.persistence.repository;
 
+import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.member.adapter.out.persistence.QMemberEntity;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneSearchResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.*;
 import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,8 +17,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -444,10 +444,8 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
 
             return new PageImpl<>(content, pageable, total == null ? 0 : total);
         } else {
-                long totalStart = System.currentTimeMillis();
 
                 // 1단계: ID만 추출 (인덱스 활용 + 페이징 안정성 확보)
-                long start = System.currentTimeMillis();
                 List<Long> zoneIds = queryFactory
                         .select(summary.id)
                         .from(summary)
@@ -458,20 +456,15 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
 
                 if (zoneIds.isEmpty()) return Page.empty(pageable);
                 long end = System.currentTimeMillis();
-                System.out.println("zoneIds 추출 시간: " + (end - start) + "ms");
 
                 // 2단계: 상세 정보 조회
-                start = System.currentTimeMillis();
                 List<Tuple> zoneInfos = queryFactory
                         .select(summary.id, summary.name, summary.passwordRequired)
                         .from(summary)
                         .where(summary.id.in(zoneIds))
                         .fetch();
-                end = System.currentTimeMillis();
-                System.out.println("zoneInfos 조회 시간: " + (end - start) + "ms");
 
                 // 3단계: 태그 조회
-                start = System.currentTimeMillis();
                 Map<Long, List<String>> zoneIdToTags = queryFactory
                         .select(zoneTag.zone.id, tag.name)
                         .from(zoneTag)
@@ -483,11 +476,8 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                                 tuple -> tuple.get(zoneTag.zone.id),
                                 Collectors.mapping(t -> t.get(tag.name), Collectors.toList())
                         ));
-                end = System.currentTimeMillis();
-                System.out.println("zoneIdToTags 조회 시간: " + (end - start) + "ms");
 
                 // 4단계: 멤버 이미지 조회 (최대 3개 제한)
-                start = System.currentTimeMillis();
                 Map<Long, List<String>> zoneIdToImages = queryFactory
                         .select(zoneMember.mogakZoneEntity.id, member.imagePath)
                         .from(zoneMember)
@@ -502,11 +492,8 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                                     return img == null ? "Default" : img;
                                 }, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream().limit(3).toList()))
                         ));
-                end = System.currentTimeMillis();
-                System.out.println("zoneIdToImages 조회 시간: " + (end - start) + "ms");
 
                 // 5단계: 응답 DTO 조립
-                start = System.currentTimeMillis();
                 List<MogakZoneSearchResponse> content = zoneInfos.stream()
                         .map(tuple -> {
                             Long zoneId = tuple.get(summary.id);
@@ -519,12 +506,9 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                                     .build();
                         })
                         .toList();
-                end = System.currentTimeMillis();
-                System.out.println("응답 DTO 조립 시간: " + (end - start) + "ms");
 
                 // 6단계: 전체 개수 카운트
-                start = System.currentTimeMillis();
-            Object cached = redisTemplate.opsForValue().get("zone_summary_total_count");
+            Object cached = redisTemplate.opsForValue().get(RedisConstant.ZONE_SUMMARY_TOTAL_COUNT);
 
             Long totalCount;
             if (cached == null) {
@@ -533,15 +517,10 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                         .from(summary)
                         .fetchOne();
 
-                redisTemplate.opsForValue().set("zone_summary_total_count", totalCount, Duration.ofMinutes(10));
+                redisTemplate.opsForValue().set(RedisConstant.ZONE_SUMMARY_TOTAL_COUNT, totalCount, Duration.ofMinutes(10));
             } else {
                 totalCount = ((Number) cached).longValue();
             }
-                end = System.currentTimeMillis();
-                System.out.println("count 쿼리 시간: " + (end - start) + "ms");
-
-                long totalEnd = System.currentTimeMillis();
-                System.out.println("총 수행 시간: " + (totalEnd - totalStart) + "ms");
 
                 return new PageImpl<>(content, pageable, Optional.ofNullable(totalCount).orElse(0L));
             }

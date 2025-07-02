@@ -8,7 +8,6 @@ import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.WorryException;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
-import com.hnc.mogak.member.domain.vo.MemberInfo;
 import com.hnc.mogak.worry.dto.*;
 import com.hnc.mogak.worry.event.CreateAiCommentEvent;
 import com.hnc.mogak.worry.scheduler.WorryScheduler;

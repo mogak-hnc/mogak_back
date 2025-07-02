@@ -1,13 +1,15 @@
 package com.hnc.mogak.challenge.adapter.in.web.dto;
 
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ChallengeSearchResponse {
 

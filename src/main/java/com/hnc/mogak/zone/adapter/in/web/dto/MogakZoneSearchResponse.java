@@ -1,12 +1,14 @@
 package com.hnc.mogak.zone.adapter.in.web.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
-@Builder
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MogakZoneSearchResponse {
 
     private Long mogakZoneId;
