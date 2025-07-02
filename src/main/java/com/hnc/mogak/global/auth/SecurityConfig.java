@@ -32,12 +32,12 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler oAuth2FailureHandler;
     private final JwtFilter jwtFilter;
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
-        return web -> web.ignoring()
-                // error endpoint를 열어줘야 함, favicon.ico 추가!
-                .requestMatchers("/error", "/favicon.ico");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
+//        return web -> web.ignoring()
+//                // error endpoint를 열어줘야 함, favicon.ico 추가!
+//                .requestMatchers("/error", "/favicon.ico");
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -91,7 +91,7 @@ public class SecurityConfig {
                                         "/dashboard/**",
                                         "/webjars/**",
                                         "/error",
-                                        "/ci-cd",
+                                        "faviicon.ico",
                                         "/actuator/**"
                                 ).permitAll()
                                 .anyRequest().authenticated())
