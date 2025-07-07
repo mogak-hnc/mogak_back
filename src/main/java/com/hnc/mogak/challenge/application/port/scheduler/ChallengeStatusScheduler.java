@@ -13,6 +13,7 @@ import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.BadgeException;
 import com.hnc.mogak.global.util.mapper.BadgeMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class ChallengeStatusScheduler {
 
@@ -34,21 +36,19 @@ public class ChallengeStatusScheduler {
     private final ApplicationEventPublisher eventPublisher;
 
 //    @Scheduled(cron = "0 * * * * *")
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     @Transactional
     public void updateChallengesByDate() {
+        log.info("Challenge Scheduler Start");
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
-//        LocalDate today = LocalDate.now().plusDays(1);
-
         updateStartChallenge(today);
 
-        LocalDate testDate = today.plusDays(30);
         List<ChallengeEntity> completedChallenges = challengeRepository.findAllByEndDateAndStatus(
                 today.minusDays(1),
-//                testDate,
                 ChallengeStatus.ONGOING
         );
 
+        log.info("Challenge Scheduler -> Event Listener");
         completedChallenges.forEach(challengeEntity -> {
             challengeEntity.updateChallengeStatus(ChallengeStatus.COMPLETED);
             challengeRepository.save(challengeEntity);
@@ -87,6 +87,7 @@ public class ChallengeStatusScheduler {
     }
 
     private void updateStartChallenge(LocalDate today) {
+        log.info("Challenge update BEFORE -> ONGOING");
         challengeRepository.updateStatusForStartingChallenges(today, ChallengeStatus.BEFORE, ChallengeStatus.ONGOING);
     }
 

@@ -54,7 +54,9 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private void handleConnect(StompHeaderAccessor accessor) {
-        log.info("handleConnect 로직 실행");
+//        log.info("handleConnect 로직 시작");
+        log.info("세션 ID: {}", accessor.getSessionId());
+        log.info("연결 시작");
         String token = accessor.getFirstNativeHeader("Authorization");
         if (token == null || jwtUtil.isTokenExpired(token)) {
             log.info("handle Conenction 중 토큰 예외 발생");

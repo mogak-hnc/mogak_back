@@ -85,8 +85,6 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
         return mogakZoneQueryDslRepository.findMogakZone(query, pageable);
     }
 
-
-
     @Override
     public List<TagNameResponse> getPopularTags() {
         Pageable pageable = PageRequest.of(0, 5);

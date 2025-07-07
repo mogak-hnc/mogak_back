@@ -27,6 +27,7 @@ public class BadgeEventListener {
     @Async
     @TransactionalEventListener
     public void handleChallengeDurationCompletion(ChallengeCompletionDurationEvent event) {
+        log.info("Duration Badge Event Start");
         int challengeDays = event.getChallengeDuration();
         Badge durationBadge = findTopDurationBadgeByChallengeDays(challengeDays);
         if (durationBadge == null) return;
@@ -37,6 +38,7 @@ public class BadgeEventListener {
     @Async
     @TransactionalEventListener
     public void handleOfficialChallengeCompletion(ChallengeCompletionOfficialEvent event) {
+        log.info("Official Badge Event Start");
         List<Long> memberIdList = event.getMemberIdList();
         for (Long memberId : memberIdList) {
             badgeUseCase.acquireBadge(memberId, event.getChallengeId(), event.getBadge());
@@ -46,6 +48,7 @@ public class BadgeEventListener {
     @Async
     @TransactionalEventListener
     public void handleCountChallengeCompletion(ChallengeCompletionCountEvent event) {
+        log.info("Count Badge Event Start");
         List<Long> memberIds = event.getMemberIdList();
         Map<Long, Integer> badgeCountByMemberId = badgeQueryPort.findBadgeCountByMemberIds(memberIds);
 

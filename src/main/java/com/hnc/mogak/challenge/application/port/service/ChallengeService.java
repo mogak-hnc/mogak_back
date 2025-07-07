@@ -101,9 +101,6 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public Page<ChallengeSearchResponse> searchChallenge(ChallengeSearchQuery query) {
-        if (RequestContextHolder.getContext() != null) {
-            log.info("[{}] 쿼리 시작", RequestContextHolder.getContext().getUuid());
-        }
         return challengeQueryPort.searchChallenge(query);
     }
 
