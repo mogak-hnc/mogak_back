@@ -53,6 +53,9 @@ public class QueryCountInterceptor implements HandlerInterceptor {
             log.info("[{}] Response Status=[{}]", ctx.getUuid(), response.getStatus());
         }
 
+        String ip = getClientIp(request); // ✅ IP 추출
+        log.info("[{}] Response Status=[{}], Client IP=[{}]", ctx.getUuid(), response.getStatus(), ip);
+
         RequestContextHolder.clear();
     }
     
@@ -66,6 +69,26 @@ public class QueryCountInterceptor implements HandlerInterceptor {
                 .register(meterRegistry);
 
         summary.record(count);
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            // 여러 IP가 있을 수 있어서 첫 번째만 추출
+            return ip.split(",")[0].trim();
+        }
+
+        ip = request.getHeader("Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+
+        ip = request.getHeader("WL-Proxy-Client-IP");
+        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+            return ip;
+        }
+
+        return request.getRemoteAddr(); // 마지막 fallback
     }
 
 }
