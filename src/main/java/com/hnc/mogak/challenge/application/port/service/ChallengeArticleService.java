@@ -63,6 +63,11 @@ public class ChallengeArticleService implements ChallengeArticleUseCase {
         return challengeArticlePort.findChallengeArticle(challengeId, articleId);
     }
 
+    @Override
+    public Boolean hasWrittenArticleToday(Long challengeId, Long memberId) {
+        return challengeArticlePort.isAlreadyPostToday(challengeId, memberId);
+    }
+
     private List<String> saveImages(CreateArticleCommand command) {
         List<MultipartFile> images = command.getImages();
         if (images.size() > 10) throw new ChallengeArticleException(ErrorCode.TOO_MANY_IMAGES);

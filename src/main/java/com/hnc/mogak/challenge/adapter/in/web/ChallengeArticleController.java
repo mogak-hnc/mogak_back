@@ -94,4 +94,15 @@ public class ChallengeArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeArticleUseCase.getChallengeArticleDetail(challengeId, articleId));
     }
 
+    @Operation(summary = "인증 여부 조회", description = "오늘 챌린지 게시글을 작성하여 인증했는지에 조회합니다.")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @GetMapping("/{challengeId}/article/today")
+    public ResponseEntity<Boolean> hasWrittenArticleToday(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @PathVariable Long challengeId) {
+        Long memberId = Long.parseLong(jwtUtil.getMemberId(token));
+        return ResponseEntity.ok(challengeArticleUseCase.hasWrittenArticleToday(challengeId, memberId));
+    }
+
 }

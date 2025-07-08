@@ -13,4 +13,6 @@ public interface ChallengeArticleUseCase {
 
     GetChallengeArticleDetail getChallengeArticleDetail(Long challengeId, Long articleId);
 
+    Boolean hasWrittenArticleToday(Long challengeId, Long memberId);
+
 }

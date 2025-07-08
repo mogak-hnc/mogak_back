@@ -69,7 +69,7 @@ public class ChallengeService implements ChallengeUseCase {
     @Override
     public ChallengeDetailResponse getDetail(Long memberId, Long challengeId) {
         log.info("[{}] [챌린지 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
-        int limit = 6;
+        int limit = 7;
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
         int survivorCount = challengeMemberPort.getSurvivorCount(challengeId);

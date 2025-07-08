@@ -17,6 +17,7 @@ import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.member.adapter.out.persistence.MemberEntity;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ChallengeArticleAdapter implements ChallengeArticlePort {
 
     private final ChallengeArticleRepository challengeArticleRepository;
@@ -100,6 +102,8 @@ public class ChallengeArticleAdapter implements ChallengeArticlePort {
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+        log.info("Current ZoneId: {}", startOfDay);
+        log.info("LocalDateTime.now(): {}", endOfDay);
         return challengeArticleRepository.isAlreadyPostToday(challengeId, memberId, startOfDay, endOfDay);
     }
 
