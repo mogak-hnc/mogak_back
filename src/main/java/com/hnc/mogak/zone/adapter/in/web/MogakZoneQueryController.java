@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/zone")
 @Tag(name = "3. MogakZone", description = "모각존 생성 및 조회 API")
+@Slf4j
 public class MogakZoneQueryController {
 
     private final MogakZoneQueryUseCase mogakZoneQueryUseCase;
@@ -50,7 +52,13 @@ public class MogakZoneQueryController {
             @Parameter(description = "페이지 사이즈")
             @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
 
+        log.info("MogakZone Search Information");
+        log.info("tag={}", tag);
+        log.info("sort={}", sort);
+        log.info("page={}", page);
+        log.info("size={}", size);
         MogakZoneSearchQuery.Sort sortType = MogakZoneSearchQuery.Sort.valueOf(sort);
+        log.info("sortType={}", sortType);
         MogakZoneSearchQuery mogakZoneSearchQuery = MogakZoneSearchQuery.builder()
                 .tag(tag)
                 .sort(sortType)

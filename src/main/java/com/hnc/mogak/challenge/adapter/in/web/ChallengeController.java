@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +35,7 @@ import java.time.ZoneId;
 @RequestMapping("/challenge")
 @RequiredArgsConstructor
 @Tag(name = "4. Challenge", description = "모각챌 관련 API")
+@Slf4j
 public class ChallengeController {
 
     private final ChallengeUseCase challengeUseCase;
@@ -147,6 +149,14 @@ public class ChallengeController {
                 .status(status)
                 .size(size)
                 .build();
+
+        log.info("Challenge Search Information");
+        log.info("search={}", search);
+        log.info("official={}", official);
+        log.info("sort={}", sort);
+        log.info("status={}", status);
+        log.info("page={}", page);
+        log.info("size={}", size);
 
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.searchChallenge(query));
     }
