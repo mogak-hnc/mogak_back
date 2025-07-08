@@ -7,6 +7,7 @@ import com.hnc.mogak.badge.adapter.out.persistence.repository.MemberBadgeReposit
 import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
 import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.badge.event.MemberBadgeCountProjection;
+import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeBadgeRepository;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.BadgeException;
 import com.hnc.mogak.global.util.mapper.BadgeMapper;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class BadgeQueryAdapter implements BadgeQueryPort {
 
     private final MemberBadgeRepository memberBadgeRepository;
+    private final ChallengeBadgeRepository challengeBadgeRepository;
     private final BadgeRepository badgeRepository;
 
     @Override
@@ -94,4 +96,12 @@ public class BadgeQueryAdapter implements BadgeQueryPort {
     public Optional<BadgeEntity> findBadgeByCountNumber(BadgeType badgeType, int badgeCount) {
         return badgeRepository.findByBadgeTypeAndConditionValue(badgeType, badgeCount);
     }
+
+    @Override
+    public Badge findByChallengeId(Long challengeId) {
+        return BadgeMapper.mapToDomainEntity(
+                challengeBadgeRepository.findBadgeByChallengeId(challengeId)
+                .orElseThrow(() -> new BadgeException(ErrorCode.NOT_EXISTS_BADGE)));
+    }
+
 }

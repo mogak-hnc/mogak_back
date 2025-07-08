@@ -71,4 +71,7 @@ public class Challenge {
         return Objects.equals(memberId, ownerMemberId);
     }
 
+    public boolean isOfficial() {
+        return this.extraDetails.official();
+    }
 }

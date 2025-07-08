@@ -1,6 +1,6 @@
 package com.hnc.mogak.challenge.adapter.in.web.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import lombok.AccessLevel;
@@ -26,13 +26,24 @@ public class ChallengeDetailResponse {
     private boolean isJoined;
     private Long challengeOwnerId;
     private ChallengeStatus status;
+    private BadgeInfo badgeInfo;
 
     public static ChallengeDetailResponse build(
             List<String> memberImageList,
             Challenge challenge,
             int survivorCount,
             boolean isJoined,
-            Long challengeOwnerId) {
+            Long challengeOwnerId,
+            Badge badge) {
+
+        BadgeInfo badgeInfo = null;
+        if (badge != null) {
+            badgeInfo = new BadgeInfo(
+                    badge.getBadgeId().value(),
+                    badge.getBadgeInfo().name(),
+                    badge.getBadgeImage().iconUrl()
+            );
+        }
 
         return new ChallengeDetailResponse(
                 challenge.getExtraDetails().official(),
@@ -44,8 +55,17 @@ public class ChallengeDetailResponse {
                 memberImageList,
                 isJoined,
                 challengeOwnerId,
-                challenge.getStatus()
+                challenge.getStatus(),
+                badgeInfo
         );
+    }
+
+    @Getter
+    @AllArgsConstructor
+    static class BadgeInfo {
+        private Long badgeId;
+        private String name;
+        private String badgeImageUrl;
     }
 
 }

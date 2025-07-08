@@ -15,4 +15,6 @@ public interface ChallengeBadgeRepository extends JpaRepository<ChallengeBadgeEn
     @Query("SELECT cb.badgeEntity FROM ChallengeBadgeEntity cb WHERE cb.challengeEntity.id = :challengeId")
     Optional<BadgeEntity> findBadgeEntityByChallengeId(@Param("challengeId") Long challengeId);
 
+    @Query("SELECT cb.badgeEntity FROM ChallengeBadgeEntity cb WHERE cb.challengeEntity.id = :challengeId")
+    Optional<BadgeEntity> findBadgeByChallengeId(@Param(value = "challengeId") Long challengeId);
 }

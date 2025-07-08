@@ -30,4 +30,5 @@ public interface BadgeQueryPort {
 
     Badge findByBadgeId(Long badgeId);
 
+    Badge findByChallengeId(Long challengeId);
 }

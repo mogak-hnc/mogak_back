@@ -1,5 +1,7 @@
 package com.hnc.mogak.challenge.application.port.service;
 
+import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
+import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.ChallengeDeactivateCommand;
@@ -37,6 +39,7 @@ public class ChallengeService implements ChallengeUseCase {
     private final ChallengeCommandPort challengeCommandPort;
     private final ChallengeQueryPort challengeQueryPort;
     private final ChallengeMemberPort challengeMemberPort;
+    private final BadgeQueryPort badgeQueryPort;
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
@@ -73,7 +76,11 @@ public class ChallengeService implements ChallengeUseCase {
 
         boolean isJoined = challengeMemberPort.isMember(challengeId, memberId);
         Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
-        return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId);
+
+        Badge badge = null;
+        if (challenge.isOfficial()) badge = badgeQueryPort.findByChallengeId(challengeId);
+
+        return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId, badge);
     }
 
 //    @Override
