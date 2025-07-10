@@ -102,8 +102,6 @@ public class ChallengeArticleAdapter implements ChallengeArticlePort {
         LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-        log.info("Current ZoneId: {}", startOfDay);
-        log.info("LocalDateTime.now(): {}", endOfDay);
         return challengeArticleRepository.isAlreadyPostToday(challengeId, memberId, startOfDay, endOfDay);
     }
 
