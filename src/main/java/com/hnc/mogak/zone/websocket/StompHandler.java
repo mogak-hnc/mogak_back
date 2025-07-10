@@ -59,7 +59,6 @@ public class StompHandler implements ChannelInterceptor {
         log.info("연결 시작");
         String token = accessor.getFirstNativeHeader("Authorization");
         if (token == null || jwtUtil.isTokenExpired(token)) {
-            log.info("handle Conenction 중 토큰 예외 발생");
             throw new WebSocketException(ErrorCode.EXPIRED_TOKEN);
         }
 

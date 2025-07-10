@@ -46,12 +46,11 @@ public class QueryCountInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         RequestContext ctx = RequestContextHolder.getContext();
+        if (ctx == null) return;
 
-        if (ctx != null) {
-            Map<QueryType, Integer> queryCountByType = ctx.getQueryCountByType();
-            queryCountByType.forEach((queryType, count) -> increment(ctx, queryType, count));
-            log.info("[{}] Response Status=[{}]", ctx.getUuid(), response.getStatus());
-        }
+        Map<QueryType, Integer> queryCountByType = ctx.getQueryCountByType();
+        queryCountByType.forEach((queryType, count) -> increment(ctx, queryType, count));
+        log.info("[{}] Response Status=[{}]", ctx.getUuid(), response.getStatus());
 
         String ip = getClientIp(request); // ✅ IP 추출
         log.info("[{}] Response Status=[{}], Client IP=[{}]", ctx.getUuid(), response.getStatus(), ip);
