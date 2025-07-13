@@ -50,10 +50,14 @@ public class ChallengeStatusScheduler {
 
         log.info("Challenge Scheduler -> Event Listener");
         completedChallenges.forEach(challengeEntity -> {
+            log.info("ONGOING -> COMPLETED");
             challengeEntity.updateChallengeStatus(ChallengeStatus.COMPLETED);
             challengeRepository.save(challengeEntity);
 
             List<Long> survivorMemberIds = challengeMemberRepository.findSurvivorMemberIds(challengeEntity.getId());
+            log.info("survivorMemberIds -> {}", survivorMemberIds);
+
+            log.info("Challenge Completion Event Start");
             executeDurationEvent(challengeEntity, survivorMemberIds);
             executeCountEvent(challengeEntity, survivorMemberIds);
             executeOfficialEvent(challengeEntity, survivorMemberIds);
@@ -61,6 +65,7 @@ public class ChallengeStatusScheduler {
     }
 
     private void executeOfficialEvent(ChallengeEntity challengeEntity, List<Long> survivorMemberIds) {
+        log.info("Challenge Official Event Start");
         if (challengeEntity.isOfficial()) {
             Badge badge = BadgeMapper.mapToDomainEntity(challengeBadgeRepository.findBadgeEntityByChallengeId(challengeEntity.getId())
                     .orElseThrow(() -> new BadgeException(ErrorCode.NOT_EXISTS_BADGE)));
@@ -71,13 +76,16 @@ public class ChallengeStatusScheduler {
                     badge
             ));
         }
+        log.info("Challenge Official Event End");
     }
 
     private void executeCountEvent(ChallengeEntity challengeEntity, List<Long> survivorMemberIds) {
+        log.info("Challenge Count Event Start");
         eventPublisher.publishEvent(new ChallengeCompletionCountEvent(challengeEntity.getId(), survivorMemberIds));
     }
 
     private void executeDurationEvent(ChallengeEntity challengeEntity, List<Long> survivorMemberIds) {
+        log.info("Challenge Duration Event Start");
         int duration = calculateDuration(challengeEntity.getStartDate(), challengeEntity.getEndDate());
         eventPublisher.publishEvent(new ChallengeCompletionDurationEvent(
                 challengeEntity.getId(),
