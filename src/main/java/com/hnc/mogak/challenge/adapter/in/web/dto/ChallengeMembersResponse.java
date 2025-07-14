@@ -12,5 +12,4 @@ public class ChallengeMembersResponse {
     private String memberImageUrl;
     private boolean isSurvivor;
 
-
 }
