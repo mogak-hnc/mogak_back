@@ -14,12 +14,10 @@ import com.hnc.mogak.global.util.mapper.ChallengeMapper;
 import com.hnc.mogak.global.util.mapper.MemberMapper;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class ChallengeCommandAdapter implements ChallengeCommandPort {
 
     private final ChallengeRepository challengeRepository;
@@ -32,10 +30,6 @@ public class ChallengeCommandAdapter implements ChallengeCommandPort {
     @Override
     public Challenge persist(Challenge challenge) {
         ChallengeEntity savedChallengeEntity = challengeRepository.save(ChallengeMapper.mapToJpaEntity(challenge));
-        log.info("DB==");
-        log.info("startDate={}", savedChallengeEntity.getStartDate());
-        log.info("endDate={}", savedChallengeEntity.getEndDate());
-
         return ChallengeMapper.mapToDomain(savedChallengeEntity);
     }
 
