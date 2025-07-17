@@ -66,7 +66,7 @@ public class ChallengeController {
         boolean isOfficial = role.equals(AuthConstant.ROLE_ADMIN);
 
         dateValidCheck(startDate, endDate);
-
+        log.info("startDate: {}, endDate: {}", startDate, endDate);
         CreateChallengeCommand command = getChallengeCommand(request, startDate, endDate, memberId, isOfficial);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));

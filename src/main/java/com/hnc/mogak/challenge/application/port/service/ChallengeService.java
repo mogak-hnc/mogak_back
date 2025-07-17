@@ -49,7 +49,7 @@ public class ChallengeService implements ChallengeUseCase {
 
         Challenge savedChallenge = saveChallenge(command, challenge, challengeCreator);
         join(getJoinChallengeJoinCommand(command, savedChallenge));
-
+        log.info("startDate: {}, endDate: {}", savedChallenge.getChallengeDuration().startDate(), savedChallenge.getChallengeDuration().endDate());
         return CreateChallengeResponse.build(command, savedChallenge, challengeCreator.getMemberId().value());
     }
 
