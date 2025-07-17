@@ -65,8 +65,6 @@ public class ChallengeController {
         LocalDate endDate = localDates[1];
         boolean isOfficial = role.equals(AuthConstant.ROLE_ADMIN);
 
-        log.info("startDate={}", startDate);
-        log.info("endDate={}", endDate);
         dateValidCheck(startDate, endDate);
 
         CreateChallengeCommand command = getChallengeCommand(request, startDate, endDate, memberId, isOfficial);

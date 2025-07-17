@@ -38,7 +38,6 @@ public class BadgeService implements BadgeUseCase {
 
     @Override
     public void acquireBadge(Long memberId, Long challengeId, Badge badge) {
-        log.info("[{}] [뱃지 획득 로직 실행]", RequestContextHolder.getContext().getUuid());
         if (badgeQueryPort.hasBadge(memberId, badge.getBadgeId().value(), badge.getBadgeType())) {
             return;
         }

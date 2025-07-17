@@ -76,7 +76,6 @@ public class ChallengeStatusScheduler {
                     badge
             ));
         }
-        log.info("Challenge Official Event End");
     }
 
     private void executeCountEvent(ChallengeEntity challengeEntity, List<Long> survivorMemberIds) {
