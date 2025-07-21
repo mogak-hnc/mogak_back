@@ -83,8 +83,7 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
                         .nickname(projection.getNickname())
                         .memberImageUrl(projection.getMemberImageUrl())
                         .isSurvivor(Boolean.TRUE.equals(projection.getSurvivor()))
-                        .IsLeader(Objects.equals(requestMemberId, ownerId))
-                        .CurrentUserIsLeader(Objects.equals(requestMemberId, ownerId))
+                        .isLeader(Objects.equals(projection.getMemberId(), ownerId))
                         .build());
     }
 

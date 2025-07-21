@@ -71,6 +71,7 @@ public class SecurityConfig {
                                         "/challenge/article/*/verification",
                                         "/challenge/*/article/*",
                                         "/challenge/*/members/*/survivor",
+                                        "/challenge/{challengeId}/owner",
                                         "/challenge/list",
                                         "/badge/all",
                                         "/badge/*",

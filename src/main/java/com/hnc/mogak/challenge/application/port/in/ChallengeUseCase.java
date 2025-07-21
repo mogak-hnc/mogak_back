@@ -26,4 +26,7 @@ public interface ChallengeUseCase {
 
     ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command);
 
+
+    Boolean isChallengeOwner(Long challengeId, Long requestMemberId);
+
 }

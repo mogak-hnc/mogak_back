@@ -134,6 +134,12 @@ public class ChallengeService implements ChallengeUseCase {
     }
 
     @Override
+    public Boolean isChallengeOwner(Long challengeId, Long requestMemberId) {
+        Long ownerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
+        return Objects.equals(ownerId, requestMemberId);
+    }
+
+    @Override
     public ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command) {
         log.info("[{}] [챌린지 내보내기 로직 실행]", RequestContextHolder.getContext().getUuid());
         Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());

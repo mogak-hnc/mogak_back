@@ -197,6 +197,20 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getChallengeMembers(query, requestMemberId));
     }
 
+    @Operation(summary = "챌린지 방장 여부", description = "해당 챌린지 방장인지 조회합니다.")
+    @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
+    @GetMapping("/{challengeId}/owner")
+    public ResponseEntity<Boolean> isChallengeOwner(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
+            @Parameter(description = "멤버 조회 할 챌린지 ID")
+            @PathVariable(value = "challengeId") Long challengeId
+    ) {
+        Long requestMemberId = Long.parseLong(jwtUtil.getMemberId(token));
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.isChallengeOwner(challengeId, requestMemberId));
+    }
+
+
     @Operation(summary = "챌린지 멤버 생존자 내보내기", description = "챌린지 멤버 생존자를 내보내는 기능입니다.")
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @PutMapping("/{challengeId}/members/{targetMemberId}/survivor")

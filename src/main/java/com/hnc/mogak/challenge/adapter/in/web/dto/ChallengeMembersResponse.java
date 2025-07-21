@@ -11,7 +11,6 @@ public class ChallengeMembersResponse {
     private String nickname;
     private String memberImageUrl;
     private boolean isSurvivor;
-    private boolean CurrentUserIsLeader;
-    private boolean IsLeader;
+    private boolean isLeader;
 
 }
