@@ -126,9 +126,11 @@ public class ChallengeService implements ChallengeUseCase {
     }
 
     @Override
-    public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query) {
+    public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query, Long requestMemberId) {
         log.info("[{}] [챌린지 멤버 조회 로직 실행]", RequestContextHolder.getContext().getUuid());
-        return challengeMemberPort.getChallengeMembers(query);
+        Long ownerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(query.getChallengeId());
+
+        return challengeMemberPort.getChallengeMembers(query, requestMemberId, ownerId);
     }
 
     @Override

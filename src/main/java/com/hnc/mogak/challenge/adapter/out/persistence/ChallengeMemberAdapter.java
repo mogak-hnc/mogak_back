@@ -16,10 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -75,7 +72,7 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
     }
 
     @Override
-    public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query) {
+    public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query, Long requestMemberId, Long ownerId) {
         int page = query.getPage();
         int size = query.getSize();
         Pageable pageable = PageRequest.of(page, size);
@@ -86,6 +83,8 @@ public class ChallengeMemberAdapter implements ChallengeMemberPort {
                         .nickname(projection.getNickname())
                         .memberImageUrl(projection.getMemberImageUrl())
                         .isSurvivor(Boolean.TRUE.equals(projection.getSurvivor()))
+                        .IsLeader(Objects.equals(requestMemberId, ownerId))
+                        .CurrentUserIsLeader(Objects.equals(requestMemberId, ownerId))
                         .build());
     }
 

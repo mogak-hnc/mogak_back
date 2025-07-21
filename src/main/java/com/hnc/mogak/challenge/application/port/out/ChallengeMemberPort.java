@@ -24,7 +24,7 @@ public interface ChallengeMemberPort {
 
     boolean isMember(Long challengeId, Long memberId);
 
-    Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query);
+    Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query, Long requestMemberId, Long ownerId);
 
     void deactivateSurvivorMember(Long targetMemberId, Long challengeId);
 

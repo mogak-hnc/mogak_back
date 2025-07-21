@@ -8,8 +8,6 @@ import com.hnc.mogak.challenge.application.port.in.query.ChallengeSearchQuery;
 import com.hnc.mogak.challenge.application.port.in.query.GetChallengeMembersQuery;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface ChallengeUseCase {
 
     CreateChallengeResponse create(CreateChallengeCommand command);
@@ -24,7 +22,7 @@ public interface ChallengeUseCase {
 
     Long deleteChallenge(Long challengeId, Long memberId, String role);
 
-    Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query);
+    Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query, Long requestMemberId);
 
     ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command);
 

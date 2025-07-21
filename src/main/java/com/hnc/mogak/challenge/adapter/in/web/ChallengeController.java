@@ -178,6 +178,8 @@ public class ChallengeController {
     @PreAuthorize(AuthConstant.ACCESS_ONLY_MEMBER_OR_ADMIN)
     @GetMapping("/{challengeId}/members")
     public ResponseEntity<Page<ChallengeMembersResponse>> getChallengeMembers(
+            @Parameter(hidden = true)
+            @RequestHeader(AuthConstant.AUTHORIZATION) String token,
             @Parameter(description = "멤버 조회 할 챌린지 ID")
             @PathVariable(value = "challengeId") Long challengeId,
             @Parameter(description = "페이지 번호")
@@ -185,14 +187,14 @@ public class ChallengeController {
             @Parameter(description = "페이지 사이즈")
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
-
+        Long requestMemberId = Long.parseLong(jwtUtil.getMemberId(token));
         GetChallengeMembersQuery query = GetChallengeMembersQuery.builder()
                 .challengeId(challengeId)
                 .page(page)
                 .size(size)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getChallengeMembers(query));
+        return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.getChallengeMembers(query, requestMemberId));
     }
 
     @Operation(summary = "챌린지 멤버 생존자 내보내기", description = "챌린지 멤버 생존자를 내보내는 기능입니다.")
