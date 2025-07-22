@@ -52,14 +52,7 @@ public class MogakZoneQueryController {
             @Parameter(description = "페이지 사이즈")
             @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
 
-        System.out.println("sort = " + sort);
-        log.info("MogakZone Search Information");
-        log.info("tag={}", tag);
-        log.info("sort={}", sort);
-        log.info("page={}", page);
-        log.info("size={}", size);
         MogakZoneSearchQuery.Sort sortType = MogakZoneSearchQuery.Sort.valueOf(sort);
-        log.info("sortType={}", sortType);
         MogakZoneSearchQuery mogakZoneSearchQuery = MogakZoneSearchQuery.builder()
                 .tag(tag)
                 .sort(sortType)
