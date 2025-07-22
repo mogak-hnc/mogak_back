@@ -89,4 +89,10 @@ public interface ChallengeMemberRepository extends JpaRepository<ChallengeMember
             "AND cm.challengeEntity.status = com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus.ONGOING")
     List<ChallengeInfoProjection> findJoinedOngoingChallenges(@Param("memberId") Long memberId);
 
+    @Query("SELECT cm.survivor " +
+            "FROM ChallengeMemberEntity cm " +
+            "WHERE cm.challengeEntity.id = :challengeId AND cm.memberEntity.id = :memberId")
+    boolean isSurvive(@Param(value = "challengeId") Long challengeId,
+                      @Param(value = "memberId") Long memberId);
+
 }

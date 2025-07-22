@@ -70,4 +70,8 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
                 .toList();
     }
 
+    @Override
+    public boolean isSurvive(Long challengeId, Long memberId) {
+        return challengeMemberRepository.isSurvive(challengeId, memberId);
+    }
 }

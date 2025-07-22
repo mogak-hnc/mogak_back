@@ -27,6 +27,7 @@ public class ChallengeDetailResponse {
     private Long challengeOwnerId;
     private ChallengeStatus status;
     private BadgeInfo badgeInfo;
+    private boolean survive;
 
     public static ChallengeDetailResponse build(
             List<String> memberImageList,
@@ -34,7 +35,7 @@ public class ChallengeDetailResponse {
             int survivorCount,
             boolean isJoined,
             Long challengeOwnerId,
-            Badge badge) {
+            Badge badge, boolean isSurvive) {
 
         BadgeInfo badgeInfo = null;
         if (badge != null) {
@@ -56,7 +57,8 @@ public class ChallengeDetailResponse {
                 isJoined,
                 challengeOwnerId,
                 challenge.getStatus(),
-                badgeInfo
+                badgeInfo,
+                isSurvive
         );
     }
 

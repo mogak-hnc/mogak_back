@@ -20,4 +20,6 @@ public interface ChallengeQueryPort {
 
     List<ChallengeInfoResponse> findJoinedOngoingChallenges(Long memberId);
 
+    boolean isSurvive(Long challengeId, Long memberId);
+
 }

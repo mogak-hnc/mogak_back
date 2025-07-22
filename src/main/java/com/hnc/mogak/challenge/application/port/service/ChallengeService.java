@@ -80,7 +80,9 @@ public class ChallengeService implements ChallengeUseCase {
         Badge badge = null;
         if (challenge.isOfficial()) badge = badgeQueryPort.findByChallengeId(challengeId);
 
-        return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId, badge);
+        boolean isSurvive = challengeQueryPort.isSurvive(challengeId, memberId);
+
+        return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId, badge, isSurvive);
     }
 
 //    @Override
