@@ -10,6 +10,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslRepository {
@@ -643,16 +645,20 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
 
     private OrderSpecifier<?> getSortFromZone(MogakZoneSearchQuery query) {
         if (query.getSort().equals(MogakZoneSearchQuery.Sort.participant)) {
+            log.info("1. participant sort");
             return QMogakZoneEntity.mogakZoneEntity.participantNum.desc();
         } else {
+            log.info("2. summary sort");
             return QMogakZoneEntity.mogakZoneEntity.createdAt.desc();
         }
     }
 
     private OrderSpecifier<?> getSortFromSummary(MogakZoneSearchQuery query) {
         if (query.getSort().equals(MogakZoneSearchQuery.Sort.participant)) {
+            log.info("participant sort");
             return QZoneSummary.zoneSummary.participantNum.desc();
         } else {
+            log.info("summary sort");
             return QZoneSummary.zoneSummary.createdAt.desc();
         }
     }
