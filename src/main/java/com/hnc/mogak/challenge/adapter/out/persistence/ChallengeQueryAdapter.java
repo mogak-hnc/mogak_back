@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -72,6 +73,7 @@ public class ChallengeQueryAdapter implements ChallengeQueryPort {
 
     @Override
     public boolean isSurvive(Long challengeId, Long memberId) {
-        return challengeMemberRepository.isSurvive(challengeId, memberId);
+        return challengeMemberRepository.isSurvive(challengeId, memberId)
+                .orElse(false);
     }
 }
