@@ -446,70 +446,65 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
 
             return new PageImpl<>(content, pageable, total == null ? 0 : total);
         } else {
+            List<Tuple> zoneInfos = queryFactory
+                    .select(summary.id, summary.name, summary.passwordRequired)
+                    .from(summary)
+                    .orderBy(getSortFromSummary(query), summary.id.asc()) // 안정성 있는 정렬
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
 
-                // 1단계: ID만 추출 (인덱스 활용 + 페이징 안정성 확보)
-                List<Long> zoneIds = queryFactory
-                        .select(summary.id)
-                        .from(summary)
-                        .orderBy(getSortFromSummary(query), summary.id.asc()) // 안정성 있는 정렬
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize())
-                        .fetch();
+            if (zoneInfos.isEmpty()) return Page.empty(pageable);
 
-                if (zoneIds.isEmpty()) return Page.empty(pageable);
-                long end = System.currentTimeMillis();
+            // 2단계: 상세 정보 조회
+            List<Long> zoneIds = zoneInfos.stream().map(tuple -> tuple.get(summary.id)).toList();
 
-                // 2단계: 상세 정보 조회
-                List<Tuple> zoneInfos = queryFactory
-                        .select(summary.id, summary.name, summary.passwordRequired)
-                        .from(summary)
-                        .where(summary.id.in(zoneIds))
-                        .fetch();
+            // 3단계: 태그 조회
+            Map<Long, List<String>> zoneIdToTags = queryFactory
+                    .select(zoneTag.zone.id, tag.name)
+                    .from(zoneTag)
+                    .join(tag).on(zoneTag.tag.eq(tag))
+                    .where(zoneTag.zone.id.in(zoneIds))
+                    .fetch()
+                    .stream()
+                    .collect(Collectors.groupingBy(
+                            tuple -> tuple.get(zoneTag.zone.id),
+                            Collectors.mapping(t -> t.get(tag.name), Collectors.toList())
+                    ));
 
-                // 3단계: 태그 조회
-                Map<Long, List<String>> zoneIdToTags = queryFactory
-                        .select(zoneTag.zone.id, tag.name)
-                        .from(zoneTag)
-                        .join(tag).on(zoneTag.tag.eq(tag))
-                        .where(zoneTag.zone.id.in(zoneIds))
-                        .fetch()
-                        .stream()
-                        .collect(Collectors.groupingBy(
-                                tuple -> tuple.get(zoneTag.zone.id),
-                                Collectors.mapping(t -> t.get(tag.name), Collectors.toList())
-                        ));
+            // 4단계: 멤버 이미지 조회 (최대 3개 제한)
+            Map<Long, List<String>> zoneIdToImages = queryFactory
+                    .select(zoneMember.mogakZoneEntity.id, member.imagePath)
+                    .from(zoneMember)
+                    .join(member).on(zoneMember.memberEntity.eq(member))
+                    .where(zoneMember.mogakZoneEntity.id.in(zoneIds))
+                    .fetch()
+                    .stream()
+                    .collect(Collectors.groupingBy(
+                            tuple -> tuple.get(zoneMember.mogakZoneEntity.id),
+                            Collectors.mapping(t -> {
+                                String img = t.get(member.imagePath);
+                                return img == null ? "Default" : img;
+                            }, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream().limit(3).toList()))
+                    ));
 
-                // 4단계: 멤버 이미지 조회 (최대 3개 제한)
-                Map<Long, List<String>> zoneIdToImages = queryFactory
-                        .select(zoneMember.mogakZoneEntity.id, member.imagePath)
-                        .from(zoneMember)
-                        .join(member).on(zoneMember.memberEntity.eq(member))
-                        .where(zoneMember.mogakZoneEntity.id.in(zoneIds))
-                        .fetch()
-                        .stream()
-                        .collect(Collectors.groupingBy(
-                                tuple -> tuple.get(zoneMember.mogakZoneEntity.id),
-                                Collectors.mapping(t -> {
-                                    String img = t.get(member.imagePath);
-                                    return img == null ? "Default" : img;
-                                }, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream().limit(3).toList()))
-                        ));
 
-                // 5단계: 응답 DTO 조립
-                List<MogakZoneSearchResponse> content = zoneInfos.stream()
-                        .map(tuple -> {
-                            Long zoneId = tuple.get(summary.id);
-                            return MogakZoneSearchResponse.builder()
-                                    .mogakZoneId(zoneId)
-                                    .name(tuple.get(summary.name))
-                                    .passwordRequired(Boolean.TRUE.equals(tuple.get(summary.passwordRequired)))
-                                    .tagNames(zoneIdToTags.getOrDefault(zoneId, List.of()))
-                                    .memberImageUrls(zoneIdToImages.getOrDefault(zoneId, List.of()))
-                                    .build();
-                        })
-                        .toList();
 
-                // 6단계: 전체 개수 카운트
+            // 5단계: 응답 DTO 조립
+            List<MogakZoneSearchResponse> content = zoneInfos.stream()
+                    .map(tuple -> {
+                        Long zoneId = tuple.get(summary.id);
+                        return MogakZoneSearchResponse.builder()
+                                .mogakZoneId(zoneId)
+                                .name(tuple.get(summary.name))
+                                .passwordRequired(Boolean.TRUE.equals(tuple.get(summary.passwordRequired)))
+                                .tagNames(zoneIdToTags.getOrDefault(zoneId, List.of()))
+                                .memberImageUrls(zoneIdToImages.getOrDefault(zoneId, List.of()))
+                                .build();
+                    })
+                    .toList();
+
+            // 6단계: 전체 개수 카운트
             Object cached = redisTemplate.opsForValue().get(RedisConstant.ZONE_SUMMARY_TOTAL_COUNT);
 
             Long totalCount;
@@ -524,8 +519,89 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
                 totalCount = ((Number) cached).longValue();
             }
 
-                return new PageImpl<>(content, pageable, Optional.ofNullable(totalCount).orElse(0L));
-            }
+            return new PageImpl<>(content, pageable, Optional.ofNullable(totalCount).orElse(0L));
+        }
+
+        // 1단계: ID만 추출 (인덱스 활용 + 페이징 안정성 확보)
+//                List<Long> zoneIds = queryFactory
+//                        .select(summary.id)
+//                        .from(summary)
+//                        .orderBy(getSortFromSummary(query), summary.id.asc()) // 안정성 있는 정렬
+//                        .offset(pageable.getOffset())
+//                        .limit(pageable.getPageSize())
+//                        .fetch();
+//
+//                if (zoneIds.isEmpty()) return Page.empty(pageable);
+//
+//                // 2단계: 상세 정보 조회
+//                List<Tuple> zoneInfos = queryFactory
+//                        .select(summary.id, summary.name, summary.passwordRequired)
+//                        .from(summary)
+//                        .where(summary.id.in(zoneIds))
+//                        .fetch();
+//
+//                // 3단계: 태그 조회
+//                Map<Long, List<String>> zoneIdToTags = queryFactory
+//                        .select(zoneTag.zone.id, tag.name)
+//                        .from(zoneTag)
+//                        .join(tag).on(zoneTag.tag.eq(tag))
+//                        .where(zoneTag.zone.id.in(zoneIds))
+//                        .fetch()
+//                        .stream()
+//                        .collect(Collectors.groupingBy(
+//                                tuple -> tuple.get(zoneTag.zone.id),
+//                                Collectors.mapping(t -> t.get(tag.name), Collectors.toList())
+//                        ));
+//
+//                // 4단계: 멤버 이미지 조회 (최대 3개 제한)
+//                Map<Long, List<String>> zoneIdToImages = queryFactory
+//                        .select(zoneMember.mogakZoneEntity.id, member.imagePath)
+//                        .from(zoneMember)
+//                        .join(member).on(zoneMember.memberEntity.eq(member))
+//                        .where(zoneMember.mogakZoneEntity.id.in(zoneIds))
+//                        .fetch()
+//                        .stream()
+//                        .collect(Collectors.groupingBy(
+//                                tuple -> tuple.get(zoneMember.mogakZoneEntity.id),
+//                                Collectors.mapping(t -> {
+//                                    String img = t.get(member.imagePath);
+//                                    return img == null ? "Default" : img;
+//                                }, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream().limit(3).toList()))
+//                        ));
+//
+//
+//
+//                // 5단계: 응답 DTO 조립
+//                List<MogakZoneSearchResponse> content = zoneInfos.stream()
+//                        .map(tuple -> {
+//                            Long zoneId = tuple.get(summary.id);
+//                            return MogakZoneSearchResponse.builder()
+//                                    .mogakZoneId(zoneId)
+//                                    .name(tuple.get(summary.name))
+//                                    .passwordRequired(Boolean.TRUE.equals(tuple.get(summary.passwordRequired)))
+//                                    .tagNames(zoneIdToTags.getOrDefault(zoneId, List.of()))
+//                                    .memberImageUrls(zoneIdToImages.getOrDefault(zoneId, List.of()))
+//                                    .build();
+//                        })
+//                        .toList();
+//
+//                // 6단계: 전체 개수 카운트
+//            Object cached = redisTemplate.opsForValue().get(RedisConstant.ZONE_SUMMARY_TOTAL_COUNT);
+//
+//            Long totalCount;
+//            if (cached == null) {
+//                totalCount = queryFactory
+//                        .select(summary.count())
+//                        .from(summary)
+//                        .fetchOne();
+//
+//                redisTemplate.opsForValue().set(RedisConstant.ZONE_SUMMARY_TOTAL_COUNT, totalCount, Duration.ofMinutes(10));
+//            } else {
+//                totalCount = ((Number) cached).longValue();
+//            }
+//
+//                return new PageImpl<>(content, pageable, Optional.ofNullable(totalCount).orElse(0L));
+//            }
 
     }
 
