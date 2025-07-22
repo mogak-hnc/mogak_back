@@ -24,7 +24,6 @@ public class StompHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        log.info("preSend 로직 시작");
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (accessor != null) {
@@ -34,11 +33,11 @@ public class StompHandler implements ChannelInterceptor {
             }
             if (Objects.requireNonNull(command) == StompCommand.SUBSCRIBE) {
                 log.info("세션 ID: {}", accessor.getSessionId());
-                log.info("구독 시작");
+                log.info("구독 시작={}", accessor.getDestination());
             }
             if (Objects.requireNonNull(command) == StompCommand.UNSUBSCRIBE) {
                 log.info("세션 ID: {}", accessor.getSessionId());
-                log.info("구독 종료");
+                log.info("구독 종료= {}", accessor.getDestination());
             }
             if (Objects.requireNonNull(command) == StompCommand.ERROR) {
                 log.info("세션 ID: {}", accessor.getSessionId());
@@ -49,12 +48,11 @@ public class StompHandler implements ChannelInterceptor {
             log.info("accessor가 null");
         }
 
-        log.info("preSend 로직 끝");
         return message;
     }
 
     private void handleConnect(StompHeaderAccessor accessor) {
-//        log.info("handleConnect 로직 시작");
+        log.info("handleConnect 로직 시작");
         log.info("세션 ID: {}", accessor.getSessionId());
         log.info("연결 시작");
         String token = accessor.getFirstNativeHeader("Authorization");

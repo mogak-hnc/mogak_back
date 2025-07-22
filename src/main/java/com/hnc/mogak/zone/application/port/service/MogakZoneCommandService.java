@@ -13,6 +13,7 @@ import com.hnc.mogak.zone.adapter.in.web.dto.CreateMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.JoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.TagEntity;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneSummary;
+import com.hnc.mogak.zone.adapter.out.persistence.repository.ZoneSummaryRepository;
 import com.hnc.mogak.zone.application.port.in.MogakZoneCommandUseCase;
 import com.hnc.mogak.zone.application.port.in.command.CreateMogakZoneCommand;
 import com.hnc.mogak.zone.application.port.in.command.DelegateHostCommand;
@@ -42,6 +43,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     private final ZoneMemberPort zoneMemberPort;
     private final MemberPort memberPort;
     private final TagPort tagPort;
+    private final ZoneSummaryRepository zoneSummaryRepository;
 
     private final S3Service s3Service;
 
@@ -81,12 +83,12 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         validateMogakZoneJoin(command, mogakZone, zoneSummary.getParticipantNum());
         zoneSummary.increaseJoinCount();
         mogakZone.increaseJoinCount();
+        mogakZoneCommandPort.saveMogakZone(mogakZone);
         return zoneMemberPort.join(mogakZone, findMember);
     }
 
     @Override
     public void leave(Long mogakZoneId, Long memberId) {
-        log.info("[모각존 나가기 로직 실행] mogakZoneId={}, memberId={}", mogakZoneId, memberId);
         ZoneSummary zoneSummary = mogakZoneQueryPort.getSummaryDetail(mogakZoneId);
         zoneSummary.decreaseJoinCount();
 
@@ -120,7 +122,12 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
             throw new MogakZoneException(ErrorCode.NOT_CREATOR);
         }
 
+        ZoneSummary findZoneSummary = zoneSummaryRepository.findByMogakZoneId(mogakZoneId);
         zoneMemberPort.deleteMemberByMogakZoneId(mogakZoneId, targetMemberId);
+        mogakZone.decreaseJoinCount();
+        findZoneSummary.decreaseJoinCount();
+        mogakZoneCommandPort.saveMogakZone(mogakZone);
+
         return mogakZoneId;
     }
 

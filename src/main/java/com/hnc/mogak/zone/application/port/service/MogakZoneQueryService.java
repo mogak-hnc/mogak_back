@@ -36,7 +36,6 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public MogakZoneDetailResponse getDetail(MogakZoneDetailQuery detailQuery) {
-        log.info("[모각존 디테일 로직 실행] mogakZoneId={}, memberId={}", detailQuery.getMogakZoneId(), detailQuery.getMemberId());
         List<String> tagNames = mogakZoneQueryPort.getTags(detailQuery.getMogakZoneId());
         MogakZone mogakZone = mogakZoneQueryPort.findById(detailQuery.getMogakZoneId());
         ZoneOwner zoneOwner = mogakZoneQueryPort.findZoneOwnerByMogakZoneId(detailQuery.getMogakZoneId());
@@ -52,7 +51,7 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
 //    @Override
 //    public List<MogakZoneMainResponse> getMainPage() {
-//        log.info("[{}] [모각존 메인 페이지 로직 실행]", RequestContextHolder.getContext().getUuid());
+//
 //        int size = 4;
 //
 //        List<ZoneSummary> summaryList = mogakZoneQueryPort.findTopZoneSummariesByJoinCount(size);
@@ -109,7 +108,6 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public Page<ChatMessageResponse> getMessage(GetMessageQuery getMessageQuery) {
-        log.info("[{}] [모각존 메세지 로직 실행]", RequestContextHolder.getContext().getUuid());
         MogakZone mogakZone = mogakZoneQueryPort.findById(getMessageQuery.getMogakZoneId());
         return chatPort.loadMessagesByMogakZoneId(mogakZone.getZoneId().value(), getMessageQuery.getPage(), getMessageQuery.getSize());
     }

@@ -43,19 +43,16 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
-        log.info("[{}] [챌린지 생성 로직 실행]", RequestContextHolder.getContext().getUuid());
         Member challengeCreator = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = ChallengeMapper.mapToDomain(command);
 
         Challenge savedChallenge = saveChallenge(command, challenge, challengeCreator);
         join(getJoinChallengeJoinCommand(command, savedChallenge));
-        log.info("startDate: {}, endDate: {}", savedChallenge.getChallengeDuration().startDate(), savedChallenge.getChallengeDuration().endDate());
         return CreateChallengeResponse.build(command, savedChallenge, challengeCreator.getMemberId().value());
     }
 
     @Override
     public JoinChallengeResponse join(JoinChallengeCommand command) {
-        log.info("[{}] [챌린지 참가 로직 실행]", RequestContextHolder.getContext().getUuid());
         Member member = memberPort.loadMemberByMemberId(command.getMemberId());
         Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());
         List<Member> members = challengeMemberPort.findMembersByChallengeId(challenge.getChallengeId().value());
@@ -68,7 +65,6 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public ChallengeDetailResponse getDetail(Long memberId, Long challengeId) {
-        log.info("[{}] [챌린지 디테일 로직 실행]", RequestContextHolder.getContext().getUuid());
         int limit = 7;
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
@@ -115,7 +111,6 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public Long deleteChallenge(Long challengeId, Long memberId, String role) {
-        log.info("[{}] [챌린지 삭제 로직 실행]", RequestContextHolder.getContext().getUuid());
         Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
         Long memberOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
 
@@ -129,7 +124,6 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public Page<ChallengeMembersResponse> getChallengeMembers(GetChallengeMembersQuery query, Long requestMemberId) {
-        log.info("[{}] [챌린지 멤버 조회 로직 실행]", RequestContextHolder.getContext().getUuid());
         Long ownerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(query.getChallengeId());
 
         return challengeMemberPort.getChallengeMembers(query, requestMemberId, ownerId);
@@ -143,7 +137,6 @@ public class ChallengeService implements ChallengeUseCase {
 
     @Override
     public ChallengeMemberDeactivateResponse deactivateSurvivorMember(ChallengeDeactivateCommand command) {
-        log.info("[{}] [챌린지 내보내기 로직 실행]", RequestContextHolder.getContext().getUuid());
         Challenge challenge = challengeQueryPort.findByChallengeId(command.getChallengeId());
         Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challenge.getChallengeId().value());
         Member kickedMember = memberPort.loadMemberByMemberId(command.getTargetMemberId());

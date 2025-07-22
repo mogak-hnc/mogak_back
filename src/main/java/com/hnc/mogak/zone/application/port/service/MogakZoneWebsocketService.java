@@ -34,7 +34,6 @@ public class MogakZoneWebsocketService implements WebSocketUseCase {
 
     @Override
     public ChatMessageResponse sendMessage(SendChatMessageCommand command) {
-        log.info("[웹소켓 메세지 보내기 로직 실행] mogakZoneId={}, memberId={}", command.getMogakZoneId(), command.getMemberId());
         Member member = memberPort.loadMemberByMemberId(command.getMemberId());
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
 
@@ -62,7 +61,6 @@ public class MogakZoneWebsocketService implements WebSocketUseCase {
 
     @Override
     public MogakZoneStatusResponse changeStatus(ChangeStatusCommand command) {
-        log.info("[웹소켓 변경 로직 실행] mogakZoneId={}, memberId={}", command.getMogakZoneId(), command.getMemberId());
         zoneMemberPort.changeStatus(command.getMemberId(), command.getMogakZoneId(), command.getStatus());
         return MogakZoneStatusResponse.builder()
                 .status(command.getStatus())
@@ -73,7 +71,6 @@ public class MogakZoneWebsocketService implements WebSocketUseCase {
 
     @Override
     public SendJoinMogakZoneResponse sendJoinMogakZone(Long mogakZoneId) {
-        log.info("[웹소켓 입장 로직 실행] mogakZoneId={}", mogakZoneId);
         List<ZoneMember> zoneMemberList =  zoneMemberPort.findAllZoneMembersWithMembersByMogakZoneId(mogakZoneId);
         return ZoneMemberMapper.mapToSendJoinMogakZoneResponse(zoneMemberList);
     }

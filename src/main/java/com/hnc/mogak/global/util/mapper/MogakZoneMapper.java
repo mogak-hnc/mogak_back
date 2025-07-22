@@ -65,6 +65,7 @@ public class MogakZoneMapper {
                 .maxCapacity(zoneConfig.maxCapacity())
                 .passwordRequired(zoneConfig.passwordEnabled())
                 .chatEnabled(zoneConfig.chatEnabled())
+                .participantNum(zoneInfo.participantNum())
                 .build();
     }
 

@@ -32,8 +32,6 @@ public class MainPageScheduler {
     @Scheduled(cron = "0 */10 * * * *")
     public void cacheMainPageData() {
         try {
-            log.info("[MainPageScheduler] 메인 페이지 데이터 캐싱 시작");
-
             Page<MogakZoneSearchResponse> mogakZones = mogakZoneQueryService.searchMogakZone(
                     MogakZoneSearchQuery.builder()
                             .sort(MogakZoneSearchQuery.Sort.participant)
@@ -67,7 +65,6 @@ public class MainPageScheduler {
 
             redisTemplate.opsForValue().set(RedisConstant.MAIN_PAGE_CACHE, response, TTL_SECONDS, TimeUnit.SECONDS);
 
-            log.info("[MainPageScheduler] 메인 페이지 캐시 완료");
         } catch (Exception e) {
             log.error("[MainPageScheduler] 메인 페이지 캐시 중 오류 발생", e);
         }

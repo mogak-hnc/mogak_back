@@ -66,7 +66,6 @@ public class ChallengeController {
         boolean isOfficial = role.equals(AuthConstant.ROLE_ADMIN);
 
         dateValidCheck(startDate, endDate);
-        log.info("startDate: {}, endDate: {}", startDate, endDate);
         CreateChallengeCommand command = getChallengeCommand(request, startDate, endDate, memberId, isOfficial);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(challengeUseCase.create(command));
@@ -149,14 +148,6 @@ public class ChallengeController {
                 .status(status)
                 .size(size)
                 .build();
-
-        log.info("Challenge Search Information");
-        log.info("search={}", search);
-        log.info("official={}", official);
-        log.info("sort={}", sort);
-        log.info("status={}", status);
-        log.info("page={}", page);
-        log.info("size={}", size);
 
         return ResponseEntity.status(HttpStatus.OK).body(challengeUseCase.searchChallenge(query));
     }
