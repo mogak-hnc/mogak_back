@@ -22,7 +22,8 @@ public interface ChallengeArticleRepository extends JpaRepository<ChallengeArtic
             "ca.id AS challengeArticleId, " +
             "ca.thumbnailUrl AS thumbnailUrl " +
             "FROM ChallengeArticleEntity ca " +
-            "WHERE ca.challengeEntity.id = :challengeId")
+            "WHERE ca.challengeEntity.id = :challengeId " +
+            "ORDER BY ca.createdAt DESC")
     Page<GetChallengeArticleThumbNailProjection> getChallengeArticlesByChallengeId(@Param("challengeId") Long challengeId, Pageable pageable);
 
 
