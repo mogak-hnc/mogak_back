@@ -20,7 +20,10 @@ import java.util.Optional;
 @Repository
 public interface ZoneMemberRepository extends JpaRepository<ZoneMemberEntity, Long> {
 
-    @Query("SELECT zm FROM ZoneMemberEntity zm JOIN FETCH zm.memberEntity WHERE zm.mogakZoneEntity.id = :mogakZoneId")
+    @Query("SELECT zm FROM ZoneMemberEntity zm " +
+            "JOIN FETCH zm.memberEntity " +
+            "JOIN FETCH zm.mogakZoneEntity " +
+            "WHERE zm.mogakZoneEntity.id = :mogakZoneId")
     List<ZoneMemberEntity> findAllZoneMembersWithMembersByMogakZoneId(@Param("mogakZoneId") Long mogakZoneId);
 
     @Lock(LockModeType.PESSIMISTIC_READ)

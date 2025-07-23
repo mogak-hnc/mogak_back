@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
@@ -25,6 +26,7 @@ public class WebsocketEventHandler {
     private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
 
     @EventListener
+    @Transactional(readOnly = true)
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         log.info("웹소켓 연결 해제 로직 실행");
         Principal principal = event.getUser();
