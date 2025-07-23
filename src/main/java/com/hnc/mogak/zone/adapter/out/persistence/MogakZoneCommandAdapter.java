@@ -60,6 +60,7 @@ public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
     @Override
     public MogakZone createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
         MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(MogakZoneMapper.mapToEntity(mogakZone));
+        mogakZoneRepository.flush();
         tagSet.forEach(tagEntity -> zoneTagRepository.save(new ZoneTagEntity(null, tagEntity, mogakZoneEntity)));
         return MogakZoneMapper.mapToDomainWithId(mogakZoneEntity);
     }

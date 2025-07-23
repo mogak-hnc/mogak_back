@@ -3,6 +3,7 @@ package com.hnc.mogak.challenge.application.port.service;
 import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
 import com.hnc.mogak.badge.domain.Badge;
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
+import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.ChallengeDeactivateCommand;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
@@ -40,6 +41,7 @@ public class ChallengeService implements ChallengeUseCase {
     private final ChallengeQueryPort challengeQueryPort;
     private final ChallengeMemberPort challengeMemberPort;
     private final BadgeQueryPort badgeQueryPort;
+    private final ChallengeRepository challengeRepository;
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
@@ -47,7 +49,7 @@ public class ChallengeService implements ChallengeUseCase {
         Challenge challenge = ChallengeMapper.mapToDomain(command);
 
         Challenge savedChallenge = saveChallenge(command, challenge, challengeCreator);
-        join(getJoinChallengeJoinCommand(command, savedChallenge));
+//        join(getJoinChallengeJoinCommand(command, savedChallenge));
         return CreateChallengeResponse.build(command, savedChallenge, challengeCreator.getMemberId().value());
     }
 
