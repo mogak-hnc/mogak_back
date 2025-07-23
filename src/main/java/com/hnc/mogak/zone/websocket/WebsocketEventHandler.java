@@ -26,7 +26,7 @@ public class WebsocketEventHandler {
     private final MogakZoneCommandUseCase mogakZoneCommandUseCase;
 
     @EventListener
-    @Transactional(readOnly = true)
+    @Transactional
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         log.info("웹소켓 연결 해제 로직 실행");
         Principal principal = event.getUser();
