@@ -12,6 +12,7 @@ import com.hnc.mogak.zone.application.port.out.MogakZoneCommandPort;
 import com.hnc.mogak.zone.application.port.out.TagPort;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
 
     private final MogakZoneRepository mogakZoneRepository;
@@ -60,7 +62,9 @@ public class MogakZoneCommandAdapter implements MogakZoneCommandPort, TagPort {
     @Override
     public MogakZone createMogakZone(MogakZone mogakZone, Set<TagEntity> tagSet) {
         MogakZoneEntity mogakZoneEntity = mogakZoneRepository.save(MogakZoneMapper.mapToEntity(mogakZone));
-        mogakZoneRepository.flush();
+        log.info("created_at:{}", mogakZoneEntity.getCreatedAt());
+        log.info("modified_at:{}", mogakZoneEntity.getModifiedAt());
+//        mogakZoneRepository.flush();
         tagSet.forEach(tagEntity -> zoneTagRepository.save(new ZoneTagEntity(null, tagEntity, mogakZoneEntity)));
         return MogakZoneMapper.mapToDomainWithId(mogakZoneEntity);
     }
