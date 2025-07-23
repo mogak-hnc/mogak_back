@@ -19,7 +19,7 @@ public class MainPageService {
             return objectMapper.convertValue(cached, MainPageResponse.class);
         }
 
-        return null;
+        return new MainPageResponse();
     }
 
 }

@@ -3,6 +3,7 @@ package com.hnc.mogak.zone.adapter.out.persistence.entity;
 import com.hnc.mogak.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EntityListeners(AuditingEntityListener.class)
 public class MogakZoneEntity extends BaseEntity {
 
     @Id
