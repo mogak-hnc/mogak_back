@@ -731,7 +731,7 @@ public class MogakZoneQueryDslRepositoryImpl implements MogakZoneQueryDslReposit
         if (query.getSort().equals(MogakZoneSearchQuery.Sort.participant)) {
             return QZoneSummary.zoneSummary.participantNum.desc();
         } else {
-            return QZoneSummary.zoneSummary.createdAt.desc();
+            return QZoneSummary.zoneSummary.modifiedAt.desc();
         }
     }
 

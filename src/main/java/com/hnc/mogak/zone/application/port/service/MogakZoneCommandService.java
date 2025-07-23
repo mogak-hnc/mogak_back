@@ -59,7 +59,6 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         }
 
         MogakZone mogakZone = createMogakZone(command, tagEntitySet, imageUrl);
-        log.info("created = {}", MogakZoneMapper.mapToEntity(mogakZone).getCreatedAt());
         saveZoneOwner(hostMember, mogakZone);
 
         mogakZoneCommandPort.saveZoneSummary(mogakZone, tagEntitySet);

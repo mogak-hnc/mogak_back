@@ -116,7 +116,7 @@ public class ChallengeQueryDslRepositoryImpl implements ChallengeQueryDslReposit
         if (query.getSort().equals(ChallengeSearchQuery.Sort.participant)) {
             return QChallengeMemberEntity.challengeMemberEntity.id.count().desc();
         } else {
-            return QChallengeEntity.challengeEntity.createdAt.desc();
+            return QChallengeEntity.challengeEntity.modifiedAt.desc();
         }
     }
 
