@@ -42,6 +42,4 @@ public class AiReplyService {
         return reply;
     }
 
-
-
 }

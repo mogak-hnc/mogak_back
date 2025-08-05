@@ -1,6 +1,8 @@
 package com.hnc.mogak.worry.service.ai;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class GeminiCommentService {
 
@@ -19,6 +22,7 @@ public class GeminiCommentService {
     private static final String MODEL_NAME = "gemini-1.5-flash";
     private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
 
+    @CircuitBreaker(name = "gemini", fallbackMethod = "fallbackGemini")
     public String getGeminiReply(String title, String body) {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -42,4 +46,10 @@ public class GeminiCommentService {
 
         return (String) parts.get(0).get("text");
     }
+
+    public String fallbackGemini(String title, String body, Throwable t) {
+        log.warn("Fallback for Gemini called due to: {}", t.getMessage());
+        throw new RuntimeException("Gemini service unavailable", t);
+    }
+
 }
