@@ -1,4 +1,4 @@
-package com.hnc.mogak.worry.service;
+package com.hnc.mogak.worry.service.ai;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,14 +15,14 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class AiCommentService {
+public class ChatGptCommentService {
 
     @Value("${openai.api.key}")
     private String apiKey;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
-    public String getAiReply(String title, String body) {
+    public String getChatGptReply(String title, String body) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -30,6 +30,7 @@ public class AiCommentService {
         headers.setBearerAuth(apiKey);
 
         HttpEntity<Map<String, Object>> request = getMapHttpEntity(title, body, headers);
+
         ResponseEntity<Map> response = restTemplate.postForEntity(API_URL, request, Map.class);
 
         List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");

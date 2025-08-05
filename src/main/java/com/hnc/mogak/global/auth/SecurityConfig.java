@@ -91,6 +91,7 @@ public class SecurityConfig {
                                         "/swagger-ui.html",
                                         "/dashboard/**",
                                         "/webjars/**",
+                                        "/test",
                                         "/error",
                                         "faviicon.ico",
                                         "/actuator/**"
