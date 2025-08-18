@@ -34,4 +34,5 @@ public class GamePoint {
         this.balance += amount;
     }
 
+
 }
