@@ -75,6 +75,7 @@ public class SecurityConfig {
                                         "/challenge/list",
                                         "/badge/all",
                                         "/badge/*",
+                                        "/gamepoint/*",
                                         "/worry",
                                         "/worry/*",
                                         "/worry/*/comments",
