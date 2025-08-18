@@ -13,15 +13,15 @@ public class GamePointController {
 
     private final GamePointService gamePointService;
 
-    @PostMapping("/charge")
+    @PostMapping("/exchange")
     public ResponseEntity<Void> chargePoint(@RequestBody ChargePointRequest request) {
         gamePointService.chargePoint(request.getMemberId(), request.getAmount());
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Integer> getPoint(@PathVariable Long userId) {
-        return ResponseEntity.ok(gamePointService.getPoint(userId));
+    @GetMapping("/{memberId}")
+    public ResponseEntity<Integer> getPoint(@PathVariable(value = "memberId") Long memberId) {
+        return ResponseEntity.ok(gamePointService.getPoint(memberId));
     }
 
 }
