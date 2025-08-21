@@ -2,6 +2,7 @@ package com.hnc.mogak.global.util.mapper;
 
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.adapter.in.web.dto.ChatMessageResponse;
+import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneCommonData;
 import com.hnc.mogak.zone.adapter.in.web.dto.MogakZoneDetailResponse;
 import com.hnc.mogak.zone.adapter.in.web.dto.SendJoinMogakZoneResponse;
 import com.hnc.mogak.zone.adapter.out.persistence.entity.ZoneMemberEntity;
@@ -17,24 +18,20 @@ import java.util.List;
 public class ZoneMemberMapper {
 
     public static MogakZoneDetailResponse mapToMogakZoneDetailResponse(
-            List<String> tagNames,
-            MogakZone mogakZone,
-            ZoneOwner zoneOwner,
-            List<ZoneMember> zoneMemberList,
-            boolean isJoined,
-            boolean passwordRequired
+            MogakZoneCommonData data,
+            boolean isJoined
     ) {
 
         return MogakZoneDetailResponse.builder()
-                .tagNames(tagNames)
-                .hostMemberId(zoneOwner.getHostMember().getMemberId().value())
-                .name(mogakZone.getZoneInfo().name())
-                .joinedUserCount(zoneMemberList.size())
-                .imageUrl(mogakZone.getZoneInfo().imageUrl())
-                .zoneMemberInfoList(getZoneMemberInfos(zoneMemberList))
+                .tagNames(data.getTagNames())
+                .hostMemberId(data.getZoneOwner().getHostMember().getMemberId().value())
+                .name(data.getMogakZone().getZoneInfo().name())
+                .joinedUserCount(data.getZoneMemberList().size())
+                .imageUrl(data.getMogakZone().getZoneInfo().imageUrl())
+                .zoneMemberInfoList(getZoneMemberInfos(data.getZoneMemberList()))
                 .isJoined(isJoined)
-                .passwordRequired(passwordRequired)
-                .maxCapacity(mogakZone.getZoneConfig().maxCapacity())
+                .passwordRequired(data.isPasswordEnabled())
+                .maxCapacity(data.getMogakZone().getZoneConfig().maxCapacity())
                 .build();
     }
 

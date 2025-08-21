@@ -1,14 +1,17 @@
 package com.hnc.mogak.zone.domain.zonemember;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hnc.mogak.member.domain.Member;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberId;
 import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ZoneMember {
 
     private ZoneMemberId zoneMemberId;

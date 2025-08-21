@@ -20,4 +20,10 @@ public final class RedisConstant {
     public static final String MAIN_PAGE_CACHE = "mainPageCache::main";
     public static final String ZONE_SUMMARY_TOTAL_COUNT = "zone:summary:total:count:";
 
+    public static final String CHALLENGE_DETAIL_CACHE_PREFIX = "challenge:detail:";
+    public static final String MOGAKZONE_DETAIL_CACHE_PREFIX = "mogakzone:detail:";
+
+    public static final String CHALLENGE_DETAIL_LOCK = "lock:challenge:";
+    public static final String MOGAKZONE_DETAIL_LOCK = "lock:zone:";
+
 }

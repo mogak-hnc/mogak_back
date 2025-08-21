@@ -40,6 +40,7 @@ public enum ErrorCode {
     ONLY_ONE_POST_PER_DAY("하루에 하나만 업로드 가능합니다.", HttpStatus.BAD_REQUEST),
     ONLY_CAN_UPLOAD_WHEN_ONGOING("챌린지 진행 중에만 업로드 할 수 있습니다.", HttpStatus.BAD_REQUEST),
     NOT_SURVIVOR("생존자가 아닙니다.", HttpStatus.BAD_REQUEST),
+    CACHED_FAILED("캐시 대기 중 예외발생", HttpStatus.BAD_REQUEST),
 
     // Member Exception
     NOT_EXISTS_MEMBER("해당 회원이 존재하지 않습니다.", HttpStatus.BAD_REQUEST),

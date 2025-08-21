@@ -30,13 +30,11 @@ public class ChallengeDetailResponse {
     private boolean survive;
 
     public static ChallengeDetailResponse build(
-            List<String> memberImageList,
-            Challenge challenge,
-            int survivorCount,
+            ChallengeCommonData data,
             boolean isJoined,
-            Long challengeOwnerId,
-            Badge badge, boolean isSurvive) {
+            boolean isSurvive) {
 
+        Badge badge = data.getBadge();
         BadgeInfo badgeInfo = null;
         if (badge != null) {
             badgeInfo = new BadgeInfo(
@@ -45,22 +43,54 @@ public class ChallengeDetailResponse {
                     badge.getBadgeImage().iconUrl()
             );
         }
-
+        Challenge challenge = data.getChallenge();
         return new ChallengeDetailResponse(
                 challenge.getExtraDetails().official(),
                 challenge.getContent().title(),
                 challenge.getChallengeDuration().startDate(),
                 challenge.getChallengeDuration().endDate(),
                 challenge.getExtraDetails().totalParticipants(),
-                survivorCount,
-                memberImageList,
+                data.getSurvivorCount(),
+                data.getMemberImageList(),
                 isJoined,
-                challengeOwnerId,
+                data.getChallengeOwnerId(),
                 challenge.getStatus(),
                 badgeInfo,
                 isSurvive
         );
     }
+//    public static ChallengeDetailResponse build(
+//            List<String> memberImageList,
+//            Challenge challenge,
+//            int survivorCount,
+//            boolean isJoined,
+//            Long challengeOwnerId,
+//            Badge badge, boolean isSurvive) {
+//
+//        BadgeInfo badgeInfo = null;
+//        if (badge != null) {
+//            badgeInfo = new BadgeInfo(
+//                    badge.getBadgeId().value(),
+//                    badge.getBadgeInfo().name(),
+//                    badge.getBadgeImage().iconUrl()
+//            );
+//        }
+//
+//        return new ChallengeDetailResponse(
+//                challenge.getExtraDetails().official(),
+//                challenge.getContent().title(),
+//                challenge.getChallengeDuration().startDate(),
+//                challenge.getChallengeDuration().endDate(),
+//                challenge.getExtraDetails().totalParticipants(),
+//                survivorCount,
+//                memberImageList,
+//                isJoined,
+//                challengeOwnerId,
+//                challenge.getStatus(),
+//                badgeInfo,
+//                isSurvive
+//        );
+//    }
 
     @Getter
     @AllArgsConstructor

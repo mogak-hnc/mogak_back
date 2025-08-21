@@ -1,5 +1,6 @@
 package com.hnc.mogak.challenge.domain.challenge;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hnc.mogak.challenge.adapter.out.persistence.entity.ChallengeStatus;
 import com.hnc.mogak.challenge.domain.challenge.vo.ChallengeDuration;
 import com.hnc.mogak.challenge.domain.challenge.vo.ChallengeId;
@@ -9,12 +10,15 @@ import com.hnc.mogak.member.domain.Member;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Challenge {
 
     private ChallengeId challengeId;

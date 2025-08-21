@@ -1,13 +1,11 @@
 package com.hnc.mogak.zone.domain.zone;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneConfig;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneId;
 import com.hnc.mogak.zone.domain.zone.vo.ZoneInfo;
 import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +13,8 @@ import java.util.Objects;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MogakZone {
 
     private ZoneId zoneId;

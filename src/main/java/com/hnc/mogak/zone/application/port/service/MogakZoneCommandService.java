@@ -6,6 +6,7 @@ import com.hnc.mogak.global.cloud.S3Service;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.MogakZoneException;
 import com.hnc.mogak.global.monitoring.RequestContextHolder;
+import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.global.util.mapper.MogakZoneMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
@@ -27,6 +28,7 @@ import com.hnc.mogak.zone.domain.zone.MogakZone;
 import com.hnc.mogak.zone.domain.zonemember.vo.ZoneMemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
     private final ZoneSummaryRepository zoneSummaryRepository;
 
     private final S3Service s3Service;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public CreateMogakZoneResponse create(CreateMogakZoneCommand command) {
@@ -84,6 +87,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         zoneSummary.increaseJoinCount();
         mogakZone.increaseJoinCount();
         mogakZoneCommandPort.saveMogakZone(mogakZone);
+        redisTemplate.delete(RedisConstant.MOGAKZONE_DETAIL_CACHE_PREFIX + mogakZone.getZoneId());
         return zoneMemberPort.join(mogakZone, findMember);
     }
 
@@ -98,6 +102,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         mogakZoneCommandPort.deleteZoneSummaryMemberImage(mogakZoneId, memberId);
         mogakZoneCommandPort.saveMogakZone(mogakZone);
         zoneMemberPort.deleteMemberByMogakZoneId(mogakZoneId, memberId);
+        redisTemplate.delete(RedisConstant.MOGAKZONE_DETAIL_CACHE_PREFIX + mogakZone.getZoneId());
     }
 
     @Override
@@ -128,6 +133,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         findZoneSummary.decreaseJoinCount();
         mogakZoneCommandPort.saveMogakZone(mogakZone);
 
+        redisTemplate.delete(RedisConstant.MOGAKZONE_DETAIL_CACHE_PREFIX + mogakZone.getZoneId());
         return mogakZoneId;
     }
 
@@ -148,6 +154,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
         Member newOwnerMember = memberPort.loadMemberByMemberId(command.getNewHostId());
 
         mogakZoneCommandPort.updateHost(mogakZone.getZoneId().value(), newOwnerMember);
+        redisTemplate.delete(RedisConstant.MOGAKZONE_DETAIL_CACHE_PREFIX + mogakZone.getZoneId());
     }
 
     @Override
@@ -160,6 +167,7 @@ public class MogakZoneCommandService implements MogakZoneCommandUseCase {
 
         String imageUrl = s3Service.uploadImage(command.getImageUrl(), S3PathConstants.MOGAKZONE);
         mogakZoneCommandPort.updateMogakZone(findMogakZone, imageUrl);
+        redisTemplate.delete(RedisConstant.MOGAKZONE_DETAIL_CACHE_PREFIX + command.getMogakZoneId());
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.hnc.mogak.challenge.application.port.service;
 
-import com.hnc.mogak.badge.application.port.out.BadgeQueryPort;
-import com.hnc.mogak.badge.domain.Badge;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hnc.mogak.challenge.adapter.in.web.dto.*;
-import com.hnc.mogak.challenge.adapter.out.persistence.repository.ChallengeRepository;
 import com.hnc.mogak.challenge.application.port.in.ChallengeUseCase;
 import com.hnc.mogak.challenge.application.port.in.command.ChallengeDeactivateCommand;
 import com.hnc.mogak.challenge.application.port.in.command.CreateChallengeCommand;
@@ -17,13 +15,14 @@ import com.hnc.mogak.challenge.domain.challenge.Challenge;
 import com.hnc.mogak.global.auth.AuthConstant;
 import com.hnc.mogak.global.exception.ErrorCode;
 import com.hnc.mogak.global.exception.exceptions.ChallengeException;
-import com.hnc.mogak.global.monitoring.RequestContextHolder;
+import com.hnc.mogak.global.redis.RedisConstant;
 import com.hnc.mogak.global.util.mapper.ChallengeMapper;
 import com.hnc.mogak.member.application.port.out.MemberPort;
 import com.hnc.mogak.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +39,10 @@ public class ChallengeService implements ChallengeUseCase {
     private final ChallengeCommandPort challengeCommandPort;
     private final ChallengeQueryPort challengeQueryPort;
     private final ChallengeMemberPort challengeMemberPort;
-    private final BadgeQueryPort badgeQueryPort;
-    private final ChallengeRepository challengeRepository;
+
+    private final RedisTemplate<Object, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
+    private final ChallengeCacheManager challengeCacheManager;
 
     @Override
     public CreateChallengeResponse create(CreateChallengeCommand command) {
@@ -61,26 +62,27 @@ public class ChallengeService implements ChallengeUseCase {
 
         joinValidateCheck(challenge, member, members);
         increaseParticipantCount(challenge);
-
+        redisTemplate.delete(RedisConstant.CHALLENGE_DETAIL_CACHE_PREFIX + command.getChallengeId());
         return challengeMemberPort.join(member, challenge);
     }
 
     @Override
-    public ChallengeDetailResponse getDetail(Long memberId, Long challengeId) {
-        int limit = 7;
-        Challenge challenge = challengeQueryPort.findByChallengeId(challengeId);
-        List<String> memberImageList = challengeMemberPort.getMemberImageByChallengeId(challengeId, limit);
-        int survivorCount = challengeMemberPort.getSurvivorCount(challengeId);
+     public ChallengeDetailResponse getDetail(Long memberId, Long challengeId) {
+         String commonCacheKey = RedisConstant.CHALLENGE_DETAIL_CACHE_PREFIX + challengeId;
+         Object cached = redisTemplate.opsForValue().get(commonCacheKey);
+         ChallengeCommonData commonData;
 
-        boolean isJoined = challengeMemberPort.isMember(challengeId, memberId);
-        Long challengeOwnerId = challengeQueryPort.findChallengeOwnerMemberIdByChallengeId(challengeId);
+         if (cached != null) {
+             log.info("Get challenge detail from cache");
+             commonData = objectMapper.convertValue(cached, ChallengeCommonData.class);
+         } else {
+             commonData = challengeCacheManager.updateCache(challengeId);
+         }
 
-        Badge badge = null;
-        if (challenge.isOfficial()) badge = badgeQueryPort.findByChallengeId(challengeId);
+         boolean isJoined = challengeMemberPort.isMember(challengeId, memberId);
+         boolean isSurvive = challengeQueryPort.isSurvive(challengeId, memberId);
 
-        boolean isSurvive = challengeQueryPort.isSurvive(challengeId, memberId);
-
-        return ChallengeDetailResponse.build(memberImageList, challenge, survivorCount, isJoined, challengeOwnerId, badge, isSurvive);
+        return ChallengeDetailResponse.build(commonData, isJoined, isSurvive);
     }
 
 //    @Override
@@ -145,6 +147,7 @@ public class ChallengeService implements ChallengeUseCase {
 
         validateHostAuthority(command, challenge, challengeOwnerId);
         challengeMemberPort.deactivateSurvivorMember(command.getTargetMemberId(), command.getChallengeId());
+        redisTemplate.delete(RedisConstant.CHALLENGE_DETAIL_CACHE_PREFIX + command.getChallengeId());
         return buildDeactivateMemberResponse(challenge, kickedMember);
     }
 

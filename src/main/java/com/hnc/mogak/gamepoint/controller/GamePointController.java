@@ -15,7 +15,7 @@ public class GamePointController {
 
     @PostMapping("/exchange")
     public ResponseEntity<Void> chargePoint(@RequestBody ChargePointRequest request) {
-        gamePointService.chargePoint(request.getMemberId(), request.getAmount());
+        gamePointService.chargePoint(request.getMemberId(), request.getAmount(), request.getOrderNo());
         return ResponseEntity.ok().build();
     }
 

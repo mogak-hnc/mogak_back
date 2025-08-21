@@ -1,5 +1,6 @@
 package com.hnc.mogak.member.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hnc.mogak.member.domain.vo.MemberId;
 import com.hnc.mogak.member.domain.vo.MemberInfo;
 import com.hnc.mogak.member.domain.vo.PlatformInfo;
@@ -10,6 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Member {
 
     private MemberId memberId;
