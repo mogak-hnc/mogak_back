@@ -7,6 +7,7 @@ import com.hnc.mogak.zone.application.port.in.query.MogakZoneSearchQuery;
 import com.hnc.mogak.zone.domain.ownermember.ZoneOwner;
 import com.hnc.mogak.zone.domain.zone.MogakZone;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ public interface MogakZoneQueryPort {
 
     ZoneOwner findZoneOwnerByMogakZoneId(Long mogakZoneId);
 
-    Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery);
+    Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery, Pageable pageable);
 
     ZoneSummary getSummaryDetail(Long mogakZoneId);
 

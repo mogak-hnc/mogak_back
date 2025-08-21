@@ -24,7 +24,7 @@ public class GamePointService {
     private final TransactionTemplate transactionTemplate;
 
     public void chargePoint(Long memberId, Integer amount, String orderNo) {
-        Boolean isFirst = redisTemplate.opsForValue().setIfAbsent(orderNo + "point", "lock", Duration.ofMinutes(3));
+        Boolean isFirst = redisTemplate.opsForValue().setIfAbsent(orderNo + ":point", "lock", Duration.ofMinutes(3));
         if (!Boolean.TRUE.equals(isFirst)) return;
 
         log.info("[ChargePoint]memberId={}, amount={}", memberId, amount);

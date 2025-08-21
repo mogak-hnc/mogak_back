@@ -19,6 +19,8 @@ import com.hnc.mogak.zone.domain.zonemember.ZoneMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +59,13 @@ public class MogakZoneQueryService implements MogakZoneQueryUseCase {
 
     @Override
     public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery mogakZoneSearchQuery) {
-        return mogakZoneQueryPort.searchMogakZone(mogakZoneSearchQuery);
+        Pageable pageable = PageRequest.of(mogakZoneSearchQuery.getPage(), mogakZoneSearchQuery.getSize());
+        final int MAX_PAGE_LIMIT = 20;
+        if (pageable.getPageNumber() >= MAX_PAGE_LIMIT) {
+            return Page.empty(pageable);
+        }
+
+        return mogakZoneQueryPort.searchMogakZone(mogakZoneSearchQuery, pageable);
     }
 
     @Override

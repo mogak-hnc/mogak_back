@@ -80,8 +80,7 @@ public class MogakZoneQueryAdapter implements MogakZoneQueryPort {
 //    }
 //
     @Override
-    public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery query) {
-        Pageable pageable = PageRequest.of(query.getPage(), query.getSize());
+    public Page<MogakZoneSearchResponse> searchMogakZone(MogakZoneSearchQuery query, Pageable pageable) {
         return mogakZoneQueryDslRepository.findMogakZone(query, pageable);
     }
 
